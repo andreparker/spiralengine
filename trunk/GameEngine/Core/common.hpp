@@ -180,7 +180,7 @@ namespace gameEngine {
 
 				virtual void SetupClassInfo()
 				{
-					addDerivedClass( getSuper() );
+					addDerivedClass();
 					CLASS_SETUP_ATTRIBUTES( Class, Derived );
 				}
 
@@ -205,14 +205,14 @@ namespace gameEngine {
 					return bool( _aIsClass != NULL );
 				}
 
-				void addDerivedClass( Derived* super )
+				void addDerivedClass()
 				{
 					_classID = ++classCount;
 					const uint32 id = Super::type_info.getClassID();
 					const uint32 indx = bitIndex( id );
 					const uint32 bit = bitInIndex( indx, id );
 
-					if( super && allocateClassBitArray() )
+					if( allocateClassBitArray() )
 					{
 						const uint8* srcArray = Derived::type_info.getClassBitArray();
 						
@@ -273,17 +273,17 @@ namespace gameEngine {
 			static nullTypeInfo type_info; // dummy info
 		};
 
-		template< class _t, class _f >
-		_t fast_dynamic_cast( const _f* pointer )
+		template< class T, class F >
+		T fast_dynamic_cast( const F* pointer )
 		{
 			using namespace type_helper::mpt;
-			_t castedObject = NULL;
+			T castedObject = NULL;
 
 			if( pointer )
 			{
-				if( _f::type_info.isClass( type_utility::remove_ptr< _t >::type::type_info.getClassID() ) )
+				if( F::type_info.isClass( type_utility::remove_ptr< T >::type::type_info.getClassID() ) )
 				{
-					castedObject = static_cast< _t >( const_cast< _f* >( pointer ) );
+					castedObject = static_cast< T >( const_cast< F* >( pointer ) );
 				}
 			}
 

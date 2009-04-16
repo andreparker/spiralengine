@@ -324,10 +324,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Core\zlib\example.c"
-					>
-				</File>
-				<File
 					RelativePath=".\Core\zlib\gzio.c"
 					>
 				</File>
