@@ -1,0 +1,15 @@
+function RemoveDirs( directorys_ )
+	local i = 1
+	while directorys_[i] do
+		if os.isdir( directorys_[i] ) == true then
+			os.rmdir( directorys_[i] )
+		end
+		i=i+1
+	end
+end
+
+-- CUtil class
+CUtil = 
+{
+	rmDirs = RemoveDirs
+}

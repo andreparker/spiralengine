@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Config>
+  <vid_width value="640" />
+  <vid_height value="480" />
+  <vid_bitdepth value="32" />
+</Config>

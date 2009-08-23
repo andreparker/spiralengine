@@ -1,0 +1,1194 @@
+format 67
+"Spiral"
+  revision 6
+  modified_by 32 "Andre"
+  cpp_root_dir "/Users/admin/Documents/Spiral/C++/"
+
+
+  
+  // class settings
+  default_attribute_visibility protected default_relation_visibility protected default_operation_visibility public
+  //class diagram settings
+  draw_all_relations yes hide_attributes no hide_operations no show_members_full_definition no show_members_visibility no show_members_stereotype no show_members_multiplicity no show_members_initialization no show_attribute_modifiers no member_max_width 127 show_parameter_dir yes show_parameter_name yes package_name_in_tab no class_drawing_mode natural drawing_language uml show_context_mode no auto_label_position yes show_relation_modifiers no show_infonote no shadow yes show_stereotype_properties no
+  //use case diagram settings
+  package_name_in_tab no show_context no auto_label_position yes draw_all_relations yes class_drawing_mode actor shadow yes show_stereotype_properties no
+  //sequence diagram settings
+  show_full_operations_definition no write_horizontally yes class_drawing_mode natural drawing_language uml draw_all_relations yes shadow yes show_stereotype_properties no
+  //collaboration diagram settings
+  show_full_operations_definition no show_hierarchical_rank no write_horizontally yes drawing_language uml package_name_in_tab no show_context no draw_all_relations yes shadow yes show_stereotype_properties no
+  //object diagram settings
+   write_horizontally yes package_name_in_tab no show_context no auto_label_position yes draw_all_relations yes shadow yes show_stereotype_properties no
+  //component diagram settings
+  package_name_in_tab no show_context no auto_label_position yes draw_all_relations yes shadow yes
+  draw_component_as_icon no show_component_req_prov no show_component_rea no show_stereotype_properties no
+  //deployment diagram settings
+  package_name_in_tab no show_context no write_horizontally yes auto_label_position yes draw_all_relations yes shadow yes
+  draw_component_as_icon no show_component_req_prov no show_component_rea no show_stereotype_properties no
+  //state diagram settings
+  package_name_in_tab no show_context no auto_label_position yes write_trans_label_horizontally yes show_trans_definition no draw_all_relations yes shadow yes
+  show_activities yes region_horizontally yes drawing_language uml show_stereotype_properties no
+  //activity diagram settings
+  package_name_in_tab no show_context no show_opaque_action_definition no auto_label_position yes write_flow_label_horizontally no draw_all_relations yes shadow yes
+  show_infonote yes drawing_language uml show_stereotype_properties no
+  
+  class_color yellow duration_color transparent continuation_color gray note_color blue fragment_color transparent subject_color transparent usecase_color yellow package_color transparent component_color green artifact_color green deploymentnode_color gray state_color yellow stateaction_color transparent activity_color transparent activityregion_color transparent activitypartition_color transparent activityaction_color transparent parameterpin_color white 
+  font_size 11
+  diagram_format A4
+
+  mark_for_import
+  
+  classview 128163 "Class"
+    //class diagram settings
+    draw_all_relations default hide_attributes default hide_operations default show_members_full_definition default show_members_visibility default show_members_stereotype default show_members_multiplicity default show_members_initialization default show_attribute_modifiers default member_max_width 0 show_parameter_dir default show_parameter_name default package_name_in_tab default class_drawing_mode default drawing_language default show_context_mode default auto_label_position default show_relation_modifiers default show_infonote default shadow default show_stereotype_properties default
+    //collaboration diagram settings
+    show_full_operations_definition default show_hierarchical_rank default write_horizontally default drawing_language default package_name_in_tab default show_context default draw_all_relations default shadow default show_stereotype_properties default
+    //object diagram settings
+     write_horizontally default package_name_in_tab default show_context default auto_label_position default draw_all_relations default shadow default show_stereotype_properties default
+    //sequence diagram settings
+    show_full_operations_definition default write_horizontally default class_drawing_mode default drawing_language default draw_all_relations default shadow default show_stereotype_properties default
+    //state diagram settings
+    package_name_in_tab default show_context default auto_label_position default write_trans_label_horizontally default show_trans_definition default draw_all_relations default shadow default
+    show_activities default region_horizontally default drawing_language default show_stereotype_properties default
+    //class settings
+    //activity diagram settings
+    package_name_in_tab default show_context default show_opaque_action_definition default auto_label_position default write_flow_label_horizontally default draw_all_relations default shadow default
+    show_infonote default drawing_language default show_stereotype_properties default
+    classdiagram 128163 "Core"
+      draw_all_relations default hide_attributes default hide_operations default show_members_full_definition default show_members_visibility default show_members_stereotype default show_members_multiplicity default show_members_initialization default show_attribute_modifiers default member_max_width 0 show_parameter_dir default show_parameter_name default package_name_in_tab default class_drawing_mode default drawing_language default show_context_mode default auto_label_position default show_relation_modifiers default show_infonote default shadow default show_stereotype_properties default
+      size A4
+    end
+
+    classdiagram 128291 "Graphics"
+      draw_all_relations default hide_attributes default hide_operations default show_members_full_definition default show_members_visibility default show_members_stereotype default show_members_multiplicity default show_members_initialization default show_attribute_modifiers default member_max_width 0 show_parameter_dir default show_parameter_name default package_name_in_tab default class_drawing_mode default drawing_language default show_context_mode default auto_label_position default show_relation_modifiers default show_infonote default shadow default show_stereotype_properties default
+      size A4
+    end
+
+    classdiagram 128419 "Audio"
+      draw_all_relations default hide_attributes default hide_operations default show_members_full_definition default show_members_visibility default show_members_stereotype default show_members_multiplicity default show_members_initialization default show_attribute_modifiers default member_max_width 0 show_parameter_dir default show_parameter_name default package_name_in_tab default class_drawing_mode default drawing_language default show_context_mode default auto_label_position default show_relation_modifiers default show_infonote default shadow default show_stereotype_properties default
+      size A4
+    end
+
+    classdiagram 128547 "Resource"
+      draw_all_relations default hide_attributes default hide_operations default show_members_full_definition default show_members_visibility default show_members_stereotype default show_members_multiplicity default show_members_initialization default show_attribute_modifiers default member_max_width 0 show_parameter_dir default show_parameter_name default package_name_in_tab default class_drawing_mode default drawing_language default show_context_mode default auto_label_position default show_relation_modifiers default show_infonote default shadow default show_stereotype_properties default
+      size A4
+    end
+
+    classdiagram 128675 "Input"
+      draw_all_relations default hide_attributes default hide_operations default show_members_full_definition default show_members_visibility default show_members_stereotype default show_members_multiplicity default show_members_initialization default show_attribute_modifiers default member_max_width 0 show_parameter_dir default show_parameter_name default package_name_in_tab default class_drawing_mode default drawing_language default show_context_mode default auto_label_position default show_relation_modifiers default show_infonote default shadow default show_stereotype_properties default
+      size A4
+    end
+
+    class 128163 "Cloneable"
+      abstract visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      operation 128163 "Clone"
+	abstract cpp_virtual public explicit_return_type "Cloneable*"
+	nparams 0
+	
+	
+	
+	
+	
+	comment "creates a copy of a cloneable object"
+      end
+    end
+
+    class 128291 "CoreObject"
+      abstract visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      associated_diagram classdiagram_ref 128291 // Graphics
+      classrelation 128163 // <generalisation>
+	relation 128163 ---|>
+	  a public
+	    classrelation_ref 128163 // <generalisation>
+	  b parent class_ref 128163 // Cloneable
+      end
+
+      operation 128291 "Clone"
+	abstract cpp_virtual public explicit_return_type "Cloneable*"
+	nparams 0
+	
+	
+	
+	
+	
+	comment "creates a copy of a cloneable object"
+      end
+
+      operation 128419 "Tick"
+	abstract cpp_virtual public explicit_return_type "void"
+	nparams 1
+	  param in name "deltaTime" explicit_type "Real"
+	
+	
+	
+	
+	
+      end
+
+      operation 130723 "GetObjectID"
+	public explicit_return_type "uint"
+	nparams 0
+	
+	
+	
+	
+	
+      end
+    end
+
+    class 128419 "Application"
+      abstract visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      operation 128547 "Run"
+	abstract cpp_virtual public explicit_return_type "void"
+	nparams 1
+	  param in name "deltaTime" explicit_type "Real"
+	
+	
+	
+	
+	
+      end
+
+      operation 128675 "Init"
+	abstract cpp_virtual public explicit_return_type "bool"
+	nparams 0
+	
+	
+	
+	
+	
+      end
+
+      operation 128803 "UnInit"
+	abstract cpp_virtual public explicit_return_type "void"
+	nparams 0
+	
+	
+	
+	
+	
+      end
+
+      classrelation 129315 // <composition>
+	relation 128931 *---
+	  a role_name "" multiplicity "1" protected
+	    classrelation_ref 129315 // <composition>
+	  b role_name "" protected
+	    classrelation_ref 129443 // <composition>
+      end
+
+      classrelation 130083 // <composition>
+	relation 129443 *---
+	  a role_name "" multiplicity "1" protected
+	    classrelation_ref 130083 // <composition>
+	  b role_name "" protected
+	    classrelation_ref 130211 // <composition>
+      end
+    end
+
+    class 128547 "GameObject2D"
+      visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      classrelation 128291 // <generalisation>
+	relation 128291 ---|>
+	  a public
+	    classrelation_ref 128291 // <generalisation>
+	  b parent class_ref 128291 // CoreObject
+      end
+
+      operation 128931 "Clone"
+	cpp_virtual public explicit_return_type "Cloneable*"
+	nparams 0
+	
+	
+	
+	
+	
+	comment "creates a copy of a cloneable object"
+      end
+
+      operation 129059 "Tick"
+	public explicit_return_type "void"
+	nparams 1
+	  param in name "deltaTime" explicit_type "Real"
+	
+	
+	
+	
+	
+      end
+
+      operation 129187 "GetRotation"
+	public explicit_return_type "Real"
+	nparams 0
+	
+	
+	
+	
+	
+      end
+
+      operation 129315 "GetPosition"
+	public explicit_return_type "const Vector2D&"
+	nparams 0
+	
+	
+	
+	
+	
+      end
+
+      classrelation 128419 // <composition>
+	relation 128419 *---
+	  a role_name "" multiplicity "1" protected
+	    classrelation_ref 128419 // <composition>
+	  b role_name "" protected
+	    classrelation_ref 128547 // <composition>
+      end
+
+      classrelation 129827 // <composition>
+	relation_ref 129187 // <composition>
+      end
+
+      operation 131107 "GetObjectID"
+	public explicit_return_type "uint"
+	nparams 0
+	
+	
+	
+	
+	
+      end
+    end
+
+    class 128675 "Vector2D"
+      visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      attribute 128163 "x"
+	protected explicit_type "Real"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+
+      attribute 128291 "y"
+	protected explicit_type "Real"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+
+      classrelation 128547 // <composition>
+	relation_ref 128419 // <composition>
+      end
+    end
+
+    class 128803 "MessageHandler"
+      visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      operation 129443 "Push"
+	public explicit_return_type "void"
+	nparams 1
+	  param in name "message" type class_ref 128931 // Message
+	
+	
+	
+	
+	
+      end
+
+      operation 129571 "Pop"
+	public explicit_return_type "void"
+	nparams 1
+	  param in name "messageID" explicit_type "uint"
+	
+	
+	
+	
+	
+      end
+
+      operation 129699 "Read"
+	public explicit_return_type "const Message&"
+	nparams 1
+	  param in name "messageID" explicit_type "uint"
+	
+	
+	
+	
+	
+      end
+
+      classrelation 128675 // <generalisation>
+	relation 128547 ---|>
+	  a public
+	    classrelation_ref 128675 // <generalisation>
+	  b parent class_ref 128291 // CoreObject
+      end
+
+      operation 129827 "Tick"
+	public explicit_return_type "void"
+	nparams 1
+	  param in name "deltaTime" explicit_type "Real"
+	
+	
+	
+	
+	
+      end
+
+      classrelation 128803 // <composition>
+	relation 128675 *---
+	  a role_name "" multiplicity "*" protected
+	    classrelation_ref 128803 // <composition>
+	  b role_name "" protected
+	    classrelation_ref 128931 // <composition>
+      end
+
+      classrelation 129443 // <composition>
+	relation_ref 128931 // <composition>
+      end
+
+      operation 131363 "RegisterCallBack"
+	public explicit_return_type "void"
+	nparams 2
+	  param in name "gameObjectID" explicit_type "uint"
+	  param in name "boostFunc" explicit_type "boost::Function"
+	
+	
+	
+	
+	
+      end
+    end
+
+    class 128931 "Message"
+      visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      operation 129955 "GetID"
+	public explicit_return_type "uint"
+	nparams 0
+	
+	
+	
+	
+	
+      end
+
+      operation 130083 "GetData"
+	public explicit_return_type "const MessageData*"
+	nparams 0
+	
+	
+	
+	
+	
+	comment "template< class T >
+const MessageData<T>* GetData<T>();"
+      end
+
+      operation 130211 "Process"
+	public explicit_return_type "void"
+	nparams 0
+	
+	
+	
+	
+	
+      end
+
+      classrelation 128931 // <composition>
+	relation_ref 128675 // <composition>
+      end
+
+      classrelation 129059 // <composition>
+	relation 128803 *---
+	  a role_name "" multiplicity "1" protected
+	    classrelation_ref 129059 // <composition>
+	  b role_name "" protected
+	    classrelation_ref 129187 // <composition>
+      end
+    end
+
+    class 129059 "MessageData"
+      visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "template< class T >
+struct MessageData
+{
+ T data;
+};"
+      classrelation 129187 // <composition>
+	relation_ref 128803 // <composition>
+      end
+
+      attribute 128547 "data"
+	protected explicit_type "any"
+	multiplicity "1"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+    end
+
+    class 129187 "VisualObject2D"
+      visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      operation 130339 "Clone"
+	cpp_virtual public explicit_return_type "Cloneable*"
+	nparams 0
+	
+	
+	
+	
+	
+	comment "creates a copy of a cloneable object"
+      end
+
+      operation 130467 "Tick"
+	public explicit_return_type "void"
+	nparams 1
+	  param in name "deltaTime" explicit_type "Real"
+	
+	
+	
+	
+	
+      end
+
+      operation 130595 "GetGameObject"
+	public explicit_return_type "const GameObject2D&"
+	nparams 0
+	
+	
+	
+	
+	
+      end
+
+      operation 131491 "GetObjectID"
+	public explicit_return_type "uint"
+	nparams 0
+	
+	
+	
+	
+	
+      end
+
+      classrelation 130723 // <generalisation>
+	relation 129827 ---|>
+	  a public
+	    classrelation_ref 130723 // <generalisation>
+	  b parent class_ref 129571 // VisualObject
+      end
+
+      operation 132387 "Attach"
+	public explicit_return_type "bool"
+	nparams 1
+	  param in name "gameObject" explicit_type "GameObject2D*"
+	
+	
+	
+	
+	
+      end
+    end
+
+    class 129315 "GameObjectHandler"
+      visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      classrelation 129699 // <composition>
+	relation 129187 *---
+	  a role_name "" multiplicity "*" protected
+	    classrelation_ref 129699 // <composition>
+	  b role_name "" protected
+	    classrelation_ref 129827 // <composition>
+      end
+
+      classrelation 129955 // <generalisation>
+	relation 129315 ---|>
+	  a public
+	    classrelation_ref 129955 // <generalisation>
+	  b parent class_ref 128291 // CoreObject
+      end
+
+      operation 130851 "Add"
+	public explicit_return_type "uint"
+	nparams 1
+	  param in name "gameObject" explicit_type "GameObject2D*"
+	
+	
+	
+	
+	
+      end
+
+      operation 130979 "Remove"
+	public explicit_return_type "bool"
+	nparams 1
+	  param in name "gameObjectID" explicit_type "uint"
+	
+	
+	
+	
+	
+      end
+
+      operation 131235 "Tick"
+	cpp_virtual public explicit_return_type "void"
+	nparams 1
+	  param in name "deltaTime" explicit_type "Real"
+	
+	
+	
+	
+	
+      end
+
+      classrelation 130211 // <composition>
+	relation_ref 129443 // <composition>
+      end
+    end
+
+    class 129443 "VisualObjectHandler"
+      visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      classrelation 130339 // <generalisation>
+	relation 129571 ---|>
+	  a public
+	    classrelation_ref 130339 // <generalisation>
+	  b parent class_ref 128291 // CoreObject
+      end
+
+      operation 132003 "Add"
+	public explicit_return_type ""
+	nparams 1
+	  param in name "visualObject" explicit_type "any"
+	
+	
+	
+	
+	
+      end
+
+      operation 132131 "Tick"
+	cpp_virtual public explicit_return_type "void"
+	nparams 1
+	  param in name "deltaTime" explicit_type "Real"
+	
+	
+	
+	
+	
+      end
+
+      operation 132259 "Visualize"
+	public explicit_return_type "void"
+	nparams 0
+	
+	
+	
+	
+	
+      end
+
+      classrelation 131491 // <composition>
+	relation 130339 *---
+	  a role_name "" multiplicity "*" protected
+	    classrelation_ref 131491 // <composition>
+	  b role_name "" protected
+	    classrelation_ref 131619 // <composition>
+      end
+    end
+
+    class 129571 "VisualObject"
+      visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      operation 131747 "SetVisualState"
+	public explicit_return_type ""
+	nparams 2
+	  param in name "state" explicit_type "uint"
+	  param in name "value" explicit_type "uint"
+	
+	
+	
+	
+	
+      end
+
+      operation 131875 "GetVisualState"
+	public explicit_return_type "uint"
+	nparams 1
+	  param in name "state" explicit_type "uint"
+	
+	
+	
+	
+	
+      end
+
+      operation 131619 "Visualize"
+	public explicit_return_type "void"
+	nparams 0
+	
+	
+	
+	
+	
+      end
+
+      classrelation 131363 // <generalisation>
+	relation 130211 ---|>
+	  a public
+	    classrelation_ref 131363 // <generalisation>
+	  b parent class_ref 128291 // CoreObject
+      end
+
+      classrelation 131619 // <composition>
+	relation_ref 130339 // <composition>
+      end
+    end
+
+    class 129699 "Fsm"
+      visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      operation 133027 "PostEvent"
+	public explicit_return_type "void"
+	nparams 1
+	  param in name "event" type class_ref 129955 // Event
+	
+	
+	
+	
+	
+	comment "template< class T >
+void PostEvent< T >( const T& event )
+
+calls State's LookUpTransState function"
+      end
+
+      classrelation 131747 // <composition>
+	relation 130467 *---
+	  a role_name "" multiplicity "*" protected
+	    classrelation_ref 131747 // <composition>
+	  b role_name "" protected
+	    classrelation_ref 131875 // <composition>
+      end
+
+      classrelation 132003 // <aggregation>
+	relation 130595 o---
+	  a role_name "" protected
+	    classrelation_ref 132003 // <aggregation>
+	  b role_name "" protected
+	    classrelation_ref 132131 // <aggregation>
+      end
+
+      operation 133155 "Initialize"
+	public explicit_return_type "bool"
+	nparams 0
+	
+	
+	
+	
+	
+      end
+
+      operation 133283 "UnInitialize"
+	public explicit_return_type "void"
+	nparams 0
+	
+	
+	
+	
+	
+      end
+
+      operation 133411 "Run"
+	public explicit_return_type "bool"
+	nparams 0
+	
+	
+	
+	
+	
+      end
+    end
+
+    class 129827 "State"
+      visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      attribute 128675 "m_ID"
+	protected explicit_type "uint"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+
+      operation 132515 "Enter"
+	public explicit_return_type "void"
+	nparams 0
+	
+	
+	
+	
+	
+      end
+
+      operation 132643 "Run"
+	public explicit_return_type "bool"
+	nparams 1
+	  param in name "fsm" explicit_type "Fsm&"
+	
+	
+	
+	
+	
+      end
+
+      operation 132771 "Transition"
+	public explicit_return_type "bool"
+	nparams 0
+	
+	
+	
+	
+	
+      end
+
+      operation 132899 "LookUpTransState"
+	public explicit_return_type "uint"
+	nparams 0
+	
+	
+	
+	
+	
+	comment "template< class T >
+uint LookUpTransState< T >()
+
+T == Event"
+      end
+
+      classrelation 131875 // <composition>
+	relation_ref 130467 // <composition>
+      end
+    end
+
+    class 129955 "Event"
+      visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      classrelation 132131 // <aggregation>
+	relation_ref 130595 // <aggregation>
+      end
+    end
+
+    class 128030 "DeviceDriver"
+      abstract visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      operation 128030 "GetName"
+	public explicit_return_type "string"
+	nparams 0
+	
+	
+	
+	
+	
+      end
+
+      operation 128158 "GetInfo"
+	public explicit_return_type "string"
+	nparams 0
+	
+	
+	
+	
+	
+      end
+
+      operation 128286 "Initialize"
+	public explicit_return_type "bool"
+	nparams 0
+	
+	
+	
+	
+	
+      end
+
+      operation 128414 "UnInitialize"
+	public explicit_return_type "bool"
+	nparams 0
+	
+	
+	
+	
+	
+      end
+    end
+
+    class 128158 "GfxDriver"
+      abstract visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      operation 128542 "SetVideo"
+	public explicit_return_type "bool"
+	nparams 0
+	
+	
+	
+	
+	
+      end
+
+      classrelation 128030 // <generalisation>
+	relation 128030 ---|>
+	  a public
+	    classrelation_ref 128030 // <generalisation>
+	  b parent class_ref 128030 // DeviceDriver
+      end
+
+      operation 128670 "Present"
+	public explicit_return_type "bool"
+	nparams 0
+	
+	
+	
+	
+	
+      end
+
+      operation 128798 "BeginDraw"
+	public explicit_return_type "bool"
+	nparams 0
+	
+	
+	
+	
+	
+      end
+
+      operation 128926 "EndDraw"
+	public explicit_return_type "void"
+	nparams 0
+	
+	
+	
+	
+	
+      end
+
+      operation 129054 "Draw"
+	public explicit_return_type "bool"
+	nparams 0
+	
+	
+	
+	
+	
+      end
+
+      operation 129182 "EnumerateSettings"
+	public explicit_return_type "bool"
+	nparams 1
+	  param inout name "modeList" explicit_type "std::list"
+	
+	
+	
+	
+	
+      end
+
+      operation 129694 "Bind"
+	public explicit_return_type ""
+	nparams 0
+	
+	
+	
+	
+	
+      end
+    end
+
+    class 128286 "Texture"
+      visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      operation 129310 "GetWidth"
+	public explicit_return_type "int"
+	nparams 0
+	
+	
+	
+	
+	
+      end
+
+      operation 129438 "GetHeight"
+	public explicit_return_type "int"
+	nparams 0
+	
+	
+	
+	
+	
+      end
+
+      operation 129566 "GetBitDepth"
+	public explicit_return_type "int"
+	nparams 0
+	
+	
+	
+	
+	
+      end
+
+      attribute 128030 "m_resource"
+	protected explicit_type "Resource*"
+	multiplicity "0"
+	init_value "NULL"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+
+      operation 130334 "GetResource"
+	public explicit_return_type "shared_ptr< Resource >"
+	nparams 0
+	
+	
+	
+	
+	
+      end
+    end
+
+    class 128414 "Resource"
+      visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      operation 129822 "Lock"
+	public explicit_return_type ""
+	nparams 0
+	
+	
+	
+	
+	
+      end
+
+      operation 129950 "IsValid"
+	public explicit_return_type ""
+	nparams 0
+	
+	
+	
+	
+	
+      end
+
+      operation 130206 "Unlock"
+	public explicit_return_type ""
+	nparams 0
+	
+	
+	
+	
+	
+      end
+    end
+
+    class 128542 "ManagedResource"
+      visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      classrelation 128158 // <generalisation>
+	relation 128158 ---|>
+	  a public
+	    classrelation_ref 128158 // <generalisation>
+	  b parent class_ref 128414 // Resource
+      end
+
+      operation 130078 "Reload"
+	public explicit_return_type ""
+	nparams 0
+	
+	
+	
+	
+	
+      end
+    end
+  end
+
+  componentview 128163 "Component"
+    //component diagram settings
+    package_name_in_tab default show_context default auto_label_position default draw_all_relations default shadow default
+    draw_component_as_icon default show_component_req_prov default show_component_rea default show_stereotype_properties default
+    componentdiagram 128803 "Components"
+      package_name_in_tab default show_context default auto_label_position default draw_all_relations default shadow default
+      draw_component_as_icon default show_component_req_prov default show_component_rea default show_stereotype_properties default
+      size A4
+    end
+
+    component 128163 "Core"
+    end
+
+    component 128291 "Sound"
+      simplerelation 128163
+	---|>
+	  on component_ref 128163 // Core
+      end
+    end
+
+    component 128419 "Graphics"
+      simplerelation 128547
+	---|>
+	  on component_ref 128163 // Core
+      end
+    end
+
+    component 128547 "Resource"
+      simplerelation 128291
+	---|>
+	  on component_ref 128163 // Core
+      end
+    end
+
+    component 128675 "Input"
+      simplerelation 128419
+	---|>
+	  on component_ref 128163 // Core
+      end
+    end
+  end
+end
