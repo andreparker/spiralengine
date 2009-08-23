@@ -1,0 +1,25 @@
+
+-- utility functions
+dofile( "utility.premake4" )
+
+solution( "Spiral" )
+
+	if _ACTION == "clean" then
+		CUtil.rmDirs -- remove directorys
+		{ 
+			"Obj",
+			"Build" 
+		}
+	end
+	
+	location( "Build/" .. _ACTION )
+	
+	configurations
+	{
+		"Debug" .. _ACTION, 
+		"Release" .. _ACTION
+	}
+	
+	dofile( "GameEngine/SpiralEngine.premake4" )
+	dofile( "Unit_Testing/UnitTest.premake4" )
+	

@@ -1,0 +1,14 @@
+window_sizes 1210 916 240 720 700 82
+diagrams
+  classdiagram_ref 128291 // Graphics
+    767 605 100 4 0 0
+  active  classdiagram_ref 128163 // Core
+    767 605 100 4 0 0
+end
+show_stereotypes
+selected component_ref 128675 // Input
+open
+  classview_ref 128163 // Class
+  component_ref 128419 // Graphics
+end
+end

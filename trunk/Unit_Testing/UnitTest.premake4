@@ -1,0 +1,90 @@
+
+project( "UnitTest" )
+	
+	language( "C++" )
+	kind( "ConsoleApp" )
+	
+	-- use compiler name for folder /build/compiler
+	location( "../Build/" .. _ACTION )
+	
+	files
+	{
+		"**.cpp",
+		"**.hpp"
+	}
+	
+	-- add window defines 
+	if os.get() == "windows"
+	then
+		defines
+		{
+			"WIN32",
+			"_WINDOWS"
+		}
+	end
+	
+	-- add disabling of depricated warnings
+	if _ACTION == "vs2005" or _ACTION == "vs2008"
+	then
+		defines
+		{
+			"_CRT_SECURE_NO_WARNINGS"
+		}
+	end
+	
+	--------------------------------
+	-- Debug config
+	--------------------------------
+	configuration( "Debug" .. _ACTION )
+	
+		targetdir( "../Build/bin/Debug" .. _ACTION )
+		-- set the binary output name
+		targetname( "UnitTest_Debug" .. _ACTION )
+		-- set the directory were built objs go
+		objdir( "../Obj/" .. _ACTION .. "/debug" )
+		
+		defines
+		{
+			"_DEBUG"
+		}
+		
+		flags
+		{
+			"ExtraWarnings",
+			"No64BitChecks",
+			"NoManifest",
+			"NoPCH",
+			"NoRTTI",
+			"StaticRuntime",
+			"Symbols"
+		}
+	configuration ({})
+	
+	--------------------------------
+	-- Release config
+	--------------------------------
+	configuration( "Release" .. _ACTION )
+	
+		targetdir( "../Build/bin/Release" .. _ACTION )
+		-- set the binary output name
+		targetname( "UnitTest_Release" .. _ACTION )
+		-- set the directory were built objs go
+		objdir( "../Obj/" .. _ACTION .. "/release" )
+		
+		defines
+		{
+			"NDEBUG"
+		}
+		
+		flags
+		{
+			"ExtraWarnings",
+			"No64BitChecks",
+			"NoManifest",
+			"NoPCH",
+			"NoRTTI",
+			"StaticRuntime",
+			"OptimizeSpeed",
+			"NoEditAndContinue"
+		}
+	configuration ({})
