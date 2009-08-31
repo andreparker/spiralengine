@@ -39,3 +39,18 @@ void GfxDriver::Bind( const shared_ptr< Texture >& texture, int32_t unit /*= 0*/
 {
 	DoBind( texture, unit );
 }
+
+bool GfxDriver::CreateGeometry( const GeometryType& type, boost::shared_ptr<Geometry>& geometry )
+{
+	return DoCreateGeometry( type, geometry );
+}
+
+void GfxDriver::Draw( boost::shared_ptr<Geometry>& geometry )
+{
+	DoDraw( geometry );
+}
+
+void GfxDriver::SetState( const RenderState& state )
+{
+	DoSetState( state );
+}

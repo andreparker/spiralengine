@@ -25,7 +25,7 @@ namespace Spiral
 		   @brief     returns a VertexFormat enum type
 		   @return    boost::int32_t
 		*/
-		boost::int32_t GetType()const
+		boost::int32_t GetVertexType()const
 		{
 			return m_type;
 		}
@@ -50,6 +50,12 @@ namespace Spiral
 		{
 			return m_resource;
 		}
+
+		boost::int32_t GetVertexCount()const
+		{
+			return m_vertexCount;
+		}
+
 	protected:
 		VertexBuffer();
 
@@ -63,9 +69,31 @@ namespace Spiral
 		{
 			m_resource = res;
 		}
+
+		void SetVertexType( boost::int32_t type )
+		{
+			m_type = type;
+		}
+
+		boost::int32_t GetStride()const
+		{
+			return m_stride;
+		}
+
+		void SetStride( boost::int32_t stride )
+		{
+			m_stride = stride;
+		}
+
+		void SetVertexCount( boost::int32_t count )
+		{
+			m_vertexCount = count;
+		}
 	private:
+		boost::int32_t m_vertexCount;
 		boost::int32_t m_type;		///< vertex type
 		boost::shared_ptr< Resource > m_resource;
+		boost::int32_t m_stride;
 	private:
 		virtual bool DoCreate( const VertexFormat& format, boost::int32_t elementSize, boost::int32_t vertexCount, bool bManaged ) = 0;
 	};

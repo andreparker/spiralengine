@@ -17,8 +17,8 @@ namespace Spiral
 {
 	class GameState;
 	class VisualGameState;
-
 	class GameStateMachine;
+	
 	typedef boost::function< void( GameStateMachine* ) > StateInitFunc;
 
 	class GameStateMachine : private boost::noncopyable

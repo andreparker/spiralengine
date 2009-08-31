@@ -44,17 +44,3 @@ void Resource::Size( Rect< int32_t >& rect )const
 {
 	DoSize( rect );
 }
-
-
-ManagedResource::ManagedResource()
-{
-}
-
-ManagedResource::~ManagedResource()
-{
-}
-
-bool ManagedResource::Reload()
-{
-	return DoReload();
-}

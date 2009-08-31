@@ -17,6 +17,13 @@ project( "SpiralEngine" )
 		"../ThirdParty/**.c"
 	}
 	
+	-- exclude these files
+	excludes
+	{
+		"../ThirdParty/Math/Eigen/src/Core/CoreInstantiations.cpp",
+		"../ThirdParty/Math/Eigen/src/QR/QrInstantiations.cpp"
+	}
+	
 	-- add window defines 
 	if os.get() == "windows"
 	then

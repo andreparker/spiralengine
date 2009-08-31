@@ -13,7 +13,7 @@
 namespace Spiral
 {
 	class Resource;
-	class IndexBuffer : private boost::noncopyable, public Cloneable, public Bindable
+	class IndexBuffer : public Bindable, public Cloneable,private boost::noncopyable  
 	{
 	public:
 		virtual ~IndexBuffer();
@@ -42,14 +42,35 @@ namespace Spiral
 		{
 			return m_type;
 		}
+
+		boost::int32_t GetIndexCount()const
+		{
+			return m_indexCount;
+		}
+
 	protected:
 		IndexBuffer();
 
+		void SetResource( boost::shared_ptr< Resource >& res )
+		{
+			m_resource = res;
+		}
+
+		void SetIndexType( boost::int32_t type )
+		{
+			m_type = type;
+		}
+
+		void SetIndexCount( boost::int32_t count )
+		{
+			m_indexCount = count;
+		}
 	private:
+		boost::int32_t m_indexCount;
 		boost::int32_t m_type;
 		boost::shared_ptr< Resource > m_resource;
 
-		virtual bool DoCreate( const IndexFormat& format, boost::int32_t indexCount, bool bManaged = false ) = 0;
+		virtual bool DoCreate( const IndexFormat& format, boost::int32_t indexCount, bool bManaged ) = 0;
 
 	};
 }

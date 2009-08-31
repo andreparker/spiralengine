@@ -3,15 +3,29 @@
 #ifndef OGL_SW_VERTEX_BUFFER_RESOURCE_HPP
 #define OGL_SW_VERTEX_BUFFER_RESOURCE_HPP
 
+#include <boost/thread/mutex.hpp>
 #include "../../Resource/Resource.hpp"
 
 namespace Spiral
 {
 	class OglSWVertexBufferResource : public Resource
 	{
-	private:
+	public:
 		OglSWVertexBufferResource( boost::int32_t size );
 		~OglSWVertexBufferResource();
+
+		boost::int8_t* GetData()
+		{
+			return m_data;
+		}
+
+		const boost::int8_t* GetData()const
+		{
+			return m_data;
+		}
+
+	private:
+		
 
 		 /*!
         	@function   DoIsValid
@@ -55,6 +69,7 @@ namespace Spiral
 		bool m_isValid;			///< valid
 		boost::int8_t* m_data;
 		boost::int32_t m_size;
+		boost::mutex m_mutex;
 	};
 }
 
