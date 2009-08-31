@@ -1,20 +1,36 @@
 #include <boost/cstdint.hpp>
 
-#include "../../../ThirdParty/GLee/GLee.h"
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+
+#include <windows.h>
+#include <gl/GL.h>
 #include "../GfxImpl.hpp"
 #include "WinOglDriver.hpp"
 #include "WinOglException.hpp"
+#include "../Ogl/OglGeometry.hpp"
+#include "../GeometryType.hpp"
+#include "../Ogl/OglUtility.hpp"
+#include "../ogl/OglDriver.hpp"
+#include "../VertexBuffer.hpp"
+#include "../IndexBuffer.hpp"
 
 using namespace Spiral;
 using namespace boost;
 using namespace std;
 
 WinOglDriver::WinOglDriver():
-m_rc(0),m_dc(0){}
+m_rc(0),m_dc(0),m_glDriver(NULL)
+{
+	m_glDriver = new OglDriver;
+}
 
 WinOglDriver::~WinOglDriver()
 {
 	DoUnInitialize();
+	delete m_glDriver;
+	m_glDriver = NULL;
 }
 
 bool WinOglDriver::DoInitialize( const boost::any& data )
@@ -130,24 +146,42 @@ bool WinOglDriver::DoSetVideo( const GfxVidInfo_t& info, bool bfullscreen /*= tr
 
 bool WinOglDriver::DoBeginDraw()
 {
-	return true;
+	return m_glDriver->BeginDraw();
 }
 
 void WinOglDriver::DoEndDraw()
 {
-
+	m_glDriver->EndDraw();
 }
 
 bool WinOglDriver::DoPresent()
 {
+	bool result = m_glDriver->Present();
+
     if( m_dc == NULL )
     {
         throw WinOglException( "Invalid dc" );
     }
 
-    return bool( SwapBuffers( m_dc ) == TRUE );
+    return bool( SwapBuffers( m_dc ) == TRUE && result );
 }
 
-void WinOglDriver::DoBind( const boost::shared_ptr< Texture >& /*texture*/, boost::int32_t /*unit*/ )
+void WinOglDriver::DoBind( const boost::shared_ptr< Texture >& texture, boost::int32_t unit )
 {
+	m_glDriver->Bind( texture, unit );
+}
+
+bool WinOglDriver::DoCreateGeometry( const GeometryType& type, boost::shared_ptr<Geometry>& geometry )
+{
+	return m_glDriver->CreateGeometry( type, geometry );
+}
+
+void WinOglDriver::DoDraw( boost::shared_ptr<Geometry>& geometry )
+{
+	m_glDriver->Draw( geometry );
+}
+
+void WinOglDriver::DoSetState( const RenderState& state )
+{
+	m_glDriver->SetState( state );
 }

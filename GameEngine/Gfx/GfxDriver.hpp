@@ -7,6 +7,7 @@
 #include <boost/cstdint.hpp>
 
 #include "GfxImplFwd.hpp"
+#include "GeometryTypeFwd.hpp"
 #include "../Core/DeviceDriver.hpp"
 
 
@@ -14,9 +15,37 @@ namespace Spiral
 {
 
 	class Texture;
+	class Geometry;
+	struct RenderState;
+
 	class GfxDriver : public DeviceDriver
 	{
 	public:
+
+		/*!
+		   @function  SetState
+		   @brief     Sets a render state
+		   @return    void
+		   @param     const RenderState & state - the render state to set
+		*/
+		void SetState( const RenderState& state );
+
+		/*!
+		   @function  Draw
+		   @brief     draws a geometry
+		   @return    void
+		   @param     boost::shared_ptr<Geometry> & geometry
+		*/
+		void Draw( boost::shared_ptr<Geometry>& geometry );
+
+		/*!
+		   @function  CreateGeometry
+		   @brief     creates a geometry
+		   @return    bool
+		   @param     const GeometryType & type
+		   @param     boost::shared_ptr<Geometry> & geometry
+		*/
+		bool CreateGeometry( const GeometryType& type, boost::shared_ptr<Geometry>& geometry );
 
 		/*!
 			@function   CreateTexture
@@ -137,6 +166,31 @@ namespace Spiral
           @param 	  boost::int32_t unit
        */
        virtual void DoBind( const boost::shared_ptr< Texture >& texture, boost::int32_t unit ) = 0;
+
+	   /*!
+	      @function  DoCreateGeometry
+	      @brief     
+	      @return    bool
+	      @param     const GeometryType & type
+	      @param     boost::shared_ptr<Geometry> & geometry
+	   */
+	   virtual bool DoCreateGeometry( const GeometryType& type, boost::shared_ptr<Geometry>& geometry ) = 0;
+
+	   /*!
+	      @function  DoDraw
+	      @brief     draw geometry
+	      @return    void
+	      @param     boost::shared_ptr<Geometry> & geometry
+	   */
+	   virtual void DoDraw( boost::shared_ptr<Geometry>& geometry ) = 0;
+
+	   /*!
+	      @function  DoSetState
+	      @brief     
+	      @return    void
+	      @param     const RenderState & state
+	   */
+	   virtual void DoSetState( const RenderState& state ) = 0;
 
 	};
 }

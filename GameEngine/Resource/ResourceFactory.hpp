@@ -8,11 +8,11 @@
 
 #include "../Core/TypeUtils.hpp"
 #include "../Core/Singleton.ipp"
-#include "Resource.hpp"
 
 namespace Spiral
 {
 
+	class Resource;
 namespace detail
 {
     template< class ResPolicyClass >
@@ -23,16 +23,6 @@ namespace detail
 
         template< class ResourceType >
         boost::shared_ptr< ResourceType > Create( boost::int32_t size, EmptyType< ResourceType > );
-        
-        /*!
-        	@function   Create
-        	@brief  	creates a managed resource using ResPolicyClass
-        	@return    	boost::shared_ptr< ManagedResource >
-        	@param 		boost::int32_t size - size of the resource in bytes
-        	@param 		EmptyType< ManagedResource >
-        */
-        template<>
-        boost::shared_ptr< ManagedResource > Create( boost::int32_t size, EmptyType< ManagedResource > );
 
         /*!
         	@function   Create
@@ -45,15 +35,7 @@ namespace detail
         boost::shared_ptr< Resource > Create( boost::int32_t size, EmptyType< Resource > );
     };
 
-    template<ResPolicyClass>
-    boost::shared_ptr< ManagedResource > ResourceFactory<ResPolicyClass>::Create( boost::int32_t size, EmptyType< ManagedResource > )
-    {
-        boost::shared_ptr< ManagedResource > res = ResPolicyClass::Create( size, EmptyType< ManagedResource > );
-
-        return res;
-    }
-
-    template<ResPolicyClass>
+    template<class ResPolicyClass>
     boost::shared_ptr< Resource > ResourceFactory<ResPolicyClass>::Create( boost::int32_t size, EmptyType< Resource > )
     {
         boost::shared_ptr< Resource > res = ResPolicyClass::Create( size, EmptyType< Resource > );

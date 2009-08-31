@@ -1,13 +1,15 @@
 #include "OglSWVertexBufferResource.hpp"
+#include "../../Resource/ResLockImpl.hpp"
 
 using namespace Spiral;
 using namespace boost;
 using namespace std;
 
 OglSWVertexBufferResource::OglSWVertexBufferResource( boost::int32_t size ):
-m_isValid( false )
+m_isValid( true ),
 m_data( NULL ),
-m_size( size )
+m_size( size ),
+m_mutex()
 {
 	m_data = new int8_t[ size ];
 }
@@ -26,9 +28,37 @@ bool OglSWVertexBufferResource::DoIsValid() const
 bool OglSWVertexBufferResource::DoLock( int32_t start, int32_t size, ResLockInfo_t& info, bool bDiscard )
 {
 	int32_t totalSize = start + size;
-	if( totalSize < m_size )
+	bool lockResults = false;
+
+	if( m_mutex.try_lock() )
 	{
-		info.data = (m_data + start);
-		info.size = size;
+		if( totalSize < m_size )
+		{
+			info.data = (m_data + start);
+			info.size = size;
+			lockResults = true;
+		}
 	}
+	
+	return lockResults;
+}
+
+void OglSWVertexBufferResource::DoUnlock()
+{
+	m_mutex.unlock();
+}
+
+// cannot do a rectangle lock on a vertexbuffer
+bool OglSWVertexBufferResource::DoLock( const Rect< boost::int32_t >& /*rect*/, ResLockRtInfo_t& /*info*/, bool /*bDiscard*/ )
+{
+	return false;
+}
+
+int32_t OglSWVertexBufferResource::DoSize() const
+{
+	return m_size;
+}
+
+void OglSWVertexBufferResource::DoSize( Rect< int32_t >& /*rect*/ ) const
+{
 }
