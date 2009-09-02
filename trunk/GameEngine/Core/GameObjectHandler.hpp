@@ -65,8 +65,6 @@ namespace Spiral
 	private:
 		Object_set m_objects; ///< list of game objects
 
-	
-
 		virtual void DoTick( real ticks );
 		virtual CoreObject* DoClone()const;
 	};

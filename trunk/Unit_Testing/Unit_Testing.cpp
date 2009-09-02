@@ -16,12 +16,21 @@
 using namespace boost;
 using namespace std;
 
+template< int bit_, int or_ >
+struct bitChain
+{
+	static const int value = (1 << bit_) | or_;
+};
+
+int bits = bitChain< 0, bitChain< 1, bitChain< 2, bitChain< 3, 0 >::value >::value >::value >::value;
+
 BOOST_AUTO_TEST_CASE( lexical_cast_any )
 {
     any anyVar = 20;
     string str = lexical_cast< string >( any_cast< const int >( anyVar ) );
 
     cout << str.c_str() << endl;
+	cout << "bit value " << bits << endl;
 
 }
 
