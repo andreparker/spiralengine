@@ -3,7 +3,7 @@
 
 using namespace Spiral;
 
-void EventSubscriber::AddCallback( EventCallbackFunc& func )
+void EventSubscriber::AddCallback( EventCallbackFunc func )
 {
 	m_callBacks.push_back( func );
 }

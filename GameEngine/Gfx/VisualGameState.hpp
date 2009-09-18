@@ -13,16 +13,23 @@ namespace Spiral
 {
 
 	class GameState;
+	class Engine;
 	class VisualGameState : private boost::noncopyable
 	{
 	protected:
+		/*!
+		   @function  VisualGameState
+		   @brief     constructs the game state with a gameState id
+		   @return    none
+		   @param     boost::int32_t id
+		*/
 		VisualGameState( boost::int32_t id );
 	public:
 		virtual ~VisualGameState();
 
-		void Enter();
-		void Execute( real tick );
-		void Transition();
+		void Enter( Engine* engine );
+		void Execute( SpReal tick, Engine* engine );
+		void Transition( Engine* engine );
 
 		void Attach( boost::shared_ptr< GameState >& state );
 
@@ -38,9 +45,9 @@ namespace Spiral
 		boost::int32_t m_id;
 
 	private:
-		virtual void DoEnter() = 0;
-		virtual void DoExecute( real tick ) = 0;
-		virtual void DoTransition() = 0;
+		virtual void DoEnter( Engine* engine ) = 0;
+		virtual void DoExecute( SpReal tick, Engine* engine ) = 0;
+		virtual void DoTransition( Engine* engine ) = 0;
 	};
 }
 

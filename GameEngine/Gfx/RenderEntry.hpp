@@ -36,7 +36,7 @@ namespace Spiral
 			return m_id;
 		}
 
-		real GetZOrder()const
+		SpReal GetZOrder()const
 		{
 			return m_zOrder;
 		}
@@ -54,7 +54,7 @@ namespace Spiral
 
         bool m_bAlpha;
 		boost::int32_t m_id;
-		real m_zOrder;
+		SpReal m_zOrder;
     };
 
 }

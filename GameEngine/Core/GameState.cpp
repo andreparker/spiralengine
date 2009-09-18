@@ -15,19 +15,19 @@ GameState::~GameState()
 {
 }
 
-void GameState::Enter()
+void GameState::Enter( Engine* engine )
 {
-	DoEnter();
+	DoEnter( engine );
 }
 
-void GameState::Execute( real tick )
+void GameState::Execute( SpReal tick, Engine* engine )
 {
-	DoExecute( tick );
+	DoExecute( tick,engine );
 }
 
-boost::shared_ptr< GameState > GameState::Transition( const StateEvent& event )
+boost::shared_ptr< GameState > GameState::Transition( const StateEvent& event, Engine* engine )
 {
-	DoTransition( event );
+	DoTransition( event, engine );
 	return m_transList[ event.eventType ];
 }
 

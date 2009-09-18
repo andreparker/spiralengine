@@ -17,11 +17,12 @@ project( "SpiralEngine" )
 		"../ThirdParty/**.c"
 	}
 	
+	includedirs { "../ThirdParty/zlib" }
+	
 	-- exclude these files
 	excludes
 	{
-		"../ThirdParty/Math/Eigen/src/Core/CoreInstantiations.cpp",
-		"../ThirdParty/Math/Eigen/src/QR/QrInstantiations.cpp"
+		"../ThirdParty/Math/Eigen/**.cpp"
 	}
 	
 	-- add window defines 
@@ -30,7 +31,8 @@ project( "SpiralEngine" )
 		defines
 		{
 			"WIN32",
-			"_WINDOWS"
+			"_WINDOWS",
+			"NOMINMAX" -- prevent windows.h from defining them
 		}
 		-- link with opengl
 		links( "Opengl32" )

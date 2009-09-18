@@ -27,7 +27,7 @@ namespace Spiral
 		   @return    void
 		   @param     EventCallbackFunc & func
 		*/
-		void AddCallback( EventCallbackFunc& func );
+		void AddCallback( EventCallbackFunc func );
 
 		/*!
 		   @function  Recieve

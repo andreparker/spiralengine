@@ -13,6 +13,11 @@ project( "UnitTest" )
 		"**.hpp"
 	}
 	
+	links
+	{ 
+		"SpiralEngine"
+	}
+	
 	-- add window defines 
 	if os.get() == "windows"
 	then

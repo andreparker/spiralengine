@@ -23,16 +23,6 @@ namespace Util
 
 	}
 
-	FunctionProfileMgr::FunctionProfileMgr(const FunctionProfileMgr& mgr )
-	{
-
-	}
-
-	FunctionProfileMgr& FunctionProfileMgr::operator=(const FunctionProfileMgr& mgr )
-	{
-		return *this;
-	}
-
 	FunctionProfileMgr::~FunctionProfileMgr()
 	{
 		WriteToFile("DefaultProfile.log");

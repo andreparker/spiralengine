@@ -64,7 +64,7 @@ void GameObjectHandler::Clear()
 	m_objects.clear();
 }
 
-void GameObjectHandler::DoTick( real ticks )
+void GameObjectHandler::DoTick( SpReal ticks )
 {
 	// tick the objects
 	for_each( m_objects.begin(), m_objects.end(), bind( &CoreObject::Tick, _1, ticks ) );

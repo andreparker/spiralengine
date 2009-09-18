@@ -9,7 +9,6 @@
 
 using namespace boost;
 using namespace Spiral;
-using namespace Spiral::OglUtil;
 
 // pointer used to communicate with gl
 static int8_t* indexBufferPtr = NULL;
@@ -30,7 +29,7 @@ inline void EnableTexCoordData( int32_t elementCount, int32_t stride, int8_t* da
 	glTexCoordPointer( elementCount, GL_FLOAT, stride, data );
 }
 
-void DisableArrayPointers( boost::int32_t vertexFormat )
+void OglUtil::DisableArrayPointers( boost::int32_t vertexFormat )
 {
 	switch( vertexFormat )
 	{
@@ -41,7 +40,7 @@ void DisableArrayPointers( boost::int32_t vertexFormat )
 	}
 }
 
-void EnableArrayPointers( boost::int32_t vertexFormat, boost::int32_t stride, boost::int8_t* data )
+void OglUtil::EnableArrayPointers( boost::int32_t vertexFormat, boost::int32_t stride, boost::int8_t* data )
 {
 	if( vertexFormat == VertexFormat::VF_V3 )
 	{
@@ -53,7 +52,7 @@ void EnableArrayPointers( boost::int32_t vertexFormat, boost::int32_t stride, bo
 	}
 }
 
-void SetIndexBufferPointer( boost::int8_t* bufferPtr, boost::int32_t indexType )
+void OglUtil::SetIndexBufferPointer( boost::int8_t* bufferPtr, boost::int32_t indexType )
 {
 	indexBufferPtr = bufferPtr;
 	if( IndexFormat::IF_16BIT == indexType )
@@ -65,17 +64,17 @@ void SetIndexBufferPointer( boost::int8_t* bufferPtr, boost::int32_t indexType )
 	}
 }
 
-int8_t* GetIndexBufferPointer()
+int8_t* OglUtil::GetIndexBufferPointer()
 {
 	return indexBufferPtr;
 }
 
-int32_t GetIndexBufferEnum()
+int32_t OglUtil::GetIndexBufferEnum()
 {
 	return static_cast<int32_t>(indexSize);
 }
 
-void Draw( boost::shared_ptr<Geometry>& geometry )
+void OglUtil::Draw( const boost::shared_ptr<Geometry>& geometry )
 {
 	OglGeometry* geometryPtr = static_cast<OglGeometry*>( geometry.get() );
 
@@ -95,4 +94,13 @@ void Draw( boost::shared_ptr<Geometry>& geometry )
 		glDrawArrays( primitiveType, 0, static_cast<GLsizei>( vertexBuffer->GetVertexCount() ) );
 	}
 
+}
+
+void OglUtil::Draw( const boost::shared_ptr<VertexBuffer>& buffer, boost::int32_t GeometryType )
+{
+	GLenum glPrimitiveType = static_cast<GLenum>( GeometryType );
+
+	Spiral::Bind bind( buffer );
+
+	glDrawArrays( glPrimitiveType, 0, buffer->GetVertexCount() );
 }

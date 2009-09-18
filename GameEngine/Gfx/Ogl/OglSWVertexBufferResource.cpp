@@ -32,7 +32,7 @@ bool OglSWVertexBufferResource::DoLock( int32_t start, int32_t size, ResLockInfo
 
 	if( m_mutex.try_lock() )
 	{
-		if( totalSize < m_size )
+		if( totalSize <= m_size )
 		{
 			info.data = (m_data + start);
 			info.size = size;
@@ -49,7 +49,7 @@ void OglSWVertexBufferResource::DoUnlock()
 }
 
 // cannot do a rectangle lock on a vertexbuffer
-bool OglSWVertexBufferResource::DoLock( const Rect< boost::int32_t >& /*rect*/, ResLockRtInfo_t& /*info*/, bool /*bDiscard*/ )
+bool OglSWVertexBufferResource::DoLock(  ResLockRtInfo_t& /*info*/, bool /*bDiscard*/ )
 {
 	return false;
 }

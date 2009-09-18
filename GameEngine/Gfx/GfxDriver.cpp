@@ -5,7 +5,7 @@
 using namespace Spiral;
 using namespace boost;
 
-bool GfxDriver::CreateTexture(const TextureInfo_t &info, shared_ptr<Texture> &texture, const uint8_t *data /*= 0*/)
+bool GfxDriver::CreateTexture(const TextureInfo_t &info, shared_ptr<Texture> &texture, const int8_t *data /*= 0*/)
 {
 	return DoCreateTexture( info, texture, data );
 }
@@ -53,4 +53,74 @@ void GfxDriver::Draw( boost::shared_ptr<Geometry>& geometry )
 void GfxDriver::SetState( const RenderState& state )
 {
 	DoSetState( state );
+}
+
+void GfxDriver::SetViewPort( boost::int32_t x0, boost::int32_t y0, boost::int32_t x1, boost::int32_t y1 )
+{
+	DoSetViewPort( x0, y0, x1, y1 );
+}
+
+void GfxDriver::ClearBuffer( const BufferInfo_t& buffer )
+{
+	DoClearBuffer(buffer);
+}
+
+void GfxDriver::Set( const ClearInfoType_t& type, boost::int32_t value )
+{
+	DoSet( type, value );
+}
+
+void GfxDriver::Set( const ClearInfoType_t& type, const Rgba& color )
+{
+	DoSet( type, color );
+}
+
+void GfxDriver::Set( const ClearInfoType_t& type, SpReal value )
+{
+	DoSet( type, value );
+}
+
+bool GfxDriver::CreateSprite( boost::shared_ptr< Sprite >& sprite, boost::shared_ptr< Texture >& texture, const Rect< SpReal >& spriteTexCoords, const Rect< SpReal >& spriteInfo )
+{
+	return DoCreateSprite( sprite, texture, spriteTexCoords, spriteInfo );
+}
+
+void GfxDriver::Draw( boost::shared_ptr<Sprite>& sprite )
+{
+	DoDraw( sprite );
+}
+
+void GfxDriver::SetWorld( const Math::SpMatrix4x4r& world )
+{
+	DoSetWorld( world );
+}
+
+void GfxDriver::SetView( const Math::SpMatrix4x4r& view )
+{
+	DoSetView( view );
+}
+
+void GfxDriver::SetProjection( const Math::SpMatrix4x4r& proj )
+{
+	DoSetProjection( proj );
+}
+
+void GfxDriver::GetView( Math::SpMatrix4x4r& view )
+{
+	DoGetView( view );
+}
+
+void GfxDriver::GetProjection( Math::SpMatrix4x4r& proj )
+{
+	DoGetProjection( proj );
+}
+
+void GfxDriver::Draw( const std::list< Sprite* >& spriteList )
+{
+	DoDraw( spriteList );
+}
+
+void GfxDriver::Set( const BlendMode_t& mode )
+{
+	DoSet( mode );
 }

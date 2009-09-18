@@ -3,12 +3,15 @@
 #ifndef EVENT_PUBLISHER_HPP
 #define EVENT_PUBLISHER_HPP
 
+#include <queue>
 #include <boost/any.hpp>
 #include <boost/noncopyable.hpp>
+#include <boost/thread/mutex.hpp>
 #include <list>
 
+#include <boost/scoped_ptr.hpp>
 #include <boost/shared_ptr.hpp>
-#include "EventDataFwd.hpp"
+#include "EventData.hpp"
 
 namespace Spiral
 {
@@ -43,9 +46,18 @@ namespace Spiral
 		*/
 		void Publish( const Event& event, boost::any& data );
 
+		/*!
+		   @function  ProcessEventQueue
+		   @brief     process events stored away and send them to subscribers
+		   @return    void
+		*/
+		void ProcessEventQueue();
+
 	private:
 		typedef std::list< boost::shared_ptr<EventSubscriber> >::iterator SubIter;
 		std::list< boost::shared_ptr<EventSubscriber> > m_subscribers;
+		boost::scoped_ptr< std::queue< EventData > > m_eventQueue;
+		boost::mutex m_mutex;
 	};
 }
 

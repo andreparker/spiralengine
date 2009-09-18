@@ -47,7 +47,7 @@ bool OglSWIndexBufferResource::DoLock( int32_t start, int32_t size, ResLockInfo_
 	return false;
 }
 
-bool OglSWIndexBufferResource::DoLock( const Rect< int32_t >& /*rect*/, ResLockRtInfo_t& /*info*/, bool /*bDiscard*/ )
+bool OglSWIndexBufferResource::DoLock( ResLockRtInfo_t& /*info*/, bool /*bDiscard*/ )
 {
 	return false;
 }

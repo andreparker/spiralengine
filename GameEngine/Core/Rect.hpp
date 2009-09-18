@@ -16,6 +16,20 @@ namespace Spiral
 		Rect( const Rect& rect_ ):
 			left( rect_.left ), right( rect_.right ), bottom( rect_.bottom ),top( rect_.top ){}
 
+		bool Contains( const Rect& rect )const
+		{
+			bool isInBounds = false;
+			if( left <= rect.left && right >= rect.right )
+			{
+				if( top <= rect.top && bottom >= rect.bottom )
+				{
+					isInBounds = true;
+				}
+			}
+
+			return isInBounds;
+		}
+
 
 		T left, right, bottom, top;
 	};

@@ -5,14 +5,17 @@
 
 #define WIN32_LEAN_AND_MEAN
 
+#include <map>
 #include <string>
 #include <Windows.h>
+#include <boost/function.hpp>
 
 #include "../../Core/TypeUtils.hpp"
 
 class BaseWindow
 {
 public:
+	void RegisterHandler( UINT uMsg, boost::function< void( WPARAM , LPARAM ) > callBack );
 	// many different ways to register
 	virtual BOOL RegisterWindow();
 	virtual BOOL RegisterWindow(UINT style, HICON hIcon, HCURSOR hCursor, HBRUSH hbrBackground, 
@@ -30,7 +33,10 @@ public:
 
 	// 2 ways to create
 	virtual BOOL Create();
+	virtual BOOL Create(DWORD dwStyles);
 	virtual BOOL Create(DWORD dwStyles, RECT* rect);
+
+	void ResizeWindow( RECT* rect, bool fullscreen = false );
 
 	void Show( bool bshow = true );
 
@@ -56,14 +62,17 @@ public:
 	{
 		return m_hwnd;
 	}
-
+private:
+		void CallHandler( UINT uMsg, WPARAM wParam, LPARAM lParam );
 protected:
 	HINSTANCE m_hInstance;
 	HWND m_hwnd;
-   HDC m_dc;
+	HDC m_dc;
 	BOOL m_bWindowClosed;
 	std::string m_szClassName;
 	std::string m_szWindowTitle;
+	typedef std::map< UINT, boost::function< void( WPARAM , LPARAM ) > >::iterator CallbackItr;
+	std::map< UINT, boost::function< void( WPARAM , LPARAM ) > > m_callbacks;
 
 	//constructor 
 	BaseWindow(HINSTANCE hInst, CONST WNDCLASSEX* wcx = NULL) 
@@ -89,12 +98,12 @@ protected:
 	}
 };
 
-template<> HDC& BaseWindow::Get( Spiral::EmptyType<HDC> )
+template<> inline HDC& BaseWindow::Get( Spiral::EmptyType<HDC> )
 {
     return m_dc;
 }
 
-template<> HWND& BaseWindow::Get( Spiral::EmptyType<HWND> )
+template<> inline HWND& BaseWindow::Get( Spiral::EmptyType<HWND> )
 {
     return m_hwnd;
 }

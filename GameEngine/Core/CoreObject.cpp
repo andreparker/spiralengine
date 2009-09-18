@@ -8,7 +8,7 @@ m_id(0)
 
 CoreObject::~CoreObject(){}
 
-void CoreObject::Tick( real ticks )
+void CoreObject::Tick( SpReal ticks )
 {
 	DoTick( ticks );
 }
