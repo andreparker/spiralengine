@@ -7,10 +7,11 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/function.hpp>
 #include <boost/cstdint.hpp>
+#include <queue>
 #include <list>
 #include <map>
 
-#include "StateEventImplFwd.hpp"
+#include "StateEventImpl.hpp"
 #include "Sp_DataTypes.hpp"
 
 namespace Spiral
@@ -18,6 +19,7 @@ namespace Spiral
 	class GameState;
 	class VisualGameState;
 	class GameStateMachine;
+	class Engine;
 	
 	typedef boost::function< void( GameStateMachine* ) > StateInitFunc;
 
@@ -39,8 +41,9 @@ namespace Spiral
 		   @brief     sets the current state to run
 		   @return    void
 		   @param     boost::shared_ptr< GameState > & state
+		   @param     Engine* engine
 		*/
-		void SetCurrentState( boost::shared_ptr< GameState >& state );
+		void SetCurrentState( boost::shared_ptr< GameState >& state, Engine* engine );
 
 		/*!
 		   @function  InitializeStates
@@ -64,16 +67,16 @@ namespace Spiral
 		   @param     boost::shared_ptr< GameState > & state - state to add
 		   @param     boost::function< void(GameStateMachine *)> initFunc - function to initialize state transitions
 		*/
-		void AddState( boost::shared_ptr< GameState >& state, StateInitFunc& initFunc );
-		void AddState( boost::shared_ptr< VisualGameState >& state, StateInitFunc& initFunc );
+		void AddState( boost::shared_ptr< GameState >& state, StateInitFunc initFunc );
+		void AddState( boost::shared_ptr< VisualGameState >& state, StateInitFunc initFunc );
 
 		/*!
 		   @function  Tick
 		   @brief     updates the state machine
 		   @return    void
-		   @param     real tick - frac seconds
+		   @param     SpReal tick - frac seconds
 		*/
-		void Tick( real tick );
+		void Tick( SpReal tick, Engine* engine );
 
 		/*!
 		   @function  GetState
@@ -84,12 +87,15 @@ namespace Spiral
 		boost::shared_ptr< GameState > GetState( boost::int32_t stateId )const;
 
 	private:
+		void ProcessEvents( Engine* engine );
+	private:
 		typedef std::list< boost::shared_ptr< GameState > >::const_iterator const_state_itr;
 		std::list< boost::shared_ptr< GameState > > m_gameStateList;
 		std::map< boost::int32_t, boost::shared_ptr< VisualGameState > > m_visualGameStateList;
 		std::list< boost::function< void( GameStateMachine* ) > > m_stateFuncInitList;
 		boost::shared_ptr< GameState > m_currentGameState;
 		boost::shared_ptr< VisualGameState > m_currentVisualState;
+		std::queue< StateEvent > m_eventQueue;
 
 	};
 }

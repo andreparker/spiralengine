@@ -25,9 +25,9 @@ bool Resource::Lock(int32_t start, int32_t size, ResLockInfo_t &info, bool bDisc
 	return DoLock( start, size, info, bDiscard );
 }
 
-bool Resource::Lock(const Rect<boost::int32_t> &rect, ResLockRtInfo_t &info, bool bDiscard /*= true*/ )
+bool Resource::Lock( ResLockRtInfo_t &info, bool bDiscard /*= true*/ )
 {
-	return DoLock( rect, info, bDiscard );
+	return DoLock( info, bDiscard );
 }
 
 void Resource::Unlock()

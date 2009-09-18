@@ -9,6 +9,13 @@ m_bitDepth(0),m_resource()
 
 }
 
+Texture::Texture( boost::int32_t width, boost::int32_t height, boost::int32_t bitDepth ):
+m_width( width ),m_height( height ),
+m_bitDepth( bitDepth ),m_resource()
+{
+
+}
+
 Texture::~Texture()
 {
 

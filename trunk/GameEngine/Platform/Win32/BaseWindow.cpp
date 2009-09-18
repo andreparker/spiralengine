@@ -85,6 +85,8 @@ LRESULT CALLBACK BaseWindow::stWinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam
 	// else, use DefWindowProc
 	if (pWnd)
 	{
+		// call a registered handler
+		pWnd->CallHandler( uMsg, wParam, lParam );
 		return pWnd->WinMsgHandler(hwnd, uMsg, wParam, lParam);
 	}
 	else
@@ -96,14 +98,7 @@ LRESULT CALLBACK BaseWindow::stWinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam
 BOOL BaseWindow::Create()
 { 
 	// Create the window
-	RECT rect;
-
-	rect.top = 0;
-	rect.left = 0;
-	rect.right = 600;
-	rect.bottom = 400;
-
-	return Create(WS_OVERLAPPEDWINDOW | WS_VISIBLE, &rect);
+	return Create(WS_OVERLAPPEDWINDOW | WS_VISIBLE);
 }
 
 BOOL BaseWindow::Create(DWORD dwStyles, RECT* rect)
@@ -123,6 +118,17 @@ BOOL BaseWindow::Create(DWORD dwStyles, RECT* rect)
 	return (m_hwnd != NULL);
 }
 
+BOOL BaseWindow::Create( DWORD dwStyles )
+{
+	RECT rect;
+
+	rect.top = 0;
+	rect.left = 0;
+	rect.right = 600;
+	rect.bottom = 400;
+
+	return Create(dwStyles, &rect);
+}
 void BaseWindow::Show( bool bshow /* = true */ )
 {
 	if( m_hwnd == NULL )
@@ -151,6 +157,10 @@ bool BaseWindow::ProcessMessage( MSG& msg, UINT msgFilterMin, UINT msgFilterMax,
 		{
 			// a quit message posted
 			return true;
+		}else
+		{
+			TranslateMessage( &msg );
+			DispatchMessage( &msg );
 		}
 	}else
 	{
@@ -160,10 +170,58 @@ bool BaseWindow::ProcessMessage( MSG& msg, UINT msgFilterMin, UINT msgFilterMax,
 			if( msg.message == WM_QUIT )
 			{
 				return true;
+			}else
+			{
+				TranslateMessage( &msg );
+				DispatchMessage( &msg );
 			}
 		}
 	}
 
 	// no quit message
 	return false;
+}
+
+void BaseWindow::RegisterHandler( UINT uMsg, boost::function< void( WPARAM , LPARAM ) > callBack )
+{
+	if( m_callbacks.find( uMsg ) == m_callbacks.end() )
+	{
+		m_callbacks[ uMsg ] = callBack;
+	}
+}
+
+void BaseWindow::CallHandler( UINT uMsg, WPARAM wParam, LPARAM lParam )
+{
+	CallbackItr callback = m_callbacks.find( uMsg );
+	if( callback != m_callbacks.end() )
+	{
+		(*callback).second( wParam, lParam );
+	}
+}
+
+void BaseWindow::ResizeWindow( RECT* rect, bool fullscreen )
+{
+	WINDOWINFO info;
+	RECT save = *rect; // save it
+	GetWindowInfo( m_hwnd, &info );
+	AdjustWindowRect( rect, info.dwStyle, false );
+	
+	
+	if( fullscreen )
+	{
+		SetWindowLong( m_hwnd, GWL_STYLE, WS_POPUP );
+	}else
+	{
+		// keep positions same and just add the calculated sizes
+		LONG dx = save.left - rect->left;
+		LONG dy = save.top  - rect->top;
+		rect->left += dx;
+		rect->top  += dy;
+		rect->bottom += dy;
+		rect->right += dx;
+
+		SetWindowLong( m_hwnd, GWL_STYLE, WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU );
+	}
+
+	MoveWindow( m_hwnd,rect->left, rect->top, rect->right, rect->bottom ,TRUE );
 }

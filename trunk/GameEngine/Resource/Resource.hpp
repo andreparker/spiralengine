@@ -40,11 +40,10 @@ namespace Spiral
 			@function   Lock
 			@brief  	  locks a rectangle portion of the resource i.e Texures/images
 			@return     bool
-			@param 	  const Rect< boost::int32_t > & rect - rectangle bounds to lock
 			@param 	  ResLockRtInfo & info - struct containing lock information
 			@param 	  bool bDiscard - whether or not to discard current data
 		*/
-		bool Lock( const Rect< boost::int32_t >& rect, ResLockRtInfo_t& info, bool bDiscard = true );
+		bool Lock( ResLockRtInfo_t& info, bool bDiscard = true );
 
 		/*!
 			@function   Unlock
@@ -85,11 +84,10 @@ namespace Spiral
            @function   DoLock
            @brief  	  locks a rectangle portion of the resource i.e Texures/images
            @return     bool
-           @param 	  const Rect< boost::int32_t > & rect - rectangle bounds to lock
            @param 	  ResLockRtInfo & info - struct containing lock information
            @param 	  bool bDiscard - whether or not to discard current data
         */
-        virtual bool DoLock( const Rect< boost::int32_t >& rect, ResLockRtInfo_t& info, bool bDiscard ) = 0;
+        virtual bool DoLock( ResLockRtInfo_t& info, bool bDiscard ) = 0;
 
         /*!
         	  @function   DoUnlock

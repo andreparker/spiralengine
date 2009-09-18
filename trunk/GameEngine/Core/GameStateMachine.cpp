@@ -36,9 +36,9 @@ void GameStateMachine::InitializeStates()
 			func( data_ );
 		}
 
-	} funcObj;
+	} funcObject_;
 
-	for_each( m_stateFuncInitList.begin(), m_stateFuncInitList.end(), bind<void>( ref(funcObj), _1, this ) );
+	for_each( m_stateFuncInitList.begin(), m_stateFuncInitList.end(), bind<void>( ref( funcObject_ ), _1, this ) );
 }
 
 void GameStateMachine::ClearStates()
@@ -48,7 +48,7 @@ void GameStateMachine::ClearStates()
 	m_stateFuncInitList.clear();
 }
 
-void GameStateMachine::AddState( shared_ptr<GameState> &state, StateInitFunc& initFunc )
+void GameStateMachine::AddState( shared_ptr<GameState> &state, StateInitFunc initFunc )
 {
 	// no duplicates
 	m_stateFuncInitList.push_back( initFunc );
@@ -59,10 +59,12 @@ void GameStateMachine::AddState( shared_ptr<GameState> &state, StateInitFunc& in
 		
 }
 
-void GameStateMachine::SetCurrentState( boost::shared_ptr< GameState >& state )
+void GameStateMachine::SetCurrentState( boost::shared_ptr< GameState >& state, Engine* engine )
 {
 	m_currentGameState = state;
-	m_currentGameState->Enter();
+	m_currentGameState->Enter( engine );
+	m_currentVisualState = m_visualGameStateList[ m_currentGameState->GetID() ];
+	m_currentVisualState->Enter( engine );
 }
 
 shared_ptr< GameState > GameStateMachine::GetState( int32_t stateId )const
@@ -77,17 +79,18 @@ shared_ptr< GameState > GameStateMachine::GetState( int32_t stateId )const
 	return state;
 }
 
-void GameStateMachine::Tick( real tick )
+void GameStateMachine::Tick( SpReal tick, Engine* engine )
 {
+	ProcessEvents( engine );
 	if( m_currentGameState )
 	{
-		m_currentGameState->Execute( tick );
+		m_currentGameState->Execute( tick, engine );
 	}
 
 	if( m_currentVisualState )
 	{
 		// TODO: may need to pass a gfxDriver to this
-		m_currentVisualState->Execute( tick );
+		m_currentVisualState->Execute( tick, engine );
 	}
 }
 
@@ -96,30 +99,38 @@ void GameStateMachine::UnInitializeStates()
 
 }
 
-void GameStateMachine::AddState( boost::shared_ptr< VisualGameState >& state, StateInitFunc& initFunc )
+void GameStateMachine::AddState( boost::shared_ptr< VisualGameState >& state, StateInitFunc initFunc )
 {
 	if( m_visualGameStateList.find( state->GetID() ) != m_visualGameStateList.end() )
 	{
 		m_visualGameStateList[ state->GetID() ] = state;
 	}
-		m_stateFuncInitList.push_back( initFunc );
+	
+	m_stateFuncInitList.push_back( initFunc );
 }
 
 void GameStateMachine::ProcessEvent( const StateEvent& event )
 {
+	m_eventQueue.push( event );
+}
+
+void GameStateMachine::ProcessEvents( Engine* engine )
+{
 	if( m_currentGameState )
 	{
-		if( m_currentGameState->IsTransition( event ) == true )
+		StateEvent event;
+		while( m_eventQueue.empty() == false )
 		{
-			shared_ptr< GameState > newState = m_currentGameState->Transition( event );
-			if( m_currentVisualState )
+			event = m_eventQueue.front();
+			m_eventQueue.pop();
+
+			if( m_currentGameState->IsTransition( event ) == true )
 			{
-				m_currentVisualState->Transition();
-				m_currentVisualState = m_visualGameStateList[ m_currentGameState->GetID() ];
-				m_currentVisualState->Enter();
+				shared_ptr< GameState > newState = m_currentGameState->Transition( event, engine );
+				m_currentVisualState->Transition( engine );
+				SetCurrentState( newState, engine );
 			}
-			newState->Enter();
-			m_currentGameState = newState;
 		}
+		
 	}
 }

@@ -11,19 +11,19 @@ m_id( id )
 
 }
 
-void VisualGameState::Enter()
+void VisualGameState::Enter( Engine* engine )
 {
-	DoEnter();
+	DoEnter( engine );
 }
 
-void VisualGameState::Execute( real tick )
+void VisualGameState::Execute( SpReal tick, Engine* engine )
 {
-	DoExecute( tick );
+	DoExecute( tick, engine );
 }
 
-void VisualGameState::Transition()
+void VisualGameState::Transition( Engine* engine )
 {
-	DoTransition();
+	DoTransition( engine );
 }
 
 void VisualGameState::Attach( shared_ptr< GameState >& state )
@@ -32,4 +32,9 @@ void VisualGameState::Attach( shared_ptr< GameState >& state )
 	{
 		m_gameState = state;
 	}
+}
+
+VisualGameState::~VisualGameState()
+{
+
 }

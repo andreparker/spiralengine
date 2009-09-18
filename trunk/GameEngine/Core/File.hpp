@@ -1,6 +1,7 @@
 #ifndef FILE_HPP
 #define FILE_HPP
 
+#include <istream>
 #include <boost/utility.hpp>
 #include <boost/cstdint.hpp>
 #include <boost/any.hpp>
@@ -71,6 +72,13 @@ namespace Spiral
 			@return true if end of file reached
 		*/
 		bool Eof() const;
+
+		/*!
+		   @function  GetStream
+		   @brief     returns a stream with the file input
+		   @return    boost::shared_ptr< std::istream >
+		*/
+		boost::shared_ptr< std::istream > GetStream();
 	private:
 		/*!
 
@@ -143,6 +151,16 @@ namespace Spiral
 			@brief closes the opened file
 		*/
 		void Close();
+
+		boost::shared_ptr< std::ostream > GetStream()const;
+
+		/*!
+		   @function  WriteOutStream
+		   @brief     writes out the stream returned by getstream
+		   @return    void
+		   @param     const boost::shared_ptr< std::ostream > & stream
+		*/
+		void WriteOutStream( const boost::shared_ptr< std::ostream >& stream );
 	private:
 		/*!
 			@brief writes data from buffer out to a file

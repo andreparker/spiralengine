@@ -64,7 +64,7 @@ bool OglHWIndexBufferResource::DoLock( boost::int32_t start, boost::int32_t size
 	return ( m_isValid && data );
 }
 
-bool OglHWIndexBufferResource::DoLock( const Rect< int32_t >& /*rect*/, ResLockRtInfo_t& /*info*/, bool /*bDiscard*/ )
+bool OglHWIndexBufferResource::DoLock( ResLockRtInfo_t& /*info*/, bool /*bDiscard*/ )
 {
 	return false;
 }

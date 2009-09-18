@@ -18,5 +18,6 @@ namespace detail
 	};
 }
 
+typedef detail::EventData EventData;
 }
 #endif

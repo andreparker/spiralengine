@@ -45,8 +45,8 @@ namespace Util
 	class FunctionProfileMgr
 	{
 			FunctionProfileMgr();
-			FunctionProfileMgr(const FunctionProfileMgr& mgr );
-			FunctionProfileMgr& operator=(const FunctionProfileMgr& mgr );
+			FunctionProfileMgr(const FunctionProfileMgr& );
+			FunctionProfileMgr& operator=(const FunctionProfileMgr& );
 
 			typedef std::list< FunctionProfileData* >::iterator FuncItr;
 		public:

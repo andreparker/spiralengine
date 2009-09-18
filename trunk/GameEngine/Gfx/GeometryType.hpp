@@ -20,6 +20,7 @@ namespace Impl
 			INVALID = -1,
 			GT_TRIANGLES = 0x0004,
 			GT_TRIANGLE_STRIP = 0x0005,
+			GT_QUADS = 0x0007,
 			GT_POINTS = 0x0000
 		};
 

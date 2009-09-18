@@ -7,7 +7,7 @@
 
 namespace Spiral
 {
-	typedef float real;
+	typedef float SpReal;
 }
 
 #endif

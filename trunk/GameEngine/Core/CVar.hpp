@@ -3,17 +3,19 @@
 #ifndef CVAR_HPP
 #define CVAR_HPP
 
+#include <boost/assert.hpp>
 #include <boost/cstdint.hpp>
 #include <boost/any.hpp>
 #include <boost/tokenizer.hpp>
 #include <boost/function.hpp>
 #include <boost/smart_ptr.hpp>
+#include <boost/noncopyable.hpp>
 #include <string>
 #include <map>
 
 #include "FileFwd.hpp"
 #include "TypeUtils.hpp"
-#include "Singleton.ipp"
+
 
 namespace Spiral
 {
@@ -21,10 +23,10 @@ namespace Spiral
 	typedef std::map< const std::string, boost::function< void( char_tokenizer::iterator, char_tokenizer::iterator ) > > command_map;
 	typedef std::map< const std::string, boost::any > variable_map;
 
-	class CVar : public Singleton< CVar >
+	class CVar : boost::noncopyable
 	{
-		DECL_SINGLETON( CVar )
 	public:
+		CVar();
 
 		/*!
 		   @function    Initialize
@@ -56,13 +58,14 @@ namespace Spiral
 			@return the value
 		*/
 		template< class T >
-		T& GetVarValue
+		T GetVarValue
 		( 
 			const std::string& varName, ///< variable name
 			EmptyType< T > ///< dummy to allow template partial specialization through overload
 		)const
 		{
-			return boost::any_cast< T >( m_vars[ varName.c_str() ] );
+			BOOST_ASSERT( m_vars.find( varName ) != m_vars.end() );
+			return boost::any_cast< T >(  (*m_vars.find( varName )).second );
 		}
 
 		/*!
@@ -75,7 +78,8 @@ namespace Spiral
 			const T& value ///< a value to set
 		)
 		{
-			m_vars[ varName.c_str() ] = value;
+			BOOST_ASSERT( m_vars.find( varName ) != m_vars.end() );
+			m_vars[ varName ] = value;
 		}
 
 		/*!
@@ -126,6 +130,9 @@ namespace Spiral
 		*/
 		void Version( char_tokenizer::iterator, char_tokenizer::iterator );
 		void Exec( char_tokenizer::iterator, char_tokenizer::iterator );
+		void ReadInt_vid_width( char_tokenizer::iterator, char_tokenizer::iterator );
+		void ReadInt_vid_height( char_tokenizer::iterator, char_tokenizer::iterator );
+		void ReadInt_vid_fullscreen( char_tokenizer::iterator, char_tokenizer::iterator );
 
 	};
 

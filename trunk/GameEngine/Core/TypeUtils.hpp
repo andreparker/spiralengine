@@ -15,10 +15,41 @@
 namespace Spiral
 {
 
+	template< boost::uint32_t byte0, boost::uint32_t byte1, boost::uint32_t byte2, boost::uint32_t byte3 >
+	struct MakeLongValue
+	{
+		static const boost::uint32_t value = (byte0 & 0xff) | ((byte1 & 0xff) << 8) | ((byte2 & 0xff) << 16) | ((byte3 & 0xff) << 24);
+	};
+
+	template< boost::uint32_t byteNumber >
+	inline boost::uint32_t GetByteFromLong( boost::uint32_t value )
+	{
+		const boost::uint32_t mask = 0xff << (byteNumber * 8);
+		boost::uint32_t retValue = mask & value;
+		return retValue >> (byteNumber * 8);
+	}
+
+	template< boost::uint32_t bits, int place = 0 >
+	struct Binary2Dec
+	{
+		enum
+		{
+			holePart = bits / 10L
+		};
+		static const boost::uint32_t value = ( static_cast<boost::uint32_t>(  ( float( bits * 0.1f - holePart ) > 0.0f ? 1 : 0 )  ) << place ) | 
+			Binary2Dec< holePart, place+1 >::value;
+	};
+
+	template< int place >
+	struct Binary2Dec< 0, place >
+	{
+		static const boost::uint32_t value = 0;
+	};
+
 	template< boost::int32_t Bit >
 	struct Int2Bit
 	{
-		static const boost::int32_t value = Bit << 1;
+		static const boost::int32_t value = 1 << Bit;
 	};
 
 	template< boost::int32_t val1, boost::int32_t val2 >

@@ -18,9 +18,9 @@ namespace Spiral
 		   @function    Tick
 		   @brief       Ticks the current object
 		   @return      void
-		   @param       real ticks < fractional seconds
+		   @param       SpReal ticks < fractional seconds
 		*/
-		void Tick( real ticks );
+		void Tick( SpReal ticks );
 		
 		/*!
 		   @function    GetObjectId
@@ -41,9 +41,9 @@ namespace Spiral
 			@function    DoTick
 			@brief       Ticks the current object
 			@return      void
-			@param       real ticks < fractional seconds
+			@param       SpReal ticks < fractional seconds
 		*/
-		virtual void DoTick( real ticks ) = 0;
+		virtual void DoTick( SpReal ticks ) = 0;
 
 
 	};

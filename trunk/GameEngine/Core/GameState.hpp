@@ -14,6 +14,7 @@
 namespace Spiral
 {
 
+	class Engine;
 	class GameState : private boost::noncopyable
 	{
 	public:
@@ -24,16 +25,16 @@ namespace Spiral
 		   @brief     called on start of the state
 		   @return    void
 		*/
-		void Enter();
+		void Enter( Engine* engine );
 
 
 		/*!
 		   @function  Execute
 		   @brief     states main execute function
 		   @return    void
-		   @param     real tick - frac seconds
+		   @param     SpReal tick - frac seconds
 		*/
-		void Execute( real tick );
+		void Execute( SpReal tick, Engine* engine );
 
 
 		/*!
@@ -42,7 +43,7 @@ namespace Spiral
 		   @return    boost::shared_ptr< GameState >
 		   @param     const StateEvent & event
 		*/
-		boost::shared_ptr< GameState > Transition( const StateEvent& event );
+		boost::shared_ptr< GameState > Transition( const StateEvent& event, Engine* engine );
 
 
 		/*!
@@ -75,9 +76,9 @@ namespace Spiral
 		GameState(); 
 		
 
-		virtual void DoEnter() = 0;
-		virtual void DoExecute( real tick ) = 0;
-		virtual void DoTransition( const StateEvent& event ) = 0;
+		virtual void DoEnter( Engine* engine ) = 0;
+		virtual void DoExecute( SpReal tick, Engine* engine ) = 0;
+		virtual void DoTransition( const StateEvent& event, Engine* engine ) = 0;
 		virtual bool DoIsTransition( const StateEvent& event )const = 0;
 
 		boost::int32_t m_id;

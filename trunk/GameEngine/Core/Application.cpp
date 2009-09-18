@@ -16,7 +16,7 @@ bool Application::Init( int32_t argc, list< shared_array< char > >& argList, sha
 	return DoInit( argc, argList, engine );
 }
 
-bool Application::Run( real ticks, shared_ptr< Engine >& engine )
+bool Application::Run( SpReal ticks, shared_ptr< Engine >& engine )
 {
 	return DoRun( ticks, engine );
 }

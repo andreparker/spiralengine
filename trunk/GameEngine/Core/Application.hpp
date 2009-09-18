@@ -24,16 +24,16 @@ namespace Spiral
 		   @param     std::list< boost::shared_array< char > > & argList - arguments, a list of char pointers
 		   @param     boost::shared_ptr< Engine > & engine
 		*/
-		bool Init( boost::int32_t argc, std::list< boost::shared_array< char > >& argList, boost::shared_ptr< Engine >& engine );
+		bool Init( boost::int32_t argc, std::list< boost::shared_array< char > >& argList, boost::shared_ptr< Spiral::Engine >& engine );
 		
 		/*!
 		   @function  Run
 		   @brief     application main
 		   @return    bool
-		   @param     real ticks - current elapsed time each frame
+		   @param     SpReal ticks - current elapsed time each frame
 		   @param     boost::shared_ptr< Engine > & engine
 		*/
-		bool Run( real ticks, boost::shared_ptr< Engine >& engine );
+		bool Run( SpReal ticks, boost::shared_ptr< Spiral::Engine >& engine );
 
 		/*!
 		   @function  UnInit
@@ -43,8 +43,8 @@ namespace Spiral
 		bool UnInit();
 
 	private:
-		virtual bool DoInit( boost::int32_t argc, std::list< boost::shared_array< char > >& argList, boost::shared_ptr< Engine >& engine ) = 0;
-		virtual bool DoRun( real ticks, boost::shared_ptr< Engine >& engine ) = 0;
+		virtual bool DoInit( boost::int32_t argc, std::list< boost::shared_array< char > >& argList, boost::shared_ptr< Spiral::Engine >& engine ) = 0;
+		virtual bool DoRun( SpReal ticks, boost::shared_ptr< Spiral::Engine >& engine ) = 0;
 		virtual bool DoUnInit() = 0;
 	};
 }

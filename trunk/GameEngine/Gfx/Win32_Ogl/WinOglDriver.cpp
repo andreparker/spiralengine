@@ -185,3 +185,78 @@ void WinOglDriver::DoSetState( const RenderState& state )
 {
 	m_glDriver->SetState( state );
 }
+
+void WinOglDriver::DoSetViewPort( boost::int32_t x0, boost::int32_t y0, boost::int32_t x1, boost::int32_t y1 )
+{
+	m_glDriver->SetViewPort( x0, y0, x1, y1 );
+}
+
+void WinOglDriver::DoClearBuffer(const BufferInfo_t& buffer)
+{
+	m_glDriver->ClearBuffer( buffer );
+}
+
+void WinOglDriver::DoSet( const ClearInfoType_t& type, boost::int32_t value )
+{
+	m_glDriver->Set( type, value );
+}
+
+void WinOglDriver::DoSet( const ClearInfoType_t& type, const Rgba& color )
+{
+	m_glDriver->Set( type, color );
+}
+
+void WinOglDriver::DoSet( const ClearInfoType_t& type, SpReal value )
+{
+	m_glDriver->Set( type, value );
+}
+
+bool WinOglDriver::DoCreateTexture( const TextureInfo_t& info, boost::shared_ptr< Texture >& texture, const boost::int8_t* data )
+{
+	return m_glDriver->CreateTexture( info, texture, data );
+}
+
+bool WinOglDriver::DoCreateSprite( boost::shared_ptr< Sprite >& sprite, boost::shared_ptr< Texture >& texture, const Rect< SpReal >& spriteTexCoords, const Rect< SpReal >& spriteInfo )
+{
+	return m_glDriver->CreateSprite( sprite, texture, spriteTexCoords, spriteInfo );
+}
+
+void WinOglDriver::DoDraw( boost::shared_ptr<Sprite>& sprite )
+{
+	m_glDriver->Draw( sprite );
+}
+
+void WinOglDriver::DoSetWorld( const Math::SpMatrix4x4r& world )
+{
+	m_glDriver->SetWorld( world );
+}
+
+void WinOglDriver::DoSetView( const Math::SpMatrix4x4r& view )
+{
+	m_glDriver->SetView( view );
+}
+
+void WinOglDriver::DoSetProjection( const Math::SpMatrix4x4r& proj )
+{
+	m_glDriver->SetProjection( proj );
+}
+
+void WinOglDriver::DoGetView( Math::SpMatrix4x4r& view )
+{
+	m_glDriver->GetView( view );
+}
+
+void WinOglDriver::DoGetProjection( Math::SpMatrix4x4r& proj )
+{
+	m_glDriver->GetProjection( proj );
+}
+
+void WinOglDriver::DoDraw( const std::list< Sprite* >& spriteList )
+{
+	m_glDriver->Draw( spriteList );
+}
+
+void WinOglDriver::DoSet( const BlendMode_t& mode )
+{
+	m_glDriver->Set( mode );
+}

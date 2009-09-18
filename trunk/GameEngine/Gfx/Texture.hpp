@@ -65,7 +65,12 @@ namespace Spiral
 
     protected:
         Texture();
+		Texture( boost::int32_t width, boost::int32_t height, boost::int32_t bitDepth );
 
+		void SetResource( boost::shared_ptr< Resource >& res )
+		{
+			m_resource = res;
+		}
 	private:
         boost::int32_t m_width;
         boost::int32_t m_height;

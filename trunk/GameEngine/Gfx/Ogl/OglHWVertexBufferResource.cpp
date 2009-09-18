@@ -72,7 +72,7 @@ bool OglHWVertexBufferResource::DoLock( int32_t start, int32_t size, ResLockInfo
 	return ( m_isValid );
 }
 
-bool OglHWVertexBufferResource::DoLock( const Rect< boost::int32_t >& /*rect*/, ResLockRtInfo_t& /*info*/, bool /*bDiscard*/ )
+bool OglHWVertexBufferResource::DoLock(  ResLockRtInfo_t& /*info*/, bool /*bDiscard*/ )
 {
 	return false;
 }
