@@ -1,13 +1,69 @@
 #include "GfxDriver.hpp"
 #include "GfxImpl.hpp"
 #include "Texture.hpp"
+#include "../Common/BitManipulation.hpp"
+#include "Utility/Image.hpp"
+#include <boost/scoped_array.hpp>
+#include <memory.h>
 
 using namespace Spiral;
 using namespace boost;
 
 bool GfxDriver::CreateTexture(const TextureInfo_t &info, shared_ptr<Texture> &texture, const int8_t *data /*= 0*/)
 {
-	return DoCreateTexture( info, texture, data );
+	bool copyImage = false;
+	int32_t newWidth = info.width,
+		newHeight = info.height;
+
+	if( !PowerOf2( info.width ) )
+	{
+		newWidth = NextPowerOf2( info.width );
+		copyImage = true;
+	}
+
+	if( !PowerOf2( info.height ) )
+	{
+		newHeight = NextPowerOf2( info.height );
+		copyImage = true;
+	}
+
+	if( copyImage )
+	{
+		// set up for transfer to a power of 2 surface
+		GfxUtil::Image::ImageDesc src,dst;
+
+		dst.colorChannel = info.bitDepth / 8;
+		dst.width = newWidth;
+		dst.height = newHeight;
+		dst.rowBytes = dst.width * dst.colorChannel;
+
+		const int32_t imageSize = newWidth * newHeight * dst.colorChannel;
+		scoped_array< int8_t > newImageData( new int8_t[ imageSize ] );
+		memset( newImageData.get(), 0, imageSize );
+
+		dst.data = newImageData.get();
+
+		src.colorChannel = dst.colorChannel;
+		src.width = info.width;
+		src.height = info.height;
+		src.rowBytes = info.width * src.colorChannel;
+		src.data = const_cast< int8_t* >( data );
+
+		GfxUtil::Image::Blit( src, dst, 0, 0 );
+
+		// update our info
+		TextureInfo_t newInfo;
+		newInfo.width = newWidth;
+		newInfo.height = newHeight;
+		newInfo.bitDepth = info.bitDepth;
+		newInfo.bManaged = info.bManaged;
+
+		return DoCreateTexture( newInfo, texture, newImageData.get() );
+	}else
+	{
+		return DoCreateTexture( info, texture, data );
+	}
+	
 }
 
 bool GfxDriver::SetVideo( const GfxVidInfo_t& info, bool bfullscreen /*= true*/ )

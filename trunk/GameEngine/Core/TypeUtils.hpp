@@ -88,6 +88,19 @@ namespace Spiral
 		return count;
 	}
 
+	template< class Itr, class elem >
+	boost::int32_t count_element_occurences( Itr first, Itr last, elem e )
+	{
+		boost::int32_t count = 0;
+		while( first++ != last )
+		{
+			if( *first == e )
+				++count;
+		}
+
+		return count;
+	}
+
 	template< class T >
 	struct EmptyType
 	{

@@ -21,7 +21,7 @@ public:
 	void Initialize();
 	void KeyUpCallback( WPARAM wParam, LPARAM lParam );
 	void KeyDownCallback( WPARAM wParam, LPARAM lParam );
-	void SetEventPublisher( boost::shared_ptr< Spiral::EventPublisher >& publisher )
+	void SetEventPublisher( const boost::shared_ptr< Spiral::EventPublisher >& publisher )
 	{
 		m_eventPublisher = publisher;
 	}

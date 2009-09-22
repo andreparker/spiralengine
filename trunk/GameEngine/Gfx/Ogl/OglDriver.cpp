@@ -48,6 +48,8 @@ OglDriver::~OglDriver()
 
 bool OglDriver::Initialize( const boost::any& /*data*/ )
 {
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glPixelStorei(GL_PACK_ALIGNMENT, 1);
 	return true;
 }
 

@@ -44,7 +44,15 @@ namespace Spiral
 		   @param     const Event & event
 		   @param     boost::any & data
 		*/
-		void Publish( const Event& event, boost::any& data );
+		void Publish( const Event& event, const boost::any& data );
+
+		/*!
+		   @function  ProcessEventQueueThreaded
+		   @brief     process events stored away and send them to subscribers,
+		              this has thread code in it
+		   @return    void
+		*/
+		void ProcessEventQueueThreaded();
 
 		/*!
 		   @function  ProcessEventQueue
@@ -52,12 +60,12 @@ namespace Spiral
 		   @return    void
 		*/
 		void ProcessEventQueue();
-
 	private:
 		typedef std::list< boost::shared_ptr<EventSubscriber> >::iterator SubIter;
 		std::list< boost::shared_ptr<EventSubscriber> > m_subscribers;
 		boost::scoped_ptr< std::queue< EventData > > m_eventQueue;
-		boost::mutex m_mutex;
+		boost::mutex m_eventQueueMutex;
+		boost::mutex m_subscriberMutex;
 	};
 }
 

@@ -29,5 +29,7 @@
 #include "Gfx/Utility/Image.hpp"
 #include "Gfx/Projection.hpp"
 #include "Gfx/Sprite.hpp"
+#include "Gfx/Font.hpp"
+#include "Gfx/Surface.hpp"
 
 #endif

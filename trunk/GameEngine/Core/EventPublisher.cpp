@@ -15,65 +15,94 @@ const int32_t maxQueueSize = 15;
 EventPublisher::EventPublisher():
 m_subscribers(),
 m_eventQueue(),
-m_mutex()
+m_eventQueueMutex(),
+m_subscriberMutex()
 {
 	m_eventQueue.reset( new std::queue< detail::EventData > );
 }
 
+inline void Lock_Wait( boost::mutex& m )
+{
+	while( m.try_lock() == false ){}
+}
+
 void EventPublisher::RemoveSubscriber( boost::shared_ptr<EventSubscriber>& subscriber )
 {
-	while( m_mutex.try_lock() == false ){}
+	Lock_Wait( m_subscriberMutex );
 	m_subscribers.remove( subscriber );
-	m_mutex.unlock();
+	m_subscriberMutex.unlock();
 }
 
 void EventPublisher::AddSubscriber( boost::shared_ptr<EventSubscriber>& subscriber )
 {
-	while( m_mutex.try_lock() == false ){}
+	Lock_Wait( m_subscriberMutex );
 	m_subscribers.push_back( subscriber );
-	m_mutex.unlock();
+	m_subscriberMutex.unlock();
 }
 
-void EventPublisher::Publish( const Event& event, boost::any& data )
+void EventPublisher::Publish( const Event& event, const boost::any& data )
 {
 	detail::EventData eventData;
 
 	eventData.event = event;
 	eventData.data  = data;
 	
-	while( m_mutex.try_lock() == false ){}
+	Lock_Wait( m_eventQueueMutex );
 
 	if( maxQueueSize > m_eventQueue->size() )
 	{
 		m_eventQueue->push( eventData );
 	}
 	
-	m_mutex.unlock();
+	m_eventQueueMutex.unlock();
+}
+
+void EventPublisher::ProcessEventQueueThreaded()
+{
+	while( true )
+	{
+		while( !m_eventQueue->empty() )
+		{
+			Lock_Wait( m_eventQueueMutex );
+
+			detail::EventData eventData = m_eventQueue->front();
+			m_eventQueue->pop();
+
+			m_eventQueueMutex.unlock();
+
+			Lock_Wait( m_subscriberMutex );
+			for( SubIter itr = m_subscribers.begin(); itr != m_subscribers.end(); ++itr )
+			{
+				EventSubscriber* subscriber = (*itr).get();
+				if( subscriber->GetEvent() == eventData.event )
+				{
+					subscriber->Recieve( eventData );
+				}
+			}
+			m_subscriberMutex.unlock();
+		}
+		this_thread::yield();
+	}
+
 }
 
 void EventPublisher::ProcessEventQueue()
 {
 	while( true )
 	{
-		if( m_mutex.try_lock() )
+		while( !m_eventQueue->empty() )
 		{
-			while( !m_eventQueue->empty() )
-			{
-				detail::EventData eventData = m_eventQueue->front();
-				m_eventQueue->pop();
+			detail::EventData eventData = m_eventQueue->front();
+			m_eventQueue->pop();
 
-				for( SubIter itr = m_subscribers.begin(); itr != m_subscribers.end(); ++itr )
+			for( SubIter itr = m_subscribers.begin(); itr != m_subscribers.end(); ++itr )
+			{
+				EventSubscriber* subscriber = (*itr).get();
+				if( subscriber->GetEvent() == eventData.event )
 				{
-					EventSubscriber* subscriber = (*itr).get();
-					if( subscriber->GetEvent() == eventData.event )
-					{
-						subscriber->Recieve( eventData );
-					}
+					subscriber->Recieve( eventData );
 				}
 			}
-			m_mutex.unlock();
 		}
-		this_thread::yield();
 	}
-	
 }

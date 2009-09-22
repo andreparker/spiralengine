@@ -15,6 +15,9 @@
 #include "../Gfx/SpriteLayerImpl.hpp"
 #include "../Gfx/SpriteDrawListImpl.hpp"
 
+#include "../Gfx/Font/FreeType/FreeTypeFactory.hpp"
+#include "../Gfx/Font/FreeType/FreeTypeFont.hpp"
+
 #include "GameStateMachine.hpp"
 #include "GameState.hpp"
 
@@ -45,7 +48,8 @@ m_spriteDrawList(),
 m_buffer(),
 m_attrDirtyFlag(true),
 m_eventPublisherThread(),
-m_threadManager()
+m_threadManager(),
+m_fontFactory()
 {
 }
 
@@ -66,10 +70,14 @@ bool Engine::Initialize( shared_ptr< GfxDriver >& gfxDriver, any& data )
 			m_eventPublisher = make_shared< EventPublisher >();
 			m_variables      = make_shared< CVar >();
 			m_spriteDrawList = make_shared< SpriteDrawList >();
-			m_eventPublisherThread = boost::thread( &EventPublisher::ProcessEventQueue, m_eventPublisher );
+			m_fontFactory    = make_shared< FreeTypeFactory >();
+
+			m_eventPublisherThread = boost::thread( &EventPublisher::ProcessEventQueueThreaded, m_eventPublisher );
 			m_catolog.reset( new ResourceCatalog );
 
 			InitializeAttributes();
+			m_fontFactory->Initialize();
+
 			m_variables->Initialize();
 			{
 				boost::shared_ptr< IFile > configFile;
@@ -233,6 +241,7 @@ void Engine::ClearTextureCatalog()
 void Engine::ClearCatalog()
 {
 	ClearTextureCatalog();
+	ClearFontCatalog();
 }
 
 void Engine::ApplyCamera()
@@ -449,4 +458,30 @@ void Engine::SpriteUpdateListThread()
 		}
 	}
 	m_spriteDrawList->SetBuildList( false );
+}
+
+boost::shared_ptr< Font > Engine::LoadFont( const std::string& fontFile, const std::string& fontName, boost::int32_t charWidth, boost::int32_t charHeight )
+{
+	boost::shared_ptr< Font > font;
+	ResourceCatalog::FontCatalogItr itr = m_catolog->m_fontCatalog.find( fontName );
+	if( itr != m_catolog->m_fontCatalog.end() )
+	{
+		font = (*itr).second;
+	}else
+	{
+		boost::shared_ptr< IFile > file;
+		if( FileManager::instance().getFile( fontFile, file ))
+		{
+			File_Auto_Close< IFile > fac( file );
+			font = m_fontFactory->CreateFont( file, charWidth, charHeight );
+			m_catolog->m_fontCatalog[ fontName ] = font;
+		}
+	}
+
+	return font;
+}
+
+void Engine::ClearFontCatalog()
+{
+	m_catolog->m_fontCatalog.clear();
 }
