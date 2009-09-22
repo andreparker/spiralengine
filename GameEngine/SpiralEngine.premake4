@@ -11,13 +11,67 @@ project( "SpiralEngine" )
 	{
 		"**.cpp",
 		"**.hpp",
-		"../ThirdParty/**.hpp",
-		"../ThirdParty/**.cpp",
-		"../ThirdParty/**.h",
-		"../ThirdParty/**.c"
+
+		"../ThirdParty/GLee/**.h",
+		"../ThirdParty/GLee/**.c",
+		
+		"../ThirdParty/Zip/**.hpp",
+		"../ThirdParty/Zip/**.cpp",
+		
+		"../ThirdParty/libpng/**.h",
+		"../ThirdParty/libpng/**.c",
+		
+		"../ThirdParty/tinyxml/**.cpp",
+		"../ThirdParty/tinyxml/**.h",
+		
+		"../ThirdParty/Lua/**.h",
+		"../ThirdParty/Lua/**.c",
+		
+		"../ThirdParty/Math/**.hpp",
+		
+		"../ThirdParty/Zlib/**.h",
+		"../ThirdParty/Zlib/**.c"
 	}
 	
-	includedirs { "../ThirdParty/zlib" }
+	-- freeType specifics
+	defines
+	{
+		"FT2_BUILD_LIBRARY"
+	}
+	
+	files
+	{
+		"../ThirdParty/FreeType/src/base/ftsystem.c",
+		"../ThirdParty/FreeType/src/base/ftinit.c",
+		"../ThirdParty/FreeType/src/base/ftdebug.c", 
+		"../ThirdParty/FreeType/src/base/ftbase.c",
+		"../ThirdParty/FreeType/src/base/ftbbox.c",
+		"../ThirdParty/FreeType/src/base/ftglyph.c", 
+		"../ThirdParty/FreeType/src/base/ftbitmap.c",
+		"../ThirdParty/FreeType/src/sfnt/sfnt.c",
+		"../ThirdParty/FreeType/src/psnames/psnames.c",
+		"../ThirdParty/FreeType/src/psaux/psaux.c",
+		"../ThirdParty/FreeType/src/pshinter/pshinter.c",
+		
+		-- drivers
+		"../ThirdParty/FreeType/src/truetype/truetype.c",
+		"../ThirdParty/FreeType/src/type1/type1.c",
+		"../ThirdParty/FreeType/src/type42/type42.c",
+		
+		-- renderers
+		"../ThirdParty/FreeType/src/raster/raster.c",
+		"../ThirdParty/FreeType/src/smooth/smooth.c",
+		
+		"../ThirdParty/FreeType/src/autofit/autofit.c", 
+		"../ThirdParty/FreeType/src/cache/ftcache.c",
+	}
+	
+	-- include dirs
+	includedirs 
+	{
+		"../ThirdParty/zlib",
+		"../ThirdParty/FreeType/include"
+	}
 	
 	-- exclude these files
 	excludes
@@ -65,7 +119,6 @@ project( "SpiralEngine" )
 		
 		flags
 		{
-			"ExtraWarnings",
 			"No64BitChecks",
 			"NoManifest",
 			"NoPCH",
@@ -94,7 +147,6 @@ project( "SpiralEngine" )
 		
 		flags
 		{
-			"ExtraWarnings",
 			"No64BitChecks",
 			"NoManifest",
 			"NoPCH",

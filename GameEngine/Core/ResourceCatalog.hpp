@@ -9,10 +9,14 @@
 namespace Spiral
 {
 	class Texture;
+	class Font;
 	struct ResourceCatalog
 	{
 		typedef std::map< std::string, boost::shared_ptr< Texture > >::iterator TextureCatalogItr;
-		std::map< std::string, boost::shared_ptr< Texture > > m_textureCatalog; 
+		typedef std::map< std::string, boost::shared_ptr< Font > >::iterator FontCatalogItr;
+
+		std::map< std::string, boost::shared_ptr< Texture > > m_textureCatalog;
+		std::map< std::string, boost::shared_ptr< Font > > m_fontCatalog;
 	};
 }
 

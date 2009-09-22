@@ -44,6 +44,11 @@ namespace Spiral
 			return color[ idx ];
 		}
 
+		const unsigned char GetByteComponent( boost::int32_t idx )const
+		{
+			return static_cast< const unsigned char >( color[ idx ] * 255.0f );
+		}
+
 		operator SpReal*()
 		{
 			 return color;

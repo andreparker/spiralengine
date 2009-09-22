@@ -85,3 +85,61 @@ shared_ptr< Image > Image::LoadPng( boost::shared_ptr<IFile>& pngFile )
 
 	return image;
 }
+
+inline void copy4( const boost::int8_t* src, boost::int8_t* dst )
+{
+	boost::int32_t* dst4 = reinterpret_cast<boost::int32_t*>( dst );
+	*dst4 = *reinterpret_cast<const boost::int32_t*>( src );
+}
+
+inline void copy3( const boost::int8_t* src, boost::int8_t* dst )
+{
+	*dst++ = *src++;
+	*dst++ = *src++;
+	*dst++ = *src++;
+}
+
+
+template< void copyElement( const boost::int8_t*, boost::int8_t* ), int colorChannels >
+void BlitImpl( const Image::ImageDesc& src, Image::ImageDesc& dest, boost::int32_t x, boost::int32_t y )
+{
+	int8_t* destSurf = dest.data + (y * dest.rowBytes + x * dest.colorChannel);
+	const int8_t* srcSurf = src.data;
+	int32_t rows = src.height;
+	int32_t col = src.width;
+
+	int8_t* destline = destSurf;
+	const int8_t* srcline = srcSurf;
+
+	while( rows-- != 0 )
+	{
+		do 
+		{
+			copyElement( srcline, destline );
+			srcline += colorChannels;
+			destline += colorChannels;
+		} while ( --col != 0 );
+
+		srcSurf += src.rowBytes;
+		destSurf += dest.rowBytes;
+
+		destline = destSurf;
+		srcline = srcSurf;
+
+		col = src.width;
+	}
+}
+
+void Image::Blit( const Image::ImageDesc& src, Image::ImageDesc& dest, boost::int32_t x, boost::int32_t y )
+{
+	if( src.colorChannel == dest.colorChannel )
+	{
+		if( src.colorChannel == 4 )
+		{
+			BlitImpl< copy4, 4 >( src, dest, x, y );
+		}else if( src.colorChannel == 3 )
+		{
+			BlitImpl< copy3, 3 >( src, dest, x, y );
+		}
+	}
+}

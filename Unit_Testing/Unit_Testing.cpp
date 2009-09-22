@@ -74,3 +74,23 @@ BOOST_AUTO_TEST_CASE( Binary2DecTest )
 	cout << "binaray - 11111111 to Dec " << binary2Dec< 11111111 >::value << endl;
 }
 
+boost::int32_t RoundNextPwr2( boost::int32_t n )
+{
+	n--;
+	n |= n >> 1;
+	n |= n >> 2;
+	n |= n >> 4;
+	n |= n >> 8;
+	n |= n >> 16;
+	n++;
+
+	return n;
+}
+
+BOOST_AUTO_TEST_CASE( PowerOf2_Rounding )
+{
+	cout << "next power2 24 = " << RoundNextPwr2( 24 ) << endl;
+	cout << "next power2 47 = " << RoundNextPwr2( 47 ) << endl;
+	cout << "next power2 56 = " << RoundNextPwr2( 56 ) << endl;
+	cout << "next power2 100 = " << RoundNextPwr2( 100 ) << endl;
+}

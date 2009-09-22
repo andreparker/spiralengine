@@ -1,6 +1,7 @@
 #include "SimpleApp.hpp"
 #include <boost/make_shared.hpp>
 #include <boost/bind.hpp>
+#include <string>
 
 using namespace SimpleApp;
 using namespace Spiral;
@@ -8,16 +9,31 @@ using namespace boost;
 
 bool App::DoInit( boost::int32_t /*argc*/, std::list< boost::shared_array< char > >& /*argList*/, boost::shared_ptr< Engine >& engine )
 {
-	
+	// cache of the engine pointer
+	m_engine = engine;
+
 	shared_ptr< Texture > texture = engine->LoadTexture( "Data/ball32.png", "Ball" );
 	shared_ptr< Texture > alpha_texture = engine->LoadTexture( "Data/ball32_alpha.png", "Ball_alpha" );
+	m_arialN = engine->LoadFont( "c:/windows/fonts/arialn.ttf", "arial_n", 16, 16 );
+	shared_ptr< Surface > surf = make_surface( 192, 16, 4 );
 
 	shared_ptr< GfxDriver > gfxDriver = engine->GetGfxDriver();
-	gfxDriver->CreateSprite( m_sprite, texture, Rect< SpReal >( 0.0f, 1.0f, 0.0f, 1.0f ), Rect< SpReal >( 16.0f, 32.0f, 32.0f, 16.0f ));
-	gfxDriver->CreateSprite( m_sprite_alpha, alpha_texture, Rect< SpReal >( 0.0f, 1.0f, 0.0f, 1.0f ), Rect< SpReal >( 16.0f, 32.0f, 32.0f, 16.0f ));
-	
+
+
+	gfxDriver->CreateSprite( m_sprite, texture, Rect< SpReal >( 0.0f, 1.0f, 1.0f, 0.0f ), Rect< SpReal >( 16.0f, 32.0f, 32.0f, 16.0f ));
+	gfxDriver->CreateSprite( m_sprite_alpha, alpha_texture, Rect< SpReal >( 0.0f, 1.0f, 1.0f, 0.0f ), Rect< SpReal >( 16.0f, 32.0f, 32.0f, 16.0f ));
 	m_sprite_alpha->SetPosition( 50.0f, 50.0f );
 	m_sprite_alpha->SetAlphaBlend( true );
+	
+	m_arialN->RenderAlpha( surf, std::string( "Hello world" ), Rgba( 0.0f, 0.0f, 0.0f ) );
+
+
+	shared_ptr< Texture > fontTexture = surf->CreateTextureFromData( gfxDriver );
+
+	gfxDriver->CreateSprite( m_fontSprite, fontTexture, Rect< SpReal >( 0.0f, 1.0f, 1.0f, 0.0f ), Rect< SpReal >( 32.0f, 256.0f, 16.0f, 8.0f ) );
+	m_fontSprite->SetPosition( 0.0f, 0.0f );
+	m_fontSprite->SetAlphaBlend( true );
+	
 
 	gfxDriver->SetState( RenderState::Depth_Test( RenderState::RS_FALSE ) );
 	gfxDriver->SetState( RenderState::Texture( RenderState::RS_TRUE ) );
@@ -27,6 +43,7 @@ bool App::DoInit( boost::int32_t /*argc*/, std::list< boost::shared_array< char 
 	{
 		engine->AddSprite( m_sprite.get(), 0 );
 		engine->AddSprite( m_sprite_alpha.get(), 0 );
+		engine->AddSprite( m_fontSprite.get(), 0 );
 		engine->EnableSpriteLayer( 0, true );
 	}
 
@@ -42,6 +59,8 @@ bool App::DoInit( boost::int32_t /*argc*/, std::list< boost::shared_array< char 
 	m_camera = new Camera( Math::SpVector3r( 0.0f, 0.0f, 0.0f ) );
 	m_camera->SetProjection( Projection::CreateOrtho2D( 0.0f , 0.0f , 1024.0f , 768.0f ) );
 	engine->SetCamera( m_camera );
+
+
 	return true;
 }
 
@@ -53,11 +72,7 @@ bool App::DoRun( SpReal ticks, boost::shared_ptr< Engine >& engine )
 	m_sprite->SetAngle( angle );
 	angle += 2.0f * (ticks*60.0f); // fixed 60 times a second
 	m_sprite_alpha->SetAngle( angle );
-
-	if( angle > 600.0f )
-	{
-		engine->GetEventPublisher()->Publish( Event( event_AppStatus_shutdown, Catagory_App_Status::value ), any() );
-	}
+	m_fontSprite->SetAngle( angle );
 
 	return true;
 }
@@ -68,6 +83,9 @@ bool App::DoUnInit()
 	m_sprite.reset();
 	m_sprite_alpha.reset();
 	m_keyDownSubscriber.reset();
+	m_engine.reset(); // release the reference to the engine (IMPORTANT)
+	m_arialN.reset();
+	m_fontSprite.reset();
 
 	return true;
 }
@@ -78,6 +96,9 @@ App::App():
 m_sprite(),
 m_sprite_alpha(),
 m_keyDownSubscriber(),
+m_engine(),
+m_arialN(),
+m_fontSprite(),
 m_camera(NULL)
 {
 
@@ -86,4 +107,9 @@ m_camera(NULL)
 void App::KeyDown( const Event& event, const any& data )
 {
 	int32_t key = any_cast<int32_t>(data);
+	if( key == 27 )
+	{
+		// close the app
+		m_engine->GetEventPublisher()->Publish( Event( event_AppStatus_shutdown, Catagory_App_Status::value ), any() );
+	}
 }

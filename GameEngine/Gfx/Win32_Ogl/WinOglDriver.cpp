@@ -68,7 +68,7 @@ bool WinOglDriver::DoInitialize( const boost::any& data )
         
     }
 
-    return bool(m_rc != NULL);
+    return m_glDriver->Initialize( any() );
 }
 
 bool WinOglDriver::DoUnInitialize()
@@ -78,7 +78,8 @@ bool WinOglDriver::DoUnInitialize()
 		wglMakeCurrent( NULL, NULL );
 		wglDeleteContext( m_rc );
 		m_rc = NULL;
-		return true;
+
+		return m_glDriver->UnInitialize();;
 	}
 
 	return false;

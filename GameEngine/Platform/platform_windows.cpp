@@ -81,6 +81,24 @@ int ParseCommandLine( list< shared_array< char > >& arglist )
 	return argc;
 }
 
+void InitializeWindow( shared_ptr< Engine >& engine, shared_ptr< AppWindow >& appWindow )
+{
+	RECT rt;
+	shared_ptr< CVar > variables = engine->GetVariables();
+
+	LONG width = variables->GetVarValue( "vid_width", EmptyType<LONG>() );
+	LONG height = variables->GetVarValue( "vid_height", EmptyType<LONG>() );
+	int32_t fullscreen = variables->GetVarValue( "vid_fullscreen", EmptyType<int32_t>() );
+
+	rt.left = 0;
+	rt.top = 0;
+	rt.right = width;
+	rt.bottom = height;
+
+	appWindow->ResizeWindow( &rt, (fullscreen==1) ? true : false );
+	appWindow->Show();
+}
+
 int APIENTRY WinMain(HINSTANCE hInstance,
 					 HINSTANCE /*hPrevInstance*/,
 					 LPTSTR    /*lpCmdLine*/,
@@ -115,20 +133,8 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 			spAppWindow->SetEventPublisher( engine->GetEventPublisher() );
 			spAppWindow->Initialize();
 
-			RECT rt;
-			shared_ptr< CVar > variables = engine->GetVariables();
+			InitializeWindow( engine, spAppWindow );
 
-			LONG width = variables->GetVarValue( "vid_width", EmptyType<LONG>() );
-			LONG height = variables->GetVarValue( "vid_height", EmptyType<LONG>() );
-			int32_t fullscreen = variables->GetVarValue( "vid_fullscreen", EmptyType<int32_t>() );
-
-			rt.left = 0;
-			rt.top = 0;
-			rt.right = width;
-			rt.bottom = height;
-
-			spAppWindow->ResizeWindow( &rt, (fullscreen==1) ? true : false );
-			spAppWindow->Show();
 		}
 
 		MSG msg;
@@ -187,7 +193,7 @@ m_quit(false)
 	RegisterHandler( WM_KEYDOWN, boost::bind( &AppWindow::KeyDownCallback, this, _1, _2 ) );
 }
 
-void AppWindow::KeyUpCallback( WPARAM wParam, LPARAM lParam )
+void AppWindow::KeyUpCallback( WPARAM wParam, LPARAM /*lParam*/ )
 {
 	if( m_eventPublisher )
 	{
@@ -195,7 +201,7 @@ void AppWindow::KeyUpCallback( WPARAM wParam, LPARAM lParam )
 	}
 }
 
-void AppWindow::KeyDownCallback( WPARAM wParam, LPARAM lParam )
+void AppWindow::KeyDownCallback( WPARAM wParam, LPARAM /*lParam*/ )
 {
 	if( m_eventPublisher )
 	{
@@ -210,7 +216,7 @@ void AppWindow::Initialize()
 	m_sysAppEventSubscriber->AddCallback( boost::bind( &AppWindow::SysAppEvents, this, _1, _2 ) );
 }
 
-void AppWindow::SysAppEvents( const Spiral::Event& event, const boost::any& data )
+void AppWindow::SysAppEvents( const Spiral::Event& event, const boost::any& /*data*/ )
 {
 	if( event.m_catagory.m_bits.to_ulong() == Catagory_App_Status::value &&
 		event.m_eventId == event_AppStatus_shutdown )

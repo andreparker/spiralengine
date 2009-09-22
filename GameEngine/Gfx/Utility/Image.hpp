@@ -21,6 +21,16 @@ namespace GfxUtil
 		width( width_ ), height( height_ ), bitDepth( bitDepth_ ), data( data_ ){}
 
 
+		struct ImageDesc
+		{
+			boost::int8_t* data;
+			boost::int32_t width,height;
+			boost::int32_t rowBytes;
+			boost::int32_t colorChannel;
+		};
+
+		static void Blit( const ImageDesc& src, ImageDesc& dest, boost::int32_t x, boost::int32_t y );
+
 		/*!
 		   @function  LoadPng
 		   @brief     loads a png file and returns a shared image pointer

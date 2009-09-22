@@ -22,6 +22,9 @@ namespace SimpleApp
 		boost::shared_ptr< Spiral::Sprite > m_sprite;
 		boost::shared_ptr< Spiral::Sprite > m_sprite_alpha;
 		boost::shared_ptr< Spiral::EventSubscriber > m_keyDownSubscriber;
+		boost::shared_ptr< Spiral::Engine > m_engine;
+		boost::shared_ptr< Spiral::Font > m_arialN;
+		boost::shared_ptr< Spiral::Sprite > m_fontSprite;
 		Spiral::Camera* m_camera;
 	};
 }

@@ -35,6 +35,9 @@ namespace Spiral
 	struct ResourceCatalog;
 	struct EngineAttribute;
 
+	class FontFactory;
+	class Font;
+
 	class Engine : private boost::noncopyable
 	{
 	public:
@@ -43,6 +46,16 @@ namespace Spiral
 		void SetAttribute( const EngineAttribute& attr, const boost::any& value );
 		boost::any GetAttribute( const EngineAttribute& attr );
 
+		/*!
+		   @function  LoadFont
+		   @brief     
+		   @return    boost::shared_ptr< Font >
+		   @param     const std::string & fontFile
+		   @param     const std::string & fontName
+		   @param     boost::int32_t charWidth
+		   @param     boost::int32_t charHeight
+		*/
+		boost::shared_ptr< Font > LoadFont( const std::string& fontFile, const std::string& fontName, boost::int32_t charWidth, boost::int32_t charHeight );
 		/*!
 		   @function  CreateSpriteLayers
 		   @brief     create layers for sprites, 0 - layerCount-1
@@ -224,7 +237,7 @@ namespace Spiral
 		*/
 		boost::shared_ptr< Texture > LoadTexture( const std::string& fileName, const std::string& TextureName );
 
-		boost::shared_ptr< EventPublisher > GetEventPublisher()const
+		const boost::shared_ptr< EventPublisher >& GetEventPublisher()const
 		{
 			return m_eventPublisher;
 		}
@@ -236,6 +249,13 @@ namespace Spiral
 		   @return    void
 		*/
 		void ClearTextureCatalog();
+
+		/*!
+		   @function  ClearFontCatalog
+		   @brief     clears the font catalog
+		   @return    void
+		*/
+		void ClearFontCatalog();
 
 		/*!
 		   @function  ClearCatalog
@@ -314,6 +334,7 @@ namespace Spiral
 		bool m_attrDirtyFlag;
 		boost::thread m_eventPublisherThread;
 		boost::thread_group m_threadManager;
+		boost::shared_ptr< FontFactory > m_fontFactory;
 		boost::any m_attributes[ AttributeCount ];
 
 		Engine();
