@@ -27,6 +27,7 @@ namespace Spiral
 		void GetView( Math::SpMatrix4x4r& view );
 		void GetProjection( Math::SpMatrix4x4r& proj );
 
+		void Draw( const Math::SpVector2r& position, const Rect< SpReal >& rect, const Rect< SpReal >& textureCoords );
 		void Draw( const std::list< Sprite* >& spriteList );
 		void Draw( boost::shared_ptr<Sprite>& sprite );
 		bool CreateSprite( boost::shared_ptr< Sprite >& sprite, boost::shared_ptr< Texture >& texture, const Rect< SpReal >& spriteTexCoords, const Rect< SpReal >& spriteInfo );

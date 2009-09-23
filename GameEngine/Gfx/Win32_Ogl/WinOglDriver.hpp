@@ -29,6 +29,7 @@ namespace Spiral
 		virtual void DoGetView( Math::SpMatrix4x4r& view );
 		virtual void DoGetProjection( Math::SpMatrix4x4r& proj );
 
+		virtual void DoDraw( const Math::SpVector2r& position, const Rect< SpReal >& rect, const Rect< SpReal >& textureCoords );
 		virtual void DoDraw( const std::list< Sprite* >& spriteList );
 		virtual void DoDraw( boost::shared_ptr<Sprite>& sprite );
 		virtual bool DoCreateSprite( boost::shared_ptr< Sprite >& sprite, boost::shared_ptr< Texture >& texture, const Rect< SpReal >& spriteTexCoords, const Rect< SpReal >& spriteInfo );

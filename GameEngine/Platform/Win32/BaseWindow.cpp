@@ -203,25 +203,25 @@ void BaseWindow::ResizeWindow( RECT* rect, bool fullscreen )
 {
 	WINDOWINFO info;
 	RECT save = *rect; // save it
-	GetWindowInfo( m_hwnd, &info );
-	AdjustWindowRect( rect, info.dwStyle, false );
-	
-	
+
 	if( fullscreen )
 	{
 		SetWindowLong( m_hwnd, GWL_STYLE, WS_POPUP );
 	}else
 	{
-		// keep positions same and just add the calculated sizes
-		LONG dx = save.left - rect->left;
-		LONG dy = save.top  - rect->top;
-		rect->left += dx;
-		rect->top  += dy;
-		rect->bottom += dy;
-		rect->right += dx;
-
 		SetWindowLong( m_hwnd, GWL_STYLE, WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU );
 	}
+
+	GetWindowInfo( m_hwnd, &info );
+	AdjustWindowRect( rect, info.dwStyle, false );
+
+	// keep positions same and just add the calculated sizes
+	LONG dx = save.left - rect->left;
+	LONG dy = save.top  - rect->top;
+	rect->left += dx;
+	rect->top  += dy;
+	rect->bottom += dy;
+	rect->right += dx;
 
 	MoveWindow( m_hwnd,rect->left, rect->top, rect->right, rect->bottom ,TRUE );
 }
