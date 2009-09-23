@@ -15,7 +15,7 @@ bool App::DoInit( boost::int32_t /*argc*/, std::list< boost::shared_array< char 
 	shared_ptr< Texture > texture = engine->LoadTexture( "Data/ball32.png", "Ball" );
 	shared_ptr< Texture > alpha_texture = engine->LoadTexture( "Data/ball32_alpha.png", "Ball_alpha" );
 	m_arialN = engine->LoadFont( "c:/windows/fonts/arialn.ttf", "arial_n", 16, 16 );
-	shared_ptr< Surface > surf = make_surface( 192, 16, 4 );
+	
 
 	shared_ptr< GfxDriver > gfxDriver = engine->GetGfxDriver();
 
@@ -25,14 +25,18 @@ bool App::DoInit( boost::int32_t /*argc*/, std::list< boost::shared_array< char 
 	m_sprite_alpha->SetPosition( 50.0f, 50.0f );
 	m_sprite_alpha->SetAlphaBlend( true );
 	
-	m_arialN->RenderAlpha( surf, std::string( "Hello world" ), Rgba( 0.0f, 0.0f, 0.0f ) );
+	int32_t width,height;
+	std::string text = "Testing Font rendering code using true type font.\nThis font is arial narrow.\nTesting newline code";
+	m_arialN->CalcSurfaceSize( text, width, height );
+	shared_ptr< Surface > surf = make_surface( width, height, 3 );
+	m_arialN->RenderOpaque( surf, text, Rgba( 0.0f, 1.0f, 0.0f ) );
 
 
 	shared_ptr< Texture > fontTexture = surf->CreateTextureFromData( gfxDriver );
 
-	gfxDriver->CreateSprite( m_fontSprite, fontTexture, Rect< SpReal >( 0.0f, 1.0f, 1.0f, 0.0f ), Rect< SpReal >( 32.0f, 256.0f, 16.0f, 8.0f ) );
-	m_fontSprite->SetPosition( 0.0f, 0.0f );
-	m_fontSprite->SetAlphaBlend( true );
+	gfxDriver->CreateSprite( m_fontSprite, fontTexture, Rect< SpReal >( 0.0f, 1.0f, 1.0f, 0.0f ), Rect< SpReal >( 32.0f, width*2, height*2, 8.0f ) );
+	m_fontSprite->SetPosition( 400.0f, 500.0f );
+	//m_fontSprite->SetAlphaBlend( true );
 	
 
 	gfxDriver->SetState( RenderState::Depth_Test( RenderState::RS_FALSE ) );
@@ -72,7 +76,6 @@ bool App::DoRun( SpReal ticks, boost::shared_ptr< Engine >& engine )
 	m_sprite->SetAngle( angle );
 	angle += 2.0f * (ticks*60.0f); // fixed 60 times a second
 	m_sprite_alpha->SetAngle( angle );
-	m_fontSprite->SetAngle( angle );
 
 	return true;
 }

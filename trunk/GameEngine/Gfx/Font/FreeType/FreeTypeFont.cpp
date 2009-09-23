@@ -1,6 +1,7 @@
 #include "FreeTypeFont.hpp"
 #include <boost/assert.hpp>
 #include <freetype/ftbitmap.h>
+#include <boost/tokenizer.hpp>
 
 #include "../../Surface.hpp"
 #include "../../Color.hpp"
@@ -21,10 +22,32 @@ Font( width, height ),m_library( library ), m_face( font ),m_data( data )
 
 }
 
+/*!
+   @function  FindMaxStrSize
+   @brief     finds the max string size, newlines in the string marks a sub string
+   @return    boost::int32_t
+   @param     const std::string & str
+*/
+boost::uint32_t FindMaxStrSize( const std::string& str )
+{
+	uint32_t firstPos = 0,lastPos = 0;
+	uint32_t len = 0;
+
+	tokenizer< char_separator<char> > tokens( str,char_separator<char>("\n") );
+	for( tokenizer< char_separator<char> >::iterator itr = tokens.begin(); itr != tokens.end(); ++itr )
+	{
+		uint32_t curlen = (*itr).length();
+		if( curlen > len )
+			len = curlen;
+	}
+
+	return ( len == 0 ? str.length() : len );
+}
+
 void FreeTypeFont::DoCalcSurfaceSize( const std::string& str, boost::int32_t& surfWidth, boost::int32_t& surfHeight )
 {
-	surfWidth = str.size() * GetCharWidth();
-	surfHeight = GetCharHeight() * count_element_occurences( str.begin(), str.end(), '\n' );
+	surfWidth = FindMaxStrSize( str ) * (m_face->max_advance_width/2 >> 6 );
+	surfHeight = (m_face->max_advance_height/2 >> 6 ) * ( 1 + count_element_occurences( str.begin(), str.end(), '\n' ) ) + ( GetCharHeight() / 2);
 }
 																															  
 
@@ -95,11 +118,14 @@ void RenderBitmapAlpha( const SurfacePosition& pos, const FT_Bitmap& bitmap, con
 	RenderBitmapToSurf< StorePixelRgba, 4 >( pos, bitmap, color, surface );
 }
 
-void FreeTypeFont::DoRenderAlpha( boost::shared_ptr< Surface >& surface, const std::string& str, const Rgba& color )
+template< void Render( const SurfacePosition&, const FT_Bitmap&, const Rgba&, boost::shared_ptr< Surface >& ) >
+void DrawText( FT_Face face, boost::shared_ptr< Surface >& surface, const std::string& str, const Rgba& color )
 {
 	const char* text = str.c_str();
 
-	SurfacePosition pos = {0,0};
+	SurfacePosition pos = {0,(face->max_advance_height/2) >> 6};
+	bool useKerning = bool( FT_HAS_KERNING( face ) ? true : false );
+	FT_UInt preIndex = 0;
 
 	while( *text != 0 )
 	{
@@ -107,70 +133,47 @@ void FreeTypeFont::DoRenderAlpha( boost::shared_ptr< Surface >& surface, const s
 
 		if( c == '\n' )
 		{
-			pos.y += GetCharHeight();
+			pos.y += (face->max_advance_height/2) >> 6;
 			pos.x = 0;
 			++text;
 			continue;
 		}
 
-		FT_UInt index = FT_Get_Char_Index( m_face, c );
-		FT_Error result = FT_Load_Glyph( m_face, index, FT_LOAD_DEFAULT );
+		FT_UInt index = FT_Get_Char_Index( face, c );
+		FT_Error result = FT_Load_Glyph( face, index, FT_LOAD_DEFAULT );
 		if( !result )
 		{
-
-			result = FT_Render_Glyph( m_face->glyph, FT_RENDER_MODE_NORMAL );
-			FT_GlyphSlot slot = m_face->glyph;
-			if( !result )
+			if( useKerning && index && preIndex )
 			{
-				SurfacePosition tmpPos = { pos.x + slot->bitmap_left, pos.y + (GetCharHeight()-slot->bitmap_top) };
-				RenderBitmapAlpha( tmpPos, slot->bitmap, color, surface );
+				FT_Vector delta;
+
+				FT_Get_Kerning( face, preIndex, index, 0, &delta );
+
+				pos.x += delta.x >> 6;
 			}
 
-			pos.x += m_face->glyph->advance.x >> 6;  // advance is in 26.6 format, convert to int 
-		}else
-		{
-			pos.x += GetCharWidth();
+			result = FT_Render_Glyph( face->glyph, FT_RENDER_MODE_NORMAL );
+			FT_GlyphSlot slot = face->glyph;
+			if( !result )
+			{
+				SurfacePosition tmpPos = { pos.x + slot->bitmap_left, pos.y - slot->bitmap_top  };
+				Render( tmpPos, slot->bitmap, color, surface );
+			}
+
+			pos.x += face->glyph->advance.x >> 6;  // advance is in 26.6 format, convert to int
+			preIndex = index;
 		}
 
-		
 		++text;
 	}
 }
 
+void FreeTypeFont::DoRenderAlpha( boost::shared_ptr< Surface >& surface, const std::string& str, const Rgba& color )
+{
+	DrawText< RenderBitmapAlpha >( m_face, surface, str, color );
+}
+
 void FreeTypeFont::DoRenderOpaque( boost::shared_ptr< Surface >& surface, const std::string& str, const Rgba& color )
 {
-	const char* text = str.c_str();
-
-	SurfacePosition pos = {0,0};
-
-	while( text != NULL )
-	{
-		char c = *text;
-
-		if( c == '\n' )
-		{
-			pos.y += GetCharHeight();
-			pos.x = 0;
-			++text;
-			continue;
-		}
-
-		FT_Error result = FT_Load_Char( m_face, c, FT_LOAD_DEFAULT );
-		if( !result )
-		{
-			result = FT_Render_Glyph( m_face->glyph, FT_RENDER_MODE_NORMAL );
-			FT_GlyphSlot slot = m_face->glyph;
-			if( !result )
-			{
-				FT_Bitmap aligned;
-				//SurfacePosition tmpPos = { pos.x + slot->bitmap_left, pos.y + slot->bitmap_top };
-				FT_Bitmap_Convert( m_library, &m_face->glyph->bitmap, &aligned, 1 );
-				RenderBitmapOpaque( pos, aligned, color, surface );
-				FT_Bitmap_Done( m_library, &aligned );
-			}
-		}
-
-		pos.x += GetCharWidth();
-		++text;
-	}
+	DrawText< RenderBitmapOpaque >( m_face, surface, str, color );
 }

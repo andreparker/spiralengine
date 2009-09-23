@@ -92,10 +92,12 @@ namespace Spiral
 	boost::int32_t count_element_occurences( Itr first, Itr last, elem e )
 	{
 		boost::int32_t count = 0;
-		while( first++ != last )
+		while( first != last )
 		{
 			if( *first == e )
 				++count;
+
+			++first;
 		}
 
 		return count;

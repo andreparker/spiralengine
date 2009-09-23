@@ -180,3 +180,8 @@ void GfxDriver::Set( const BlendMode_t& mode )
 {
 	DoSet( mode );
 }
+
+void GfxDriver::Draw( const Math::SpVector2r& position, const Rect< SpReal >& rect, const Rect< SpReal >& textureCoords )
+{
+	DoDraw( position, rect, textureCoords );
+}

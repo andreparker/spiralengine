@@ -366,3 +366,56 @@ void OglDriver::Set( const BlendMode_t& mode )
 		glBlendFunc( GL_ONE, GL_ONE );
 	}
 }
+
+void OglDriver::Draw( const Math::SpVector2r& position, const Rect< SpReal >& rect, const Rect< SpReal >& textureCoords )
+{
+	const int32_t count = 5;
+	SpReal elements[ count * 4 ];
+	SpReal* data = elements;
+	
+	VertexFormat::V3T2_Storage storage;
+
+	/*
+		top right
+	*/
+	storage = make_tuple( rect.right, rect.top, -1.0f, textureCoords.right, textureCoords.top );
+	VertexFormat::SetV3T2Data( data, storage );
+	data += count;
+
+	/*
+		top left
+	*/
+	storage = make_tuple( rect.left, rect.top, -1.0f, textureCoords.left, textureCoords.top );
+	VertexFormat::SetV3T2Data( data, storage );;
+	data += count;
+
+	/*
+		bottom right
+	*/
+	storage = make_tuple( rect.right, rect.bottom, -1.0f, textureCoords.right, textureCoords.bottom );
+	VertexFormat::SetV3T2Data( data, storage );
+	data += count;
+
+	/*
+		bottom left
+	*/
+	storage = make_tuple( rect.left, rect.bottom, -1.0f, textureCoords.left, textureCoords.bottom );
+	VertexFormat::SetV3T2Data( data, storage );
+
+	glEnableClientState( GL_VERTEX_ARRAY );
+	glEnableClientState( GL_TEXTURE_COORD_ARRAY );
+
+	glVertexPointer( 3, GL_FLOAT, count * sizeof(SpReal), elements );
+	glTexCoordPointer( 2, GL_FLOAT, count * sizeof(SpReal), elements + 3 );
+
+	glPushMatrix();
+	{
+		glTranslatef( position[0], position[1], 0.0f );
+		glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
+		glPopMatrix();
+	}
+
+	glDisableClientState( GL_VERTEX_ARRAY );
+	glDisableClientState( GL_TEXTURE_COORD_ARRAY );
+
+}

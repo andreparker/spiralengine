@@ -261,3 +261,8 @@ void WinOglDriver::DoSet( const BlendMode_t& mode )
 {
 	m_glDriver->Set( mode );
 }
+
+void WinOglDriver::DoDraw( const Math::SpVector2r& position, const Rect< SpReal >& rect, const Rect< SpReal >& textureCoords )
+{
+	m_glDriver->Draw( position, rect, textureCoords );
+}
