@@ -1,6 +1,9 @@
 #define WIN32_LEAN_AND_MEAN
 #define _CRT_SECURE_NO_DEPRECATE
 
+#include "platform_windows.hpp"
+#include "../../Core/MemoryOperators.hpp"
+
 #include <string>
 #include <exception>
 #include <iostream>
@@ -10,11 +13,15 @@
 #include <boost/bind.hpp>
 
 
-#include "platform_windows.hpp"
+
 #include "WindowException.hpp"
-#include "../Gfx/Win32_Ogl/WinOglDriver.hpp"
-#include "../Core/Engine.hpp"
-#include "../Core/CVar.hpp"
+#include "../../Gfx/Win32_Ogl/WinOglDriver.hpp"
+#include "../../Core/Engine.hpp"
+#include "../../Core/CVar.hpp"
+#include "../../Core/MemoryManager.hpp"
+#include "../../Core/MemoryPolicyMalloc.hpp"
+#include "../../Core/FileManager.hpp"
+#include "../../Core/File.hpp"
 #include <shellapi.h>
 
 using namespace Spiral;
@@ -163,6 +170,11 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	{
 		MsgBoxError( "Unhandled exception!" );
 	}
+
+	shared_ptr<OFile> ofile;
+	FileManager::instance().createFile("MemoryAnalysis.log", ofile );
+	MemoryManager< MallocPolicy, 0 >::instance().WriteAnalysis( ofile );
+	ofile->Close();
 
 	return 0;
 }

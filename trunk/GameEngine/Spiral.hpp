@@ -1,6 +1,7 @@
 #ifndef SPIRAL_HPP
 #define SPIRAL_HPP
 
+#include "Core/MemoryOperators.hpp"
 #include "Core/Sp_DataTypes.hpp"
 #include "Core/Application.hpp"
 #include "Core/Engine.hpp"

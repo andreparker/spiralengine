@@ -24,7 +24,7 @@ namespace Spiral
 		/*!
 		   @function  AddCallback
 		   @brief     adds a call back to be called when a subscribed event is recieved
-		   @return    void
+		   @return    void 
 		   @param     EventCallbackFunc & func
 		*/
 		void AddCallback( EventCallbackFunc func );

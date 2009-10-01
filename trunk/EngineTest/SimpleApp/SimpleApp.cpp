@@ -14,9 +14,6 @@ bool App::DoInit( boost::int32_t /*argc*/, std::list< boost::shared_array< char 
 
 	shared_ptr< Texture > texture = engine->LoadTexture( "Data/ball32.png", "Ball" );
 	shared_ptr< Texture > alpha_texture = engine->LoadTexture( "Data/ball32_alpha.png", "Ball_alpha" );
-	m_arialN = engine->LoadFont( "c:/windows/fonts/arialn.ttf", "arial_n", 16, 16 );
-	
-
 	shared_ptr< GfxDriver > gfxDriver = engine->GetGfxDriver();
 
 
@@ -25,7 +22,8 @@ bool App::DoInit( boost::int32_t /*argc*/, std::list< boost::shared_array< char 
 	m_sprite_alpha->SetPosition( 50.0f, 50.0f );
 	m_sprite_alpha->SetAlphaBlend( true );
 	
-	int32_t width,height;
+	m_arialN = engine->LoadFont( "c:/windows/fonts/arialn.ttf", "arial_n", 16, 16 );
+	int32_t width = 1024,height = 1024;
 	std::string text = "Testing Font rendering code using true type font.\nThis font is arial narrow.\nTesting newline code";
 	m_arialN->CalcSurfaceSize( text, width, height );
 	shared_ptr< Surface > surf = make_surface( width, height, 3 );

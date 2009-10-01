@@ -30,6 +30,28 @@ namespace Spiral
 			return isInBounds;
 		}
 
+		template< class Type >
+		bool Contains( Type x, Type y )const
+		{
+			SpReal xpos = (SpReal)x;
+			SpReal ypos = (SpReal)y;
+
+			return Contains( xpos, ypos );
+		}
+		
+		template<> inline bool Contains( float x, float y )const
+		{
+			bool isInBounds = false;
+			if( x >= left && x <= right )
+			{
+				if( y >= top && y <= bottom )
+				{
+					isInBounds = true;
+				}
+			}
+			return false;
+		}
+
 
 		T left, right, bottom, top;
 	};

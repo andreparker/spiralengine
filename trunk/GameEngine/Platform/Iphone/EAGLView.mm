@@ -1,13 +1,3 @@
-//
-//  EAGLView.m
-//  Platform_Iphone
-//
-//  Created by admin on 9/28/09.
-//  Copyright __MyCompanyName__ 2009. All rights reserved.
-//
-
-
-
 #import <QuartzCore/QuartzCore.h>
 #import <OpenGLES/EAGLDrawable.h>
 
@@ -18,8 +8,7 @@
 // A class extension to declare private methods
 @interface EAGLView ()
 
-@property (nonatomic, retain) EAGLContext *context;
-@property (nonatomic, assign) NSTimer *animationTimer;
+@property (nonatomic, retain) EAGLContext *m_eaglContext;
 
 - (BOOL) createFramebuffer;
 - (void) destroyFramebuffer;
@@ -28,15 +17,18 @@
 
 
 @implementation EAGLView
-
-@synthesize context;
-@synthesize animationTimer;
-@synthesize animationInterval;
+@synthesize m_eaglContext;
 
 
 // You must implement this method
+// gives back the class that creates the layer
 + (Class)layerClass {
     return [CAEAGLLayer class];
+}
+
+- (EAGLContext*) GetRenderContext
+{
+	return m_eaglContext;
 }
 
 - (id)initWithFrame:(CGRect)aRect
@@ -50,9 +42,9 @@
 			eaglLayer.drawableProperties = [NSDictionary dictionaryWithObjectsAndKeys:
 											[NSNumber numberWithBool:NO], kEAGLDrawablePropertyRetainedBacking, kEAGLColorFormatRGBA8, kEAGLDrawablePropertyColorFormat, nil];
 			
-			context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES1];
+			m_eaglContext = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES1];
 			
-			if (!context || ![EAGLContext setCurrentContext:context]) 
+			if (!m_eaglContext || ![EAGLContext setCurrentContext:m_eaglContext]) 
 			{
 				[self release];
 				return nil;
@@ -63,30 +55,6 @@
 	
 	return self;
 }
-
-//The GL view is stored in the nib file. When it's unarchived it's sent -initWithCoder:
-/* - (id)initWithCoder:(NSCoder*)coder {
-    
-    if ((self = [super initWithCoder:coder])) {
-        // Get the layer
-        CAEAGLLayer *eaglLayer = (CAEAGLLayer *)self.layer;
-        
-        eaglLayer.opaque = YES;
-        eaglLayer.drawableProperties = [NSDictionary dictionaryWithObjectsAndKeys:
-                                        [NSNumber numberWithBool:NO], kEAGLDrawablePropertyRetainedBacking, kEAGLColorFormatRGBA8, kEAGLDrawablePropertyColorFormat, nil];
-        
-        context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES1];
-        
-        if (!context || ![EAGLContext setCurrentContext:context]) {
-            [self release];
-            return nil;
-        }
-        
-        animationInterval = 1.0 / 60.0;
-    }
-    return self;
-}*/
-
 
 - (void)drawView {
     
@@ -105,10 +73,10 @@
         255,   0, 255, 255,
     };
     
-    [EAGLContext setCurrentContext:context];
+    [EAGLContext setCurrentContext:m_eaglContext];
     
-    glBindFramebufferOES(GL_FRAMEBUFFER_OES, viewFramebuffer);
-    glViewport(0, 0, backingWidth, backingHeight);
+    glBindFramebufferOES(GL_FRAMEBUFFER_OES, m_frameBuffer);
+    glViewport(0, 0, m_bufferWidth, m_bufferHeight);
     
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -126,13 +94,13 @@
     
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     
-    glBindRenderbufferOES(GL_RENDERBUFFER_OES, viewRenderbuffer);
-    [context presentRenderbuffer:GL_RENDERBUFFER_OES];
+    glBindRenderbufferOES(GL_RENDERBUFFER_OES, m_renderBuffer);
+    [m_eaglContext presentRenderbuffer:GL_RENDERBUFFER_OES];
 }
 
 
 - (void)layoutSubviews {
-    [EAGLContext setCurrentContext:context];
+    [EAGLContext setCurrentContext:m_eaglContext];
     [self destroyFramebuffer];
     [self createFramebuffer];
     [self drawView];
@@ -141,22 +109,21 @@
 
 - (BOOL)createFramebuffer {
     
-    glGenFramebuffersOES(1, &viewFramebuffer);
-    glGenRenderbuffersOES(1, &viewRenderbuffer);
+    glGenFramebuffersOES(1, &m_frameBuffer);
+    glGenRenderbuffersOES(1, &m_renderBuffer);
     
-    glBindFramebufferOES(GL_FRAMEBUFFER_OES, viewFramebuffer);
-    glBindRenderbufferOES(GL_RENDERBUFFER_OES, viewRenderbuffer);
-    [context renderbufferStorage:GL_RENDERBUFFER_OES fromDrawable:(CAEAGLLayer*)self.layer];
-    glFramebufferRenderbufferOES(GL_FRAMEBUFFER_OES, GL_COLOR_ATTACHMENT0_OES, GL_RENDERBUFFER_OES, viewRenderbuffer);
+    glBindFramebufferOES(GL_FRAMEBUFFER_OES, m_frameBuffer);
+    glBindRenderbufferOES(GL_RENDERBUFFER_OES, m_renderBuffer);
+    [m_eaglContext renderbufferStorage:GL_RENDERBUFFER_OES fromDrawable:(CAEAGLLayer*)self.layer];
+    glFramebufferRenderbufferOES(GL_FRAMEBUFFER_OES, GL_COLOR_ATTACHMENT0_OES, GL_RENDERBUFFER_OES, m_renderBuffer);
     
-    glGetRenderbufferParameterivOES(GL_RENDERBUFFER_OES, GL_RENDERBUFFER_WIDTH_OES, &backingWidth);
-    glGetRenderbufferParameterivOES(GL_RENDERBUFFER_OES, GL_RENDERBUFFER_HEIGHT_OES, &backingHeight);
+    glGetRenderbufferParameterivOES(GL_RENDERBUFFER_OES, GL_RENDERBUFFER_WIDTH_OES, &m_bufferWidth);
+    glGetRenderbufferParameterivOES(GL_RENDERBUFFER_OES, GL_RENDERBUFFER_HEIGHT_OES, &m_bufferHeight);
     
-   
-	glGenRenderbuffersOES(1, &depthRenderbuffer);
-	glBindRenderbufferOES(GL_RENDERBUFFER_OES, depthRenderbuffer);
-	glRenderbufferStorageOES(GL_RENDERBUFFER_OES, GL_DEPTH_COMPONENT16_OES, backingWidth, backingHeight);
-	glFramebufferRenderbufferOES(GL_FRAMEBUFFER_OES, GL_DEPTH_ATTACHMENT_OES, GL_RENDERBUFFER_OES, depthRenderbuffer);
+	glGenRenderbuffersOES(1, &m_depthBuffer);
+	glBindRenderbufferOES(GL_RENDERBUFFER_OES, m_depthBuffer);
+	glRenderbufferStorageOES(GL_RENDERBUFFER_OES, GL_DEPTH_COMPONENT16_OES, m_bufferWidth, m_bufferHeight);
+	glFramebufferRenderbufferOES(GL_FRAMEBUFFER_OES, GL_DEPTH_ATTACHMENT_OES, GL_RENDERBUFFER_OES, m_depthBuffer);
     
     
     if(glCheckFramebufferStatusOES(GL_FRAMEBUFFER_OES) != GL_FRAMEBUFFER_COMPLETE_OES) {
@@ -170,53 +137,30 @@
 
 - (void)destroyFramebuffer {
     
-    glDeleteFramebuffersOES(1, &viewFramebuffer);
-    viewFramebuffer = 0;
-    glDeleteRenderbuffersOES(1, &viewRenderbuffer);
-    viewRenderbuffer = 0;
+    glDeleteFramebuffersOES(1, &m_frameBuffer);
+    m_frameBuffer = 0;
+    glDeleteRenderbuffersOES(1, &m_renderBuffer);
+    m_renderBuffer = 0;
     
-    if(depthRenderbuffer) {
-        glDeleteRenderbuffersOES(1, &depthRenderbuffer);
-        depthRenderbuffer = 0;
+    if(m_depthBuffer) {
+        glDeleteRenderbuffersOES(1, &m_depthBuffer);
+        m_depthBuffer = 0;
     }
 }
 
-
+/*
 - (void)startAnimation {
     self.animationTimer = [NSTimer scheduledTimerWithTimeInterval:animationInterval target:self selector:@selector(drawView) userInfo:nil repeats:YES];
-}
-
-
-- (void)stopAnimation {
-    self.animationTimer = nil;
-}
-
-
-- (void)setAnimationTimer:(NSTimer *)newTimer {
-    [animationTimer invalidate];
-    animationTimer = newTimer;
-}
-
-
-- (void)setAnimationInterval:(NSTimeInterval)interval {
-    
-    animationInterval = interval;
-    if (animationTimer) {
-        [self stopAnimation];
-        [self startAnimation];
-    }
-}
+}*/
 
 
 - (void)dealloc {
     
-    [self stopAnimation];
-    
-    if ([EAGLContext currentContext] == context) {
+    if ([EAGLContext currentContext] == m_eaglContext) {
         [EAGLContext setCurrentContext:nil];
     }
     
-    [context release];  
+    [m_eaglContext release];  
     [super dealloc];
 }
 
