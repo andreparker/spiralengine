@@ -1,6 +1,6 @@
 #include <string>
 #include "BaseWindow.h"
-#include "../WindowException.hpp"
+#include "WindowException.hpp"
 
 using namespace std;
 
@@ -129,6 +129,7 @@ BOOL BaseWindow::Create( DWORD dwStyles )
 
 	return Create(dwStyles, &rect);
 }
+
 void BaseWindow::Show( bool bshow /* = true */ )
 {
 	if( m_hwnd == NULL )

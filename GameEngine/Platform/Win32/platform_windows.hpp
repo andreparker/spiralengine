@@ -1,12 +1,12 @@
 #ifndef PLATFORM_WINDOWS_HPP
 #define PLATFORM_WINDOWS_HPP
 
-#include "../Core/Application.hpp"
-#include "Win32/BaseWindow.h"
-#include "../Core/EventPublisher.hpp"
-#include "../Core/EventSubscriber.hpp"
-#include "../Core/Event.hpp"
-#include "../Core/Events.hpp"
+#include "../../Core/Application.hpp"
+#include "BaseWindow.h"
+#include "../../Core/EventPublisher.hpp"
+#include "../../Core/EventSubscriber.hpp"
+#include "../../Core/Event.hpp"
+#include "../../Core/Events.hpp"
 
 namespace Spiral
 {

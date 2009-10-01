@@ -3,7 +3,7 @@
 #ifndef WINDOW_EXCEPTION_HPP
 #define WINDOW_EXCEPTION_HPP
 
-#include "../Core/Sp_Exception.hpp"
+#include "../../Core/Sp_Exception.hpp"
 
 class WindowException : public Spiral::BaseException
 {
