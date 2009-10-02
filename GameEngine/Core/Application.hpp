@@ -49,6 +49,9 @@ namespace Spiral
 	};
 }
 
+/*!
+	@brief This is used to specify your application to the engine
+*/
 #define SP_DECL_APPLICATION( App )\
 namespace Spiral\
 {\

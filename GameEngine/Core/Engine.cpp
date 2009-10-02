@@ -21,6 +21,7 @@
 #include "GameStateMachine.hpp"
 #include "GameState.hpp"
 
+#include "Log.hpp"
 #include "TypeUtils.hpp"
 #include "EventPublisher.hpp"
 #include "EventSubscriber.hpp"
@@ -33,6 +34,9 @@
 
 using namespace Spiral;
 using namespace boost;
+
+const std::string version = "^g----------Spiral Engine version 1.0----------\n";
+const std::string module = "^bEngine :";
 
 Engine::Engine():
 m_stateMachine(),
@@ -61,9 +65,15 @@ bool Engine::Initialize( shared_ptr< GfxDriver >& gfxDriver, any& data )
 {
 	if( gfxDriver )
 	{
+		LOG_I( version );
+		
+
+		LOG_I( module + " ^wInitializing GfxDriver....\n" );
+
 		bool result = gfxDriver->Initialize( data );
 		if( true == result )
 		{
+			LOG_I( module + " ^wCreating engine modules....\n" );
 			m_gfxDriver      = gfxDriver;
 			m_stateMachine   = make_shared< GameStateMachine >();
 			m_gameObjectList = make_shared< GameObjectHandler >();
@@ -72,12 +82,17 @@ bool Engine::Initialize( shared_ptr< GfxDriver >& gfxDriver, any& data )
 			m_spriteDrawList = make_shared< SpriteDrawList >();
 			m_fontFactory    = make_shared< FreeTypeFactory >();
 
+			LOG_I( module + " ^wCreating EventPublisher thread....\n" );
 			m_eventPublisherThread = boost::thread( &EventPublisher::ProcessEventQueueThreaded, m_eventPublisher );
 			m_catolog.reset( new ResourceCatalog );
 
+			LOG_I( module + " ^wInitializing Engine attributes....\n" );
 			InitializeAttributes();
+
+			LOG_I( module + " ^wInitializing FontFactory....\n" );
 			m_fontFactory->Initialize();
 
+			LOG_I( module + " ^wInitializing CVars....\n" );
 			m_variables->Initialize();
 			{
 				boost::shared_ptr< IFile > configFile;
@@ -97,6 +112,7 @@ bool Engine::Initialize( shared_ptr< GfxDriver >& gfxDriver, any& data )
 			vidInfo.height = vidHeight;
 			vidInfo.width  = vidWidth;
 
+			LOG_I( module + " ^wSetting Gfx defaults....\n" );
 			m_gfxDriver->SetViewPort( 0, 0, vidWidth, vidHeight );
 			m_gfxDriver->SetVideo( vidInfo, (vidFullscreen == 1) ? true : false );
 			m_gfxDriver->Set( ClearInfoType_t( ClearInfoType_t::ColorValue ), Rgba( 0.3f, 0.3f, 0.3f ) );
@@ -112,7 +128,9 @@ bool Engine::Initialize( shared_ptr< GfxDriver >& gfxDriver, any& data )
 
 void Engine::UnInitialize()
 {
+	LOG_I( module + "^w Detaching event publisher from thread....\n" );
 	m_eventPublisherThread.detach();
+	LOG_I( module + "^w Clearing resource catalog....\n" );
 	ClearCatalog();
 }
 
@@ -197,6 +215,7 @@ void Engine::RemoveEventSubscriber( boost::shared_ptr<EventSubscriber>& subscrib
 
 boost::shared_ptr< Texture > Engine::LoadTexture( const std::string& fileName, const std::string& TextureName )
 {
+	LOG_I( module + "^w Loading texture - %1% nameTag - %2% ....\n", fileName.c_str(), TextureName.c_str() );
 	boost::shared_ptr< Texture > texture;
 
 	// check catalog for texture
@@ -205,6 +224,7 @@ boost::shared_ptr< Texture > Engine::LoadTexture( const std::string& fileName, c
 	{
 		//found
 		texture = (*itr).second;
+		LOG_I( module + "^w Texture already exists, grabing it from resource catalog....\n" );
 	}else // load it
 	{
 		shared_ptr< IFile > pngFile;
@@ -224,7 +244,11 @@ boost::shared_ptr< Texture > Engine::LoadTexture( const std::string& fileName, c
 				{
 					// catalog texture
 					m_catolog->m_textureCatalog[ TextureName ] = texture;
+					LOG_I( module + "^w Texture loaded and cached in catalog.\n" );
 				}
+			}else
+			{
+				LOG_E( module + "^r Error loading texture %1%! \n", fileName.c_str() );
 			}
 		}
 		
@@ -281,6 +305,7 @@ void Engine::ForceApplyCamera()
 
 bool Engine::CreateSpriteLayers( boost::int32_t layerCount )
 {
+	LOG_D( module + "^w Creating sprite layers - %1%....\n", layerCount );
 	shared_array< SpriteLayer > layerCol( new SpriteLayer[ layerCount ] );
 	if( layerCol )
 	{
@@ -297,6 +322,7 @@ bool Engine::AddSprite( Sprite* sprite, boost::int32_t layerIndex )
 	bool bWasAdded = false;
 	if( m_spriteLayer )
 	{
+		LOG_D( module + "^w Adding sprite to layer %1%.\n", layerIndex );
 		ValidateLayerIndex( "Engine::AddSprite", layerIndex );
 		SpriteLayer::SpriteList& spriteList = m_spriteLayer[ layerIndex ].m_spriteList; 
 		SpriteLayer::sprite_itr itr = std::find( spriteList.begin(), spriteList.end(), sprite );
@@ -309,6 +335,9 @@ bool Engine::AddSprite( Sprite* sprite, boost::int32_t layerIndex )
 				m_spriteDrawList->SetBuildList( true );
 			}
 			bWasAdded = true;
+		}else
+		{
+			LOG_D( module + "^w Sprite already exist in layer \n" );
 		}
 	}
 
@@ -322,6 +351,7 @@ bool Engine::RemoveSprite( Sprite* sprite, boost::int32_t layerIndex )
 	{
 		ValidateLayerIndex( "Engine::RemoveSprite", layerIndex );
 
+		LOG_D( module + "^w Removing sprite from layer %1%.\n", layerIndex );
 		m_spriteLayer[ layerIndex ].m_spriteList.remove( sprite );
 		m_spriteDrawList->SetBuildList( true );
 		bWasRemoved = true;
@@ -336,6 +366,7 @@ void Engine::EnableSpriteLayer( boost::int32_t layerIndex, bool bEnable )
 	{
 		ValidateLayerIndex( "Engine::EnableSpriteLayer", layerIndex );
 
+		LOG_D( module + "^w Enabling sprite layer index %1% Enable:%2%.\n", layerIndex, bEnable );
 		if( m_spriteLayer[ layerIndex ].m_enable != bEnable )
 		{
 			m_spriteLayer[ layerIndex ].m_enable = bEnable;
@@ -356,6 +387,7 @@ void Engine::ValidateLayerIndex( const std::string& funcName, boost::int32_t lay
 void Engine::DestroySpriteLayers()
 {
 	// destroyed the layers
+	LOG_I( module + "^w Destroying sprite layers....\n" );
 	m_spriteLayer.reset();
 	m_spriteLayerCount = 0;
 	m_spriteDrawList->ClearList();
@@ -366,6 +398,7 @@ void Engine::ClearSpriteLayer( boost::int32_t layerIndex )
 	if( m_spriteLayer )
 	{
 		ValidateLayerIndex( "Engine::ClearSpriteLayer", layerIndex );
+		LOG_D( module + "^wClearing sprite layer %1%.\n",layerIndex);
 		m_spriteLayer[ layerIndex ].m_spriteList.clear();
 	}
 }
@@ -375,6 +408,7 @@ void Engine::BuildSpriteDrawList()
 	if( GetAttr<bool>( EngineAttribute( EngineAttribute::EnableSprites ) ) && 
 		m_spriteLayerCount && m_spriteDrawList->NeedsBuild() )
 	{
+		LOG_D( module + "^w Creating sprite list build thread.\n" );
 		m_threadManager.create_thread( boost::bind( &Engine::SpriteUpdateListThread, this ) );
 	}
 }
@@ -464,9 +498,11 @@ boost::shared_ptr< Font > Engine::LoadFont( const std::string& fontFile, const s
 {
 	boost::shared_ptr< Font > font;
 	ResourceCatalog::FontCatalogItr itr = m_catolog->m_fontCatalog.find( fontName );
+	LOG_I( module + "^w Loading font file - %1% nameTag - %2% width - %3% height - %4%....\n", fontFile.c_str(), fontName.c_str(), charWidth, charHeight );
 	if( itr != m_catolog->m_fontCatalog.end() )
 	{
 		font = (*itr).second;
+		LOG_I( module + "^w Font already exists, grabbing it from catalog.\n" );
 	}else
 	{
 		boost::shared_ptr< IFile > file;
@@ -475,6 +511,7 @@ boost::shared_ptr< Font > Engine::LoadFont( const std::string& fontFile, const s
 			File_Auto_Close< IFile > fac( file );
 			font = m_fontFactory->CreateFont( file, charWidth, charHeight );
 			m_catolog->m_fontCatalog[ fontName ] = font;
+			LOG_I( module + "^w Font loaded into catalog.\n" );
 		}
 	}
 

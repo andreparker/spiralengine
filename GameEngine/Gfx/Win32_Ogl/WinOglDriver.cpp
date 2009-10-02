@@ -6,6 +6,8 @@
 
 #include <windows.h>
 #include <gl/GL.h>
+#include <string>
+
 #include "../GfxImpl.hpp"
 #include "WinOglDriver.hpp"
 #include "WinOglException.hpp"
@@ -15,11 +17,13 @@
 #include "../ogl/OglDriver.hpp"
 #include "../VertexBuffer.hpp"
 #include "../IndexBuffer.hpp"
+#include "../../Core/Log.hpp"
 
 using namespace Spiral;
 using namespace boost;
 using namespace std;
 
+const string module = "^bWinOglDriver :";
 WinOglDriver::WinOglDriver():
 m_rc(0),m_dc(0),m_glDriver(NULL)
 {
@@ -35,6 +39,7 @@ WinOglDriver::~WinOglDriver()
 
 bool WinOglDriver::DoInitialize( const boost::any& data )
 {
+	LOG_I( module + " ^wInitializing Driver....\n" );
     HDC dc = any_cast< HDC >( data );
 
     PIXELFORMATDESCRIPTOR pfd = { 
@@ -58,6 +63,9 @@ bool WinOglDriver::DoInitialize( const boost::any& data )
         0, 0, 0                // layer masks ignored 
     }; 
 
+	LOG_I( module + " ^wInitializing context using - \n" );
+	LOG_I( module + " ^w  %1% bit color buffer.\n", 24 );
+	LOG_I( module + " ^w  %1% bit depth buffer.\n", 16 );
     int32_t pixelFormat = ChoosePixelFormat( dc, &pfd );
 
     if( pixelFormat )
@@ -65,7 +73,9 @@ bool WinOglDriver::DoInitialize( const boost::any& data )
         SetPixelFormat( dc, pixelFormat, &pfd );
         CreateContext(dc);
         FillInDeviceInfo();
-        
+		LOG_I( module + " ^w ----------Driver Info---------- \n" );
+		LOG_I( module + "^g\n" + GetInfo() + "\n" );
+		LOG_I( module + " ^w --------------End-------------- \n" );
     }
 
     return m_glDriver->Initialize( any() );

@@ -83,7 +83,7 @@ LRESULT CALLBACK BaseWindow::stWinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam
 
 	// if we have the pointer, go to the message handler of the window
 	// else, use DefWindowProc
-	if (pWnd)
+	if (pWnd && uMsg != 28 )
 	{
 		// call a registered handler
 		pWnd->CallHandler( uMsg, wParam, lParam );
@@ -150,10 +150,7 @@ bool BaseWindow::ProcessMessage( MSG& msg, UINT msgFilterMin, UINT msgFilterMax,
 		results = GetMessage( &msg, m_hwnd, msgFilterMin, msgFilterMax );
 		if( results == -1 )
 		{
-			char outBuffer[128];
-			FormatMessage( FORMAT_MESSAGE_FROM_SYSTEM, NULL, 0, GetLastError(), outBuffer, 128, NULL );
-
-			throw WindowException( string( "Window error! :" ) + outBuffer );
+			throw WindowException( string( "Window error! :" ) );
 		}else if( results == 0 )
 		{
 			// a quit message posted
@@ -193,11 +190,13 @@ void BaseWindow::RegisterHandler( UINT uMsg, boost::function< void( WPARAM , LPA
 
 void BaseWindow::CallHandler( UINT uMsg, WPARAM wParam, LPARAM lParam )
 {
+
 	CallbackItr callback = m_callbacks.find( uMsg );
 	if( callback != m_callbacks.end() )
 	{
 		(*callback).second( wParam, lParam );
 	}
+
 }
 
 void BaseWindow::ResizeWindow( RECT* rect, bool fullscreen )

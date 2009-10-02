@@ -2,6 +2,7 @@
 #define PLATFORM_WINDOWS_HPP
 
 #include "../../Core/Application.hpp"
+#include "WindowsLogger.hpp"
 #include "BaseWindow.h"
 #include "../../Core/EventPublisher.hpp"
 #include "../../Core/EventSubscriber.hpp"
