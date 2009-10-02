@@ -1,0 +1,153 @@
+
+project( "SpConsole" )
+
+	language( "C++" )
+	kind("WindowedApp")
+	
+	location( "../Build/" .. _ACTION )
+	
+	files
+	{
+		"**.cpp",
+		"**.h"
+	}
+	
+	
+	if os.get() == "windows"
+	then
+		defines
+		{
+			"WIN32",
+			"_WINDOWS",
+			"__WXMSW__",
+			"STRICT"
+			--"WXUSINGDLL"
+		}
+		
+		links
+		{ 
+			"user32",
+			"gdi32"
+		}
+	end
+	
+	if _ACTION == "vs2005" or _ACTION == "vs2008"
+	then
+		defines
+		{
+			"_CRT_SECURE_NO_WARNINGS"
+		}
+		
+		flags
+		{
+			"WinMain"
+		}
+	end
+	
+	--------------------------------
+	-- Debug config
+	--------------------------------
+	configuration( "Debug" .. _ACTION )
+	
+		targetdir( "../Build/bin/Debug" .. _ACTION )
+		-- set the binary output name
+		targetname( "Console_deb" .. _ACTION )
+		-- set the directory were built objs go
+		objdir( "../Obj/" .. _ACTION .. "/debug" )
+		
+		defines
+		{
+			"_DEBUG"
+		}
+		
+		if os.get() == "windows" then
+		
+		links
+		{
+			"wxmsw28d_richtext",
+			"wxmsw28d_adv",
+			"wxmsw28d_html",
+			"wxmsw28d_core",
+			"wxbase28d_xml",
+			"wxbase28d",
+			"wxtiffd",
+			"wxjpegd",
+			"wxpngd",
+			"wxzlibd",
+			"wxregexd",
+			"wxexpatd",
+			"winmm",
+			"comctl32",
+			"rpcrt4",
+			"wsock32",
+			"odbc32"
+		}
+		
+		end
+		
+		flags
+		{
+			"ExtraWarnings",
+			"No64BitChecks",
+			-- "NoManifest",
+			"NoPCH",
+			"NoRTTI",
+			--"StaticRuntime",
+			"Symbols"
+		}
+	configuration ({})
+	
+	--------------------------------
+	-- Release config
+	--------------------------------
+	configuration( "Release" .. _ACTION )
+	
+		targetdir( "../Build/bin/Release" .. _ACTION )
+		-- set the binary output name
+		targetname( "Console_rel" .. _ACTION )
+		-- set the directory were built objs go
+		objdir( "../Obj/" .. _ACTION .. "/release" )
+		
+		
+		defines
+		{
+			"NDEBUG"
+		}
+		
+		if os.get() == "windows" then
+		
+		links
+		{
+			"wxmsw28_richtext",
+			"wxmsw28_adv",
+			"wxmsw28_html",
+			"wxmsw28_core",
+			"wxbase28_xml",
+			"wxbase28",
+			"wxtiff",
+			"wxjpeg",
+			"wxpng",
+			"wxzlib",
+			"wxregex",
+			"wxexpat",
+			"winmm",
+			"comctl32",
+			"rpcrt4",
+			"wsock32",
+			"odbc32"
+		}
+		
+		end
+		
+		flags
+		{
+			"ExtraWarnings",
+			"No64BitChecks",
+			-- "NoManifest",
+			"NoPCH",
+			"NoRTTI",
+			"OptimizeSpeed",
+			--"StaticRuntime",
+			"NoEditAndContinue"
+		}
+	configuration ({})

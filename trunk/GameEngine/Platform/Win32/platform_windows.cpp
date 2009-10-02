@@ -28,7 +28,7 @@ using namespace Spiral;
 using namespace boost;
 using namespace std;
 
-
+const std::string module = "^gPlatform :";
 
 /*!
    @function  GetSeconds
@@ -93,15 +93,23 @@ void InitializeWindow( shared_ptr< Engine >& engine, shared_ptr< AppWindow >& ap
 	RECT rt;
 	shared_ptr< CVar > variables = engine->GetVariables();
 
+	LOG_I( module + "^w - Window Attributes - \n" );
 	LONG width = variables->GetVarValue( "vid_width", EmptyType<LONG>() );
 	LONG height = variables->GetVarValue( "vid_height", EmptyType<LONG>() );
 	int32_t fullscreen = variables->GetVarValue( "vid_fullscreen", EmptyType<int32_t>() );
+
+	LOG_I( module + "^w Width - %1% \n", width );
+	LOG_I( module + "^w Height - %1% \n", height );
+	LOG_I( module + "^w Fullscreen - %1% \n", fullscreen );
+	LOG_I( module + "^w -         End       - \n" );
+
 
 	rt.left = 0;
 	rt.top = 0;
 	rt.right = width;
 	rt.bottom = height;
 
+	LOG_I( module + "^w setting window attributes....\n" );
 	appWindow->ResizeWindow( &rt, (fullscreen==1) ? true : false );
 	appWindow->Show();
 }
@@ -119,6 +127,9 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 		shared_ptr< Application > spApp = CreateApp();
 		shared_ptr< AppWindow > spAppWindow( new AppWindow( hInstance ) );
 		shared_ptr< Engine > engine = Engine::Create();
+		shared_ptr< LogModule > winLogger;
+
+		
 
 		if( spAppWindow )
 		{
@@ -132,16 +143,24 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 				throw WindowException( "Could not create window" );
 			}
 
+			winLogger = make_shared< WindowsLogger >( spAppWindow->Get( EmptyType<HWND>() ) );
+			LogRouter::instance().addLogger( winLogger );
+
 			shared_ptr< GfxDriver > gfxDriver = make_shared< WinOglDriver >();
 			any data = any( spAppWindow->Get( EmptyType<HDC>() ) );
-			engine->Initialize( gfxDriver , data );
-			spApp->Init( argc, argList, engine );
 
+			engine->Initialize( gfxDriver , data );
+			LOG_I( module + " ^wInitializing MainWindow....\n" );
 			spAppWindow->SetEventPublisher( engine->GetEventPublisher() );
 			spAppWindow->Initialize();
 
 			InitializeWindow( engine, spAppWindow );
 
+			LOG_I( module + " ^wInitializing Application....\n" );
+			spApp->Init( argc, argList, engine );
+
+
+			LOG_I( module + " ^wInitialization Complete.\n" );
 		}
 
 		MSG msg;
@@ -159,6 +178,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 			tickCount = GetTickCount();
 		}
 
+		LOG_I( module + "^wShutting down...\n" );
 		spApp->UnInit();
 		engine->UnInitialize();
 	}
