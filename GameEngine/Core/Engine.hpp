@@ -38,6 +38,12 @@ namespace Spiral
 	class FontFactory;
 	class Font;
 
+namespace GUI
+{
+	class GuiWindow;
+	class GuiManager;
+}
+
 	class Engine : private boost::noncopyable
 	{
 	public:
@@ -335,6 +341,7 @@ namespace Spiral
 		boost::thread m_eventPublisherThread;
 		boost::thread_group m_threadManager;
 		boost::shared_ptr< FontFactory > m_fontFactory;
+		boost::shared_ptr< GUI::GuiManager > m_guiManager;
 		boost::any m_attributes[ AttributeCount ];
 
 		Engine();

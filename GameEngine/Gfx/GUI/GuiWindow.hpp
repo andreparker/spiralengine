@@ -6,6 +6,10 @@
 #include "../../Math/Math.hpp"
 #include <boost/shared_ptr.hpp>
 #include <boost/cstdint.hpp>
+#include <boost/any.hpp>
+#include <boost/function.hpp>
+#include <boost/cstdint.hpp>
+#include <map>
 
 namespace Spiral
 {
@@ -20,6 +24,7 @@ namespace GUI
 	public:
 		friend class GuiManager;
 
+		typedef boost::function< void( boost::int32_t, GuiWindow*, const boost::any& ) > WindowEventHandler;
 		GuiWindow( const Math::SpVector2r& position, const Rect< SpReal >& rect, const Rect< SpReal >& textCoords,const boost::shared_ptr< Texture >& texture, bool bAlpha );
 		GuiWindow( const Math::SpVector2r& position, const Rect< SpReal >& rect, const boost::shared_ptr< Texture >& texture, bool bAlpha );
 
@@ -77,6 +82,9 @@ namespace GUI
 			m_show = bshow;
 		}
 
+		void ConnectHandler( boost::int32_t eventId, const WindowEventHandler& handler );
+		void DisConnectHandler( boost::int32_t eventId );
+
 		MAKE_ALIGNED_NEW
 	private:
 
@@ -111,9 +119,12 @@ namespace GUI
 		typedef std::list< boost::shared_ptr< GuiWindow > >::iterator WindowItr;
 		std::list< boost::shared_ptr< GuiWindow > > m_children;
 		boost::uint32_t m_windowId;
+		typedef std::multimap< boost::int32_t, WindowEventHandler >::iterator handleItr;
+		std::multimap< boost::int32_t, WindowEventHandler > m_eventHandlers; 
+
 		bool m_hasFocus;
 		bool m_alpha;
-		bool m_dirty;		//< used to update world positioning
+		bool m_dirty;		///< used to update world positioning
 		bool m_show;
 	};
 }

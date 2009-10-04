@@ -19,15 +19,15 @@ typedef boost::tokenizer< boost::char_separator<char> >::iterator iterator;
 SpConsole::SpConsole( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style, const wxString& name ) : wxFrame( parent, id, title, pos, size, style, name )
 {
 	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
-	this->SetForegroundColour( wxColour( 43, 96, 183 ) );
-	this->SetBackgroundColour( wxColour( 43, 96, 183 ) );
+	this->SetForegroundColour( wxColour( 3, 26, 129 ) );
+	this->SetBackgroundColour( wxColour( 3, 26, 129 ) );
 	
 	wxBoxSizer* bSizer1;
 	bSizer1 = new wxBoxSizer( wxVERTICAL );
 	
 	m_richText1 = new wxRichTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY|wxALWAYS_SHOW_SB|wxNO_BORDER|wxVSCROLL );
-	m_richText1->SetForegroundColour( wxColour( 43, 96, 183 ) );
-	m_richText1->SetBackgroundColour( wxColour( 43, 96, 183 ) );
+	m_richText1->SetForegroundColour( wxColour( 3, 26, 129 ) );
+	m_richText1->SetBackgroundColour( wxColour( 3, 26, 129 ) );
 	m_richText1->SetFont( wxFont( 11, wxFONTFAMILY_MODERN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL ) );
 	m_richText1->Connect( wxEVT_LEFT_DCLICK, wxMouseEventHandler( SpConsole::OnClick ), NULL, this );
 	m_richText1->Connect( wxEVT_LEFT_DOWN, wxMouseEventHandler( SpConsole::OnMouseDown ), NULL, this );
@@ -112,6 +112,12 @@ void DrawString( wxRichTextCtrl* ctrl, const std::string& str )
 		break;
 	case 'l':
 		DrawStringColour( ctrl, *wxLIGHT_GREY, _str );
+		break;
+	case 'y':
+		DrawStringColour( ctrl, wxColour( 255,255,0 ), _str );
+		break;
+	default:
+		DrawStringColour( ctrl, *wxWHITE, _str );
 		break;
 	}
 }

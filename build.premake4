@@ -23,5 +23,8 @@ solution( "Spiral" )
 	dofile( "GameEngine/SpiralEngine.premake4" )
 	dofile( "Unit_Testing/UnitTest.premake4" )
 	dofile( "EngineTest/EngineTest.premake4" )
-	dofile( "Console/SpConsole.premake4" )
 	
+	-- tempory until tested on other os's
+	if os.get() == "windows" then
+	dofile( "Console/SpConsole.premake4" )
+	end

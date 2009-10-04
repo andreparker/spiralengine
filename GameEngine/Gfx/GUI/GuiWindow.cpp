@@ -21,6 +21,7 @@ m_textCoords( textCoords ),
 m_texture( texture ),
 m_children(),
 m_windowId(0),
+m_eventHandlers(),
 m_hasFocus(false),
 m_alpha(bAlpha),
 m_dirty(true)
@@ -93,4 +94,14 @@ boost::shared_ptr< GuiWindow > GuiWindow::Create( const Math::SpVector2r& positi
 boost::shared_ptr< GuiWindow > GuiWindow::Create( const Math::SpVector2r& position, const Rect< SpReal >& rect, const Rect< SpReal >& textCoords, boost::shared_ptr< Texture >& texture, bool bAlpha )
 {
 	return boost::make_shared< GuiWindow >( position, rect, textCoords, texture, bAlpha );
+}
+
+void GuiWindow::ConnectHandler( boost::int32_t eventId, const WindowEventHandler& handler )
+{
+	m_eventHandlers.insert( std::pair< boost::int32_t, WindowEventHandler >( eventId, handler ) );
+}
+
+void GuiWindow::DisConnectHandler( boost::int32_t eventId )
+{
+	m_eventHandlers.erase( eventId );
 }
