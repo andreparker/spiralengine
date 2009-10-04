@@ -3,6 +3,9 @@
  To build for visual studio 2005/2008 download premake from : http://industriousone.com/premake
  Edit buildscript to point to the directory you have premake installed. Run buildscript
 
+ Running Simple App:
+ Working Directory needs to be set to Spiral or directory of this readme
+ 
  Needed Sdks:
  - Boost-C++ (bjam to build needed libs)
  - wxWidgets (for Console App) Note: Build wxWidgets as static libs

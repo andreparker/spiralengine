@@ -23,7 +23,7 @@ using namespace Spiral;
 using namespace boost;
 using namespace std;
 
-const string module = "^bWinOglDriver :";
+const string module = "^yWinOglDriver :";
 WinOglDriver::WinOglDriver():
 m_rc(0),m_dc(0),m_glDriver(NULL)
 {
@@ -74,7 +74,7 @@ bool WinOglDriver::DoInitialize( const boost::any& data )
         CreateContext(dc);
         FillInDeviceInfo();
 		LOG_I( module + " ^w ----------Driver Info---------- \n" );
-		LOG_I( module + "^g\n" + GetInfo() + "\n" );
+		LOG_I( "^g" + GetName() + GetInfo() + "\n" );
 		LOG_I( module + " ^w --------------End-------------- \n" );
     }
 
@@ -114,7 +114,7 @@ void WinOglDriver::CreateContext( HDC dc )
 
 void WinOglDriver::FillInDeviceInfo()
 {
-    SetName( string("GfxDriver: ") + reinterpret_cast<const char*>(glGetString( GL_RENDERER )) + "\n" );
+    SetName( string("Renderer: ") + reinterpret_cast<const char*>(glGetString( GL_RENDERER )) + "\n" );
     SetInfo( string("Vendor: ") + reinterpret_cast<const char*>(glGetString( GL_VENDOR )) + "\n" );
     SetInfo( GetInfo() + "Version: " + reinterpret_cast<const char*>(glGetString( GL_VERSION )) + "\n" );
     SetInfo( GetInfo() + "Extensions: " + reinterpret_cast<const char*>(glGetString( GL_EXTENSIONS )) + "\n" );

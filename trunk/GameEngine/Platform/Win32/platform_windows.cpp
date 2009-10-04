@@ -28,7 +28,7 @@ using namespace Spiral;
 using namespace boost;
 using namespace std;
 
-const std::string module = "^gPlatform :";
+const std::string module = "^yPlatform :";
 
 /*!
    @function  GetSeconds
@@ -178,7 +178,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 			tickCount = GetTickCount();
 		}
 
-		LOG_I( module + "^wShutting down...\n" );
+		LOG_I( module + "^w Shutting down...\n" );
 		spApp->UnInit();
 		engine->UnInitialize();
 	}

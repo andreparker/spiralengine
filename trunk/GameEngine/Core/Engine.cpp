@@ -18,6 +18,8 @@
 #include "../Gfx/Font/FreeType/FreeTypeFactory.hpp"
 #include "../Gfx/Font/FreeType/FreeTypeFont.hpp"
 
+#include "../Gfx/gui/Gui.hpp"
+
 #include "GameStateMachine.hpp"
 #include "GameState.hpp"
 
@@ -35,8 +37,8 @@
 using namespace Spiral;
 using namespace boost;
 
-const std::string version = "^g----------Spiral Engine version 1.0----------\n";
-const std::string module = "^bEngine :";
+const std::string version = "^l--------------------Spiral Engine version 1.0--------------------\n";
+const std::string module = "^lEngine :";
 
 Engine::Engine():
 m_stateMachine(),
@@ -53,7 +55,8 @@ m_buffer(),
 m_attrDirtyFlag(true),
 m_eventPublisherThread(),
 m_threadManager(),
-m_fontFactory()
+m_fontFactory(),
+m_guiManager()
 {
 }
 
@@ -81,6 +84,7 @@ bool Engine::Initialize( shared_ptr< GfxDriver >& gfxDriver, any& data )
 			m_variables      = make_shared< CVar >();
 			m_spriteDrawList = make_shared< SpriteDrawList >();
 			m_fontFactory    = make_shared< FreeTypeFactory >();
+			m_guiManager     = make_shared< GUI::GuiManager >();
 
 			LOG_I( module + " ^wCreating EventPublisher thread....\n" );
 			m_eventPublisherThread = boost::thread( &EventPublisher::ProcessEventQueueThreaded, m_eventPublisher );
@@ -164,6 +168,7 @@ void Engine::Tick( SpReal ticks )
 	m_threadManager.join_all();
 
 	DrawSpriteList();
+	m_guiManager->Present( m_gfxDriver );
 	m_gfxDriver->Present();
 }
 

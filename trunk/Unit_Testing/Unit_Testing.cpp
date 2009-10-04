@@ -15,6 +15,7 @@
 #include <string>
 #include <iostream>
 #include <algorithm>
+#include <boost/function.hpp>
 
 using namespace Spiral;
 using namespace boost;
