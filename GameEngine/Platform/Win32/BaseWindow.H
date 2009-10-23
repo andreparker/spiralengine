@@ -62,6 +62,14 @@ public:
 	{
 		return m_hwnd;
 	}
+public:
+
+	void GetMousePosLPARAM( int& x,int& y, LPARAM lParam )const
+	{
+		x = lParam & 0x0000FFFF;
+		y = ( lParam >> 16 ) & 0x0000FFFF;
+	}
+
 private:
 		void CallHandler( UINT uMsg, WPARAM wParam, LPARAM lParam );
 protected:

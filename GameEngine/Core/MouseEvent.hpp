@@ -7,8 +7,7 @@ namespace Spiral
 {
 	struct MouseEvent
 	{
-		MouseEvent( MouseIdType id_, boost::int32_t x, boost::int32_t y ):
-		pos( x, y ), mouseid( id_ ){}
+		
 
 		typedef enum
 		{
@@ -20,6 +19,9 @@ namespace Spiral
 			max_mouse_input
 		}MouseIdType;
 
+		MouseEvent( MouseIdType id_, boost::int32_t x, boost::int32_t y ):
+			pos( x, y ), mouseid( id_ ){}
+		
 		MouseIdType mouseid;
 
 		struct mouse_pos
@@ -27,7 +29,7 @@ namespace Spiral
 			mouse_pos( boost::int32_t x_, boost::int32_t y_ ):
 			x(x_),y(y_){}
 			
-			boost::uint32_t x,y
+			boost::uint32_t x,y;
 		}pos;
 	};
 }

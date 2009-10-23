@@ -49,7 +49,7 @@ namespace Spiral
 					isInBounds = true;
 				}
 			}
-			return false;
+			return isInBounds;
 		}
 
 

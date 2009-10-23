@@ -15,6 +15,7 @@
 #include "Core/Camera.hpp"
 #include "Core/TypeUtils.hpp"
 #include "Core/EngineAttributes.hpp"
+#include "Core/Log.hpp"
 
 #include "Gfx/Color.hpp"
 #include "Gfx/GfxDriver.hpp"
@@ -32,5 +33,10 @@
 #include "Gfx/Sprite.hpp"
 #include "Gfx/Font.hpp"
 #include "Gfx/Surface.hpp"
+
+#include "Gfx/gui/GuiWindow.hpp"
+#include "Gfx/gui/GuiButton.hpp"
+#include "Gfx/gui/Gui.hpp"
+#include "Gfx/gui/GuiWindowEvents.hpp"
 
 #endif

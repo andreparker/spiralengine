@@ -37,6 +37,13 @@ namespace Spiral
 			
 		}
 
+		bool hasCat( const std::bitset<32>& bits )const
+		{
+			std::bitset<32> result = m_catagory.m_bits;
+			result &= bits; // and the catagorys together
+			return ( m_catagory.m_bits == result || result == bits ); // result must be the same after the and
+		}
+
 		boost::int32_t m_eventId;
 		EventCatagory m_catagory;
 	};

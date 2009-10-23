@@ -247,6 +247,12 @@ namespace GUI
 		{
 			return m_eventPublisher;
 		}
+
+		const boost::shared_ptr< GUI::GuiManager >& GetGuiManager()const
+		{
+			return m_guiManager;
+		}
+
 	private:
 		
 		/*!
@@ -318,6 +324,12 @@ namespace GUI
 		*/
 		void SpriteUpdateListThread();
 
+		void CreateModules();
+
+		void SetGfxValues();
+
+		void InitEventPublisher();
+
 		template< class T >
 		const T GetAttr( const EngineAttribute& attr )const
 		{
@@ -342,6 +354,7 @@ namespace GUI
 		boost::thread_group m_threadManager;
 		boost::shared_ptr< FontFactory > m_fontFactory;
 		boost::shared_ptr< GUI::GuiManager > m_guiManager;
+		boost::shared_ptr< EventSubscriber > m_inputSubscriber;
 		boost::any m_attributes[ AttributeCount ];
 
 		Engine();
