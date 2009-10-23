@@ -1,11 +1,15 @@
 #include "GuiWindow.hpp"
 #include "../Texture.hpp"
+#include "GuiWindowEvents.hpp"
+
 #include <boost/bind.hpp>
 #include <boost/make_shared.hpp>
 #include <algorithm>
 
 using namespace Spiral;
 using namespace Spiral::GUI;
+
+boost::int32_t GuiWindow::window_ID = 0;
 
 void GuiWindow::UpdatePositions( const Math::SpVector2r& worldPosition )
 {
@@ -20,11 +24,12 @@ m_rect( rect ),
 m_textCoords( textCoords ),
 m_texture( texture ),
 m_children(),
-m_windowId(0),
+m_windowId( window_ID++ ),
 m_eventHandlers(),
 m_hasFocus(false),
 m_alpha(bAlpha),
-m_dirty(true)
+m_dirty(true),
+m_show(false)
 {
 }
 
@@ -35,7 +40,7 @@ m_rect( rect ),
 m_textCoords( Rect< SpReal >( 0.0f, 1.0f, 1.0f, 0.0f ) ),
 m_texture( texture ),
 m_children(),
-m_windowId(0),
+m_windowId( window_ID++ ),
 m_hasFocus(false),
 m_alpha(bAlpha),
 m_dirty(true),
@@ -45,7 +50,12 @@ m_show(false)
 
 void GuiWindow::AddChild( const boost::shared_ptr< GuiWindow >& window )
 {
-	m_children.push_back( window );
+	if( window )
+	{
+		m_children.push_back( window );
+		window->m_worldPosition = window->m_localPosition + m_worldPosition;
+	}
+
 }
 
 void GuiWindow::RemoveChild( const boost::shared_ptr< GuiWindow >& window )
@@ -60,13 +70,10 @@ void GuiWindow::RemoveChild( boost::uint32_t window_id )
 
 bool GuiWindow::SetFocus( SpReal x, SpReal y )
 {
-	bool hasFocus = m_hasFocus = false;
+	bool hasFocus = false;
+	bool inBounds = ContainsPoint( x, y );
 
-	// translate into local space
-	SpReal localx = x - m_worldPosition[0];
-	SpReal localy = y - m_worldPosition[1];
-
-	if( m_rect.Contains( x, y ) )
+	if( inBounds )
 	{
 		for( WindowItr itr = m_children.begin(); itr != m_children.end(); ++itr )
 		{
@@ -78,12 +85,31 @@ bool GuiWindow::SetFocus( SpReal x, SpReal y )
 
 		if( !hasFocus )
 		{
+			if( m_hasFocus == false )
+			{
+				CallHandler( focus_gained, this, boost::any() );
+			}
 			// children refuse focus ( point does not lie within there bounds )
 			m_hasFocus = true;
+
+			// return that this window has recieved focus
+			return m_hasFocus;
 		}
+
+	}else
+	{
+		ResetWindow();
+	}
+
+	if( !inBounds && m_hasFocus == true ||
+		inBounds && hasFocus )
+	{		
+		CallHandler( focus_lost, this, boost::any() );
+		m_hasFocus = false;
 	}
 	
-	return m_hasFocus;
+	// return that a child window has recieved focus
+	return hasFocus;
 }
 
 boost::shared_ptr< GuiWindow > GuiWindow::Create( const Math::SpVector2r& position, const Rect< SpReal >& rect, const boost::shared_ptr< Texture >& texture, bool bAlpha )
@@ -104,4 +130,64 @@ void GuiWindow::ConnectHandler( boost::int32_t eventId, const WindowEventHandler
 void GuiWindow::DisConnectHandler( boost::int32_t eventId )
 {
 	m_eventHandlers.erase( eventId );
+}
+
+void GuiWindow::MouseDown( const mouse_position& pos )
+{
+	if( ContainsPoint( pos.x, pos.y ) )
+	{
+		ProcessEvent( GUI::mouse_down, pos );
+	}
+}
+
+void GuiWindow::MouseUp( const mouse_position& pos )
+{
+	if( ContainsPoint( pos.x, pos.y ) )
+	{
+		ProcessEvent( GUI::mouse_up, pos );
+	}
+}
+
+void GuiWindow::CallHandler( boost::int32_t eventId, GuiWindow* window, const boost::any& data )
+{
+	std::pair< handleItr, handleItr > range_pair;
+	range_pair = m_eventHandlers.equal_range( eventId );
+
+	for( handleItr itr = range_pair.first; itr != range_pair.second; ++itr )
+	{
+		(*itr).second( eventId, window, data );
+	}
+}
+
+void GuiWindow::ProcessEvent( boost::int32_t eventId, const mouse_position& pos )
+{
+	boost::any data( pos );
+	SetFocus( pos.x, pos.y );
+	// set focus and route calls to event functions of the window with focus
+	if( !m_hasFocus )
+	{
+		for( WindowItr itr = m_children.begin(); itr != m_children.end(); ++itr )
+		{
+			if( (*itr)->m_hasFocus )
+			{
+				(*itr)->CallHandler( eventId, (*itr).get(), data );
+				break;
+			}
+		}
+	}else
+	{
+		CallHandler( eventId, this, data );
+	}
+}
+
+void GuiWindow::ResetWindow()
+{
+}
+
+void GuiWindow::MouseHover( const mouse_position& pos )
+{
+	if( ContainsPoint( pos.x, pos.y ) )
+	{
+		ProcessEvent( GUI::mouse_hover, pos );
+	}
 }

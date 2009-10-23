@@ -5,6 +5,7 @@
 #include "FileManager.hpp"
 #include "ResourceCatalog.hpp"
 #include "Camera.hpp"
+#include "Events.hpp"
 
 #include "../Gfx/GfxDriver.hpp"
 #include "../Gfx/GfxImpl.hpp"
@@ -56,7 +57,8 @@ m_attrDirtyFlag(true),
 m_eventPublisherThread(),
 m_threadManager(),
 m_fontFactory(),
-m_guiManager()
+m_guiManager(),
+m_inputSubscriber()
 {
 }
 
@@ -69,26 +71,15 @@ bool Engine::Initialize( shared_ptr< GfxDriver >& gfxDriver, any& data )
 	if( gfxDriver )
 	{
 		LOG_I( version );
-		
-
 		LOG_I( module + " ^wInitializing GfxDriver....\n" );
-
 		bool result = gfxDriver->Initialize( data );
+
 		if( true == result )
 		{
-			LOG_I( module + " ^wCreating engine modules....\n" );
-			m_gfxDriver      = gfxDriver;
-			m_stateMachine   = make_shared< GameStateMachine >();
-			m_gameObjectList = make_shared< GameObjectHandler >();
-			m_eventPublisher = make_shared< EventPublisher >();
-			m_variables      = make_shared< CVar >();
-			m_spriteDrawList = make_shared< SpriteDrawList >();
-			m_fontFactory    = make_shared< FreeTypeFactory >();
-			m_guiManager     = make_shared< GUI::GuiManager >();
+			m_gfxDriver = gfxDriver;
+			CreateModules();
 
-			LOG_I( module + " ^wCreating EventPublisher thread....\n" );
-			m_eventPublisherThread = boost::thread( &EventPublisher::ProcessEventQueueThreaded, m_eventPublisher );
-			m_catolog.reset( new ResourceCatalog );
+			InitEventPublisher();
 
 			LOG_I( module + " ^wInitializing Engine attributes....\n" );
 			InitializeAttributes();
@@ -107,23 +98,7 @@ bool Engine::Initialize( shared_ptr< GfxDriver >& gfxDriver, any& data )
 				}
 			}
 
-			int32_t vidWidth = m_variables->GetVarValue( "vid_width", EmptyType<int32_t>() );
-			int32_t vidHeight = m_variables->GetVarValue( "vid_height", EmptyType<int32_t>() );
-			int32_t vidFullscreen = m_variables->GetVarValue( "vid_fullscreen", EmptyType<int32_t>() );
-
-			GfxVidInfo_t vidInfo;
-			vidInfo.bitDepth = 32;
-			vidInfo.height = vidHeight;
-			vidInfo.width  = vidWidth;
-
-			LOG_I( module + " ^wSetting Gfx defaults....\n" );
-			m_gfxDriver->SetViewPort( 0, 0, vidWidth, vidHeight );
-			m_gfxDriver->SetVideo( vidInfo, (vidFullscreen == 1) ? true : false );
-			m_gfxDriver->Set( ClearInfoType_t( ClearInfoType_t::ColorValue ), Rgba( 0.3f, 0.3f, 0.3f ) );
-			m_gfxDriver->ClearBuffer( BufferInfo_t( BIT_ON2( BufferInfo_t::COLOR_BUFFER, BufferInfo_t::DEPTH_BUFFER ) ) );
-
-			m_gfxDriver->SetState( RenderState::Cull_Face( RenderState::RS_TRUE ) );
-			m_gfxDriver->SetState( RenderState::Depth_Test( RenderState::RS_TRUE ) );
+			SetGfxValues();
 		}
 	}
 
@@ -392,7 +367,7 @@ void Engine::ValidateLayerIndex( const std::string& funcName, boost::int32_t lay
 void Engine::DestroySpriteLayers()
 {
 	// destroyed the layers
-	LOG_I( module + "^w Destroying sprite layers....\n" );
+	LOG_D( module + "^w Destroying sprite layers....\n" );
 	m_spriteLayer.reset();
 	m_spriteLayerCount = 0;
 	m_spriteDrawList->ClearList();
@@ -526,4 +501,49 @@ boost::shared_ptr< Font > Engine::LoadFont( const std::string& fontFile, const s
 void Engine::ClearFontCatalog()
 {
 	m_catolog->m_fontCatalog.clear();
+}
+
+void Engine::CreateModules()
+{
+	LOG_I( module + " ^wCreating engine modules....\n" );
+	m_stateMachine    = make_shared< GameStateMachine >();
+	m_gameObjectList  = make_shared< GameObjectHandler >();
+	m_eventPublisher  = make_shared< EventPublisher >();
+	m_variables       = make_shared< CVar >();
+	m_spriteDrawList  = make_shared< SpriteDrawList >();
+	m_fontFactory     = make_shared< FreeTypeFactory >();
+	m_guiManager      = make_shared< GUI::GuiManager >();
+	m_inputSubscriber = make_shared< EventSubscriber >( Event( Event::EVENT_ANY, Catagory_Input::value ) );
+	m_catolog.reset( new ResourceCatalog );
+}
+
+void Engine::SetGfxValues()
+{
+	int32_t vidWidth = m_variables->GetVarValue( "vid_width", EmptyType<int32_t>() );
+	int32_t vidHeight = m_variables->GetVarValue( "vid_height", EmptyType<int32_t>() );
+	int32_t vidFullscreen = m_variables->GetVarValue( "vid_fullscreen", EmptyType<int32_t>() );
+
+	GfxVidInfo_t vidInfo;
+	vidInfo.bitDepth = 32;
+	vidInfo.height = vidHeight;
+	vidInfo.width  = vidWidth;
+
+	LOG_I( module + " ^wSetting Gfx defaults....\n" );
+	m_gfxDriver->SetViewPort( 0, 0, vidWidth, vidHeight );
+	m_gfxDriver->SetVideo( vidInfo, (vidFullscreen == 1) ? true : false );
+	m_gfxDriver->Set( ClearInfoType_t( ClearInfoType_t::ColorValue ), Rgba( 0.3f, 0.3f, 0.3f ) );
+	m_gfxDriver->ClearBuffer( BufferInfo_t( BIT_ON2( BufferInfo_t::COLOR_BUFFER, BufferInfo_t::DEPTH_BUFFER ) ) );
+
+	m_gfxDriver->SetState( RenderState::Cull_Face( RenderState::RS_TRUE ) );
+	m_gfxDriver->SetState( RenderState::Depth_Test( RenderState::RS_TRUE ) );
+}
+
+void Engine::InitEventPublisher()
+{
+	LOG_I( module + " ^wCreating EventPublisher thread....\n" );
+	m_eventPublisherThread = boost::thread( &EventPublisher::ProcessEventQueueThreaded, m_eventPublisher );
+
+	m_eventPublisher->AddSubscriber( m_inputSubscriber );
+
+	m_inputSubscriber->AddCallback( boost::bind( &GUI::GuiManager::Input, m_guiManager, _1, _2 ) );
 }

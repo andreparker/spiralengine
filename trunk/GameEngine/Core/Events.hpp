@@ -37,9 +37,11 @@ namespace Spiral
 	enum
 	{
 		event_keyboard_key = 1,
+		event_mouse,
 		event_AppStatus_shutdown
 	};
 
+	typedef MakeLongValue< cat_Input, 0, 0, 0 >                               Catagory_Input;
 	typedef MakeLongValue< cat_Input, cat_Keyboard, cat_Keyboard_KeyDown, 0 > Catagory_KeyBoard_KeyDown;
 	typedef MakeLongValue< cat_Input, cat_Keyboard, cat_Keyboard_KeyUp, 0 >   Catagory_KeyBoard_KeyUp;
 	typedef MakeLongValue< cat_Input, cat_Keyboard, 0, 0 >                    Catagory_KeyBoard;

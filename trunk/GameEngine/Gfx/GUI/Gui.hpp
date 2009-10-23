@@ -18,11 +18,38 @@ namespace GUI
 	public:
 		GuiManager();
 
-		void AddWindow( const boost::shared_ptr< GuiWindow >& window );
-		void RemoveWindow( const boost::shared_ptr< GuiWindow >& window );
+		/*!
+		   @function  AddElement
+		   @brief     adds a window
+		   @return    void
+		   @param     const boost::shared_ptr< GuiWindow > & window
+		*/
+		void AddElement( const boost::shared_ptr< GuiWindow >& window );
+
+		/*!
+		   @function  RemoveElement
+		   @brief     removes a window
+		   @return    void
+		   @param     const boost::shared_ptr< GuiWindow > & window
+		*/
+		void RemoveElement( const boost::shared_ptr< GuiWindow >& window );
+
+		/*!
+		   @function  Present
+		   @brief     draws windows in the gui
+		   @return    void
+		   @param     const boost::shared_ptr< GfxDriver > & gfxDrvier
+		*/
 		void Present( const boost::shared_ptr< GfxDriver >& gfxDrvier );
 
-		void MouseInput( const Event& mouseEvent, const boost::any& data );
+		/*!
+		   @function  Input
+		   @brief     sends input to windows
+		   @return    void
+		   @param     const Event & inputEvent
+		   @param     const boost::any & data
+		*/
+		void Input( const Event& inputEvent, const boost::any& data );
 	private:
 		void TraverseRender( const boost::shared_ptr< GfxDriver >& gfxDrvier,const boost::shared_ptr< GuiWindow >& window )const;
 

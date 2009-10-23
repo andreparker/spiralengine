@@ -22,6 +22,7 @@
 #include "../../Core/MemoryPolicyMalloc.hpp"
 #include "../../Core/FileManager.hpp"
 #include "../../Core/File.hpp"
+#include "../../Core/MouseEvent.hpp"
 #include <shellapi.h>
 
 using namespace Spiral;
@@ -223,6 +224,27 @@ m_quit(false)
 {
 	RegisterHandler( WM_KEYUP, boost::bind( &AppWindow::KeyUpCallback, this, _1, _2 ) );
 	RegisterHandler( WM_KEYDOWN, boost::bind( &AppWindow::KeyDownCallback, this, _1, _2 ) );
+	RegisterHandler( WM_LBUTTONDOWN, boost::bind( &AppWindow::LeftMouseDownCallBack, this, _1, _2 ) );
+	RegisterHandler( WM_LBUTTONUP, boost::bind( &AppWindow::LeftMouseUpCallBack, this, _1, _2 ) );
+	RegisterHandler( WM_MOUSEMOVE, boost::bind( &AppWindow::MouseMoveCallBack, this, _1, _2 ) );
+}
+
+void AppWindow::Initialize()
+{
+	m_sysAppEventSubscriber = make_shared< EventSubscriber >( Event( Event::EVENT_ANY, Catagory_App_Status::value ) );
+	m_eventPublisher->AddSubscriber( m_sysAppEventSubscriber );
+	m_sysAppEventSubscriber->AddCallback( boost::bind( &AppWindow::SysAppEvents, this, _1, _2 ) );
+}
+
+void AppWindow::SysAppEvents( const Spiral::Event& event, const boost::any& /*data*/ )
+{
+	if( event.m_catagory.m_bits.to_ulong() == Catagory_App_Status::value &&
+		event.m_eventId == event_AppStatus_shutdown )
+	{
+		// quit the app
+		m_quit = true;
+		DestroyWindow( m_hwnd );
+	}
 }
 
 void AppWindow::KeyUpCallback( WPARAM wParam, LPARAM /*lParam*/ )
@@ -241,20 +263,32 @@ void AppWindow::KeyDownCallback( WPARAM wParam, LPARAM /*lParam*/ )
 	}
 }
 
-void AppWindow::Initialize()
+void AppWindow::LeftMouseDownCallBack( WPARAM wParam, LPARAM lParam )
 {
-	m_sysAppEventSubscriber = make_shared< EventSubscriber >( Event( Event::EVENT_ANY, Catagory_App_Status::value ) );
-	m_eventPublisher->AddSubscriber( m_sysAppEventSubscriber );
-	m_sysAppEventSubscriber->AddCallback( boost::bind( &AppWindow::SysAppEvents, this, _1, _2 ) );
+	if( m_eventPublisher )
+	{
+		int x,y;
+		GetMousePosLPARAM( x, y, lParam );
+		m_eventPublisher->Publish( Event( event_mouse, Catagory_Mouse_MouseDown::value ), any( MouseEvent( MouseEvent::mouse1, x, y ) )  );
+	}
 }
 
-void AppWindow::SysAppEvents( const Spiral::Event& event, const boost::any& /*data*/ )
+void AppWindow::LeftMouseUpCallBack( WPARAM wParam, LPARAM lParam )
 {
-	if( event.m_catagory.m_bits.to_ulong() == Catagory_App_Status::value &&
-		event.m_eventId == event_AppStatus_shutdown )
+	if( m_eventPublisher )
 	{
-		// quit the app
-		m_quit = true;
-		DestroyWindow( m_hwnd );
+		int x,y;
+		GetMousePosLPARAM( x, y, lParam );
+		m_eventPublisher->Publish( Event( event_mouse, Catagory_Mouse_Up::value ), any( MouseEvent( MouseEvent::mouse1, x, y ) )  );
+	}
+}
+
+void AppWindow::MouseMoveCallBack( WPARAM wParam, LPARAM lParam )
+{
+	if( m_eventPublisher )
+	{
+		int x,y;
+		GetMousePosLPARAM( x, y, lParam );
+		m_eventPublisher->Publish( Event( event_mouse, Catagory_Mouse_Move::value ), any( MouseEvent( MouseEvent::mouse1, x, y ) )  );
 	}
 }

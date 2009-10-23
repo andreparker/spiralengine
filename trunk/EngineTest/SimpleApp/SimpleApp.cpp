@@ -14,6 +14,8 @@ bool App::DoInit( boost::int32_t /*argc*/, std::list< boost::shared_array< char 
 
 	shared_ptr< Texture > texture = engine->LoadTexture( "Data/ball32.png", "Ball" );
 	shared_ptr< Texture > alpha_texture = engine->LoadTexture( "Data/ball32_alpha.png", "Ball_alpha" );
+	shared_ptr< Texture > button_texture = engine->LoadTexture( "Data/GUI/def_button.png", "Button_texture" );
+	shared_ptr< Texture > window_texture = engine->LoadTexture( "Data/GUI/def_window.png", "Window_texture" );
 	shared_ptr< GfxDriver > gfxDriver = engine->GetGfxDriver();
 
 
@@ -36,6 +38,23 @@ bool App::DoInit( boost::int32_t /*argc*/, std::list< boost::shared_array< char 
 	m_fontSprite->SetPosition( 400.0f, 500.0f );
 	//m_fontSprite->SetAlphaBlend( true );
 	
+	m_button = make_shared< GUI::GuiButton >( Math::make_vector( 512.0f,384.0f), Rect< SpReal >( 0, 64, 32, 0 ), 
+		Rect< SpReal >( 0.0f, 1.0f, 1.0f, 0.0f ), button_texture, true );
+	m_window = make_shared< GUI::GuiWindow >( Math::make_vector( 512.0f, 600.0f ), Rect< SpReal >( 0, 128, 128, 0 ),
+		Rect< SpReal >( 0.0f, 1.0f, 1.0f, 0.0f ), window_texture, true );
+	shared_ptr< GUI::GuiButton > button = make_shared< GUI::GuiButton >( Math::make_vector( 32.0f ,32.0f ), Rect< SpReal >( 0, 64, 32, 0 ), 
+		Rect< SpReal >( 0.0f, 1.0f, 1.0f, 0.0f ), button_texture, true );
+
+	button->ConnectHandler( GUI::button_Press, bind( &App::ButtonPress, this, _1, _2, _3 ) );
+	m_window->AddChild( button );
+
+	m_button->ConnectHandler( GUI::button_Press, bind( &App::ButtonPress, this, _1, _2, _3 ) );
+	engine->GetGuiManager()->AddElement( m_button );
+	engine->GetGuiManager()->AddElement( m_window );
+
+	button->Show();
+	m_button->Show();
+	m_window->Show();
 
 	gfxDriver->SetState( RenderState::Depth_Test( RenderState::RS_FALSE ) );
 	gfxDriver->SetState( RenderState::Texture( RenderState::RS_TRUE ) );
@@ -100,6 +119,8 @@ m_keyDownSubscriber(),
 m_engine(),
 m_arialN(),
 m_fontSprite(),
+m_button(),
+m_window(),
 m_camera(NULL)
 {
 
@@ -113,4 +134,9 @@ void App::KeyDown( const Event& event, const any& data )
 		// close the app
 		m_engine->GetEventPublisher()->Publish( Event( event_AppStatus_shutdown, Catagory_App_Status::value ), any() );
 	}
+}
+
+void App::ButtonPress( boost::int32_t eventId, Spiral::GUI::GuiWindow* window, const boost::any& data )
+{
+	LOG_D( "^yApp: ^wButton Pressed!\n" );
 }
