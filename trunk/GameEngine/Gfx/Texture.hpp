@@ -17,6 +17,12 @@ namespace Spiral
     {
     public:
 		virtual ~Texture();
+
+		boost::uint32_t Size()const
+		{
+			return m_width * m_height * (m_bitDepth / 8);
+		}
+
         /*!
            @function   GetWidth
            @brief  	  returns the width
@@ -80,7 +86,7 @@ namespace Spiral
 	
 		/*!
 			@function   DoClone
-			@brief  	  returns a copy
+			@brief  	returns a copy
 			@return     Cloneable*
 		*/
 		virtual Cloneable* DoClone()const;

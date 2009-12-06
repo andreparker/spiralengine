@@ -224,7 +224,9 @@ boost::shared_ptr< Texture > Engine::LoadTexture( const std::string& fileName, c
 				{
 					// catalog texture
 					m_catolog->m_textureCatalog[ TextureName ] = texture;
+					m_catolog->m_textureSize += texture->Size();
 					LOG_I( module + "^w Texture loaded and cached in catalog.\n" );
+					LOG_I( module + "^w Current Texture Loaded: ^g%1% ^w bytes. \n", m_catolog->m_textureSize );
 				}
 			}else
 			{
@@ -491,7 +493,9 @@ boost::shared_ptr< Font > Engine::LoadFont( const std::string& fontFile, const s
 			File_Auto_Close< IFile > fac( file );
 			font = m_fontFactory->CreateFont( file, charWidth, charHeight );
 			m_catolog->m_fontCatalog[ fontName ] = font;
+			m_catolog->m_fontSize += file->Size(); 
 			LOG_I( module + "^w Font loaded into catalog.\n" );
+			LOG_I( module + "^w Current Font Loaded: ^g%1%^w bytes. \n", m_catolog->m_fontSize );
 		}
 	}
 
@@ -501,6 +505,7 @@ boost::shared_ptr< Font > Engine::LoadFont( const std::string& fontFile, const s
 void Engine::ClearFontCatalog()
 {
 	m_catolog->m_fontCatalog.clear();
+	m_catolog->m_fontSize = 0;
 }
 
 void Engine::CreateModules()
@@ -546,4 +551,34 @@ void Engine::InitEventPublisher()
 	m_eventPublisher->AddSubscriber( m_inputSubscriber );
 
 	m_inputSubscriber->AddCallback( boost::bind( &GUI::GuiManager::Input, m_guiManager, _1, _2 ) );
+}
+
+bool Engine::UnCacheFont( const std::string& fontName )
+{
+	bool found = false;
+	ResourceCatalog::FontCatalogItr font = m_catolog->m_fontCatalog.find( fontName );
+
+	if( font != m_catolog->m_fontCatalog.end() )
+	{
+		m_catolog->m_fontCatalog.erase( font );
+		found = true;
+	}
+
+	return found;
+}
+
+bool Engine::UnCacheTexture( const std::string& textureName )
+{
+	bool found = false;
+	ResourceCatalog::TextureCatalogItr texture = m_catolog->m_textureCatalog.find( textureName );
+
+	if( texture != m_catolog->m_textureCatalog.end() )
+	{
+		shared_ptr< Texture > tex = texture->second;
+		m_catolog->m_textureSize -= tex->Size();
+		m_catolog->m_textureCatalog.erase( texture );
+		found = true;
+	}
+
+	return found;
 }

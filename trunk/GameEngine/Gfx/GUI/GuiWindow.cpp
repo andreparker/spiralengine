@@ -176,6 +176,7 @@ void GuiWindow::ProcessEvent( boost::int32_t eventId, const mouse_position& pos 
 		}
 	}else
 	{
+		// call this windows event handler
 		CallHandler( eventId, this, data );
 	}
 }
@@ -189,5 +190,8 @@ void GuiWindow::MouseHover( const mouse_position& pos )
 	if( ContainsPoint( pos.x, pos.y ) )
 	{
 		ProcessEvent( GUI::mouse_hover, pos );
+	}else
+	{
+		ResetWindow();
 	}
 }
