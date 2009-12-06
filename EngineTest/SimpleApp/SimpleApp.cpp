@@ -138,5 +138,5 @@ void App::KeyDown( const Event& event, const any& data )
 
 void App::ButtonPress( boost::int32_t eventId, Spiral::GUI::GuiWindow* window, const boost::any& data )
 {
-	LOG_D( "^yApp: ^wButton Pressed!\n" );
+	LOG_D( "^yApp: ^wButton %1% Pressed!\n", window->GetID() );
 }

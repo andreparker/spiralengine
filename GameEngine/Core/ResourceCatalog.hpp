@@ -5,6 +5,7 @@
 #include <string>
 
 #include <boost/shared_ptr.hpp>
+#include <boost/cstdint.hpp>
 
 namespace Spiral
 {
@@ -15,8 +16,12 @@ namespace Spiral
 		typedef std::map< std::string, boost::shared_ptr< Texture > >::iterator TextureCatalogItr;
 		typedef std::map< std::string, boost::shared_ptr< Font > >::iterator FontCatalogItr;
 
+		ResourceCatalog():m_textureCatalog(),m_fontCatalog(),m_textureSize(0),m_fontSize(0){}
 		std::map< std::string, boost::shared_ptr< Texture > > m_textureCatalog;
 		std::map< std::string, boost::shared_ptr< Font > > m_fontCatalog;
+		boost::uint32_t m_textureSize;
+		boost::uint32_t m_fontSize;
+
 	};
 }
 

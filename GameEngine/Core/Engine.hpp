@@ -62,6 +62,10 @@ namespace GUI
 		   @param     boost::int32_t charHeight
 		*/
 		boost::shared_ptr< Font > LoadFont( const std::string& fontFile, const std::string& fontName, boost::int32_t charWidth, boost::int32_t charHeight );
+
+		bool UnCacheFont( const std::string& fontName );
+		bool UnCacheTexture( const std::string& textureName );
+
 		/*!
 		   @function  CreateSpriteLayers
 		   @brief     create layers for sprites, 0 - layerCount-1

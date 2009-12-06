@@ -2,14 +2,17 @@
 #define GUI_WINDOW_HPP
 
 #include <list>
-#include "../../Core/Rect.hpp"
-#include "../../Math/Math.hpp"
 #include <boost/shared_ptr.hpp>
 #include <boost/cstdint.hpp>
 #include <boost/any.hpp>
 #include <boost/function.hpp>
 #include <boost/cstdint.hpp>
+#include <boost/noncopyable.hpp>
 #include <map>
+
+#include "../../Core/Rect.hpp"
+#include "../../Math/Math.hpp"
+
 
 namespace Spiral
 {
@@ -20,7 +23,7 @@ namespace GUI
 	struct mouse_position;
 	class GuiManager;
 
-	class GuiWindow
+	class GuiWindow : boost::noncopyable
 	{
 	public:
 		friend class GuiManager;
@@ -100,6 +103,12 @@ namespace GUI
 		static boost::shared_ptr< GuiWindow > Create( const Math::SpVector2r& position, const Rect< SpReal >& rect, const Rect< SpReal >& textCoords, boost::shared_ptr< Texture >& texture, bool bAlpha );
 
 
+		/*!
+		   @function  Show
+		   @brief     shows/hides the window
+		   @return    void
+		   @param     bool bshow
+		*/
 		void Show( bool bshow = true )
 		{
 			m_show = bshow;
@@ -135,6 +144,21 @@ namespace GUI
 		   @param     const boost::any & data
 		*/
 		void CallHandler( boost::int32_t eventId, GuiWindow* window, const boost::any& data );
+
+		void SetTexture( const boost::shared_ptr< Texture >& texture )
+		{
+			m_texture = texture;
+		}
+
+		void SetTexCoords( const Rect< SpReal >& rt )
+		{
+			m_textCoords = rt;
+		}
+
+		void SetRect( const Rect< SpReal >& rt )
+		{
+			m_rect = rt;
+		}
 
 	private:
 
