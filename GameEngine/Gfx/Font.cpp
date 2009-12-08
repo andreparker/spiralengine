@@ -29,3 +29,13 @@ m_charWidth( width ), m_charHeight( height )
 {
 
 }
+
+void Font::RenderAlpha( boost::shared_ptr< Surface >& surface, boost::uint32_t& cursorX, const std::string& str, const Rgba& color )
+{
+	DoRenderAlpha( surface, cursorX, str, color );
+}
+
+void Font::RenderOpaque( boost::shared_ptr< Surface >& surface, boost::uint32_t& cursorX, const std::string& str, const Rgba& color )
+{
+	DoRenderOpaque( surface, cursorX, str, color );
+}

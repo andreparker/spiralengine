@@ -57,23 +57,34 @@ void GuiManager::Input( const Event& inputEvent, const boost::any& data )
 	{
 		MouseEvent event_data = boost::any_cast< MouseEvent >( data );
 		mouse_position position( static_cast<SpReal>(event_data.pos.x), static_cast<SpReal>(event_data.pos.y) );
-
-		if( Catagory_Mouse_MouseDown::value == inputEvent.m_catagory.m_bits.to_ulong() )
-		{
-			std::for_each( m_windowList.begin(), m_windowList.end(), boost::bind( &GuiWindow::MouseDown, _1, boost::cref(position) ) );
-		}
-		if( Catagory_Mouse_Up::value == inputEvent.m_catagory.m_bits.to_ulong() )
-		{
-			std::for_each( m_windowList.begin(), m_windowList.end(), boost::bind( &GuiWindow::MouseUp, _1, boost::cref(position) ) );
-		}
-		if( Catagory_Mouse_Move::value == inputEvent.m_catagory.m_bits.to_ulong() )
-		{
-			std::for_each( m_windowList.begin(), m_windowList.end(), boost::bind( &GuiWindow::MouseHover, _1, boost::cref(position) ) );
-		}
+		HandleMouseInput( inputEvent, position );
 	}
+}
+
+void GuiManager::HandleMouseInput( const Event& inputEvent, const mouse_position& position )
+{
+	if( inputEvent.IsCat( Catagory_Mouse_MouseDown::value ) )
+	{
+		std::for_each( m_windowList.begin(), m_windowList.end(), boost::bind( &GuiWindow::MouseDown, _1, boost::cref(position) ) );
+	}
+	if( inputEvent.IsCat( Catagory_Mouse_Up::value ) )
+	{
+		std::for_each( m_windowList.begin(), m_windowList.end(), boost::bind( &GuiWindow::MouseUp, _1, boost::cref(position) ) );
+	}
+	if( inputEvent.IsCat( Catagory_Mouse_Move::value ) )
+	{
+		std::for_each( m_windowList.begin(), m_windowList.end(), boost::bind( &GuiWindow::MouseHover, _1, boost::cref(position) ) );
+	}
+}
+
+void GuiManager::HandleCharInput( const Event& inputEvent, boost::uint32_t char_ )
+{
+	std::for_each( m_windowList.begin(), m_windowList.end(), boost::bind( &GuiWindow::CharInput, _1, char_ ) ) ;
 }
 
 void GuiManager::Present( const boost::shared_ptr< GfxDriver >& gfxDrvier )
 {
 	std::for_each( m_windowList.begin(), m_windowList.end(), boost::bind( &GuiManager::TraverseRender, this, boost::cref( gfxDrvier ), _1 ) );
 }
+
+

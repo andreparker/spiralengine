@@ -227,6 +227,7 @@ m_quit(false)
 	RegisterHandler( WM_LBUTTONDOWN, boost::bind( &AppWindow::LeftMouseDownCallBack, this, _1, _2 ) );
 	RegisterHandler( WM_LBUTTONUP, boost::bind( &AppWindow::LeftMouseUpCallBack, this, _1, _2 ) );
 	RegisterHandler( WM_MOUSEMOVE, boost::bind( &AppWindow::MouseMoveCallBack, this, _1, _2 ) );
+	RegisterHandler( WM_CHAR, boost::bind( &AppWindow::CharInputCallBack, this, _1, _2 ) );
 }
 
 void AppWindow::Initialize()
@@ -290,5 +291,13 @@ void AppWindow::MouseMoveCallBack( WPARAM wParam, LPARAM lParam )
 		int x,y;
 		GetMousePosLPARAM( x, y, lParam );
 		m_eventPublisher->Publish( Event( event_mouse, Catagory_Mouse_Move::value ), any( MouseEvent( MouseEvent::mouse1, x, y ) )  );
+	}
+}
+
+void AppWindow::CharInputCallBack( WPARAM wParam, LPARAM /*lParam*/ )
+{
+	if( m_eventPublisher )
+	{
+		m_eventPublisher->Publish( Event( event_keyboard_char, Catagory_KeyBoard_Char::value ), any( uint32_t( wParam ) ) );
 	}
 }

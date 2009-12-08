@@ -30,6 +30,7 @@ namespace Spiral
 		cat_Mouse_Move,
 		cat_Keyboard_KeyDown,
 		cat_Keyboard_KeyUp,
+		cat_Keyboard_Char,
 		cat_Status
 	};
 
@@ -37,6 +38,7 @@ namespace Spiral
 	enum
 	{
 		event_keyboard_key = 1,
+		event_keyboard_char,
 		event_mouse,
 		event_AppStatus_shutdown
 	};
@@ -44,6 +46,7 @@ namespace Spiral
 	typedef MakeLongValue< cat_Input, 0, 0, 0 >                               Catagory_Input;
 	typedef MakeLongValue< cat_Input, cat_Keyboard, cat_Keyboard_KeyDown, 0 > Catagory_KeyBoard_KeyDown;
 	typedef MakeLongValue< cat_Input, cat_Keyboard, cat_Keyboard_KeyUp, 0 >   Catagory_KeyBoard_KeyUp;
+	typedef MakeLongValue< cat_Input, cat_Keyboard, cat_Keyboard_Char, 0 >    Catagory_KeyBoard_Char;
 	typedef MakeLongValue< cat_Input, cat_Keyboard, 0, 0 >                    Catagory_KeyBoard;
 
 	typedef MakeLongValue< cat_Input, cat_Mouse, cat_Mouse_Down, 0 >          Catagory_Mouse_MouseDown;

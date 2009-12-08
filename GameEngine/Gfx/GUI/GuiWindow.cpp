@@ -29,7 +29,8 @@ m_eventHandlers(),
 m_hasFocus(false),
 m_alpha(bAlpha),
 m_dirty(true),
-m_show(false)
+m_show(false),
+m_allowFocus(true)
 {
 }
 
@@ -44,7 +45,8 @@ m_windowId( window_ID++ ),
 m_hasFocus(false),
 m_alpha(bAlpha),
 m_dirty(true),
-m_show(false)
+m_show(false),
+m_allowFocus(true)
 {
 }
 
@@ -53,7 +55,7 @@ void GuiWindow::AddChild( const boost::shared_ptr< GuiWindow >& window )
 	if( window )
 	{
 		m_children.push_back( window );
-		window->m_worldPosition = window->m_localPosition + m_worldPosition;
+		window->UpdatePositions( m_worldPosition );
 	}
 
 }
@@ -83,7 +85,7 @@ bool GuiWindow::SetFocus( SpReal x, SpReal y )
 			}
 		}
 
-		if( !hasFocus )
+		if( !hasFocus && m_allowFocus )
 		{
 			if( m_hasFocus == false )
 			{
@@ -136,7 +138,7 @@ void GuiWindow::MouseDown( const mouse_position& pos )
 {
 	if( ContainsPoint( pos.x, pos.y ) )
 	{
-		ProcessEvent( GUI::mouse_down, pos );
+		ProcessMouseEvent( GUI::mouse_down, pos );
 	}
 }
 
@@ -144,7 +146,7 @@ void GuiWindow::MouseUp( const mouse_position& pos )
 {
 	if( ContainsPoint( pos.x, pos.y ) )
 	{
-		ProcessEvent( GUI::mouse_up, pos );
+		ProcessMouseEvent( GUI::mouse_up, pos );
 	}
 }
 
@@ -159,11 +161,8 @@ void GuiWindow::CallHandler( boost::int32_t eventId, GuiWindow* window, const bo
 	}
 }
 
-void GuiWindow::ProcessEvent( boost::int32_t eventId, const mouse_position& pos )
+void GuiWindow::ProcessEvent( boost::int32_t eventId, const boost::any& data )
 {
-	boost::any data( pos );
-	SetFocus( pos.x, pos.y );
-	// set focus and route calls to event functions of the window with focus
 	if( !m_hasFocus )
 	{
 		for( WindowItr itr = m_children.begin(); itr != m_children.end(); ++itr )
@@ -181,6 +180,15 @@ void GuiWindow::ProcessEvent( boost::int32_t eventId, const mouse_position& pos 
 	}
 }
 
+void GuiWindow::ProcessMouseEvent( boost::int32_t eventId, const mouse_position& pos )
+{
+	boost::any data( pos );
+	SetFocus( pos.x, pos.y );
+
+	// set focus and route calls to event functions of the window with focus
+	ProcessEvent( eventId, data );
+}
+
 void GuiWindow::ResetWindow()
 {
 }
@@ -189,9 +197,15 @@ void GuiWindow::MouseHover( const mouse_position& pos )
 {
 	if( ContainsPoint( pos.x, pos.y ) )
 	{
-		ProcessEvent( GUI::mouse_hover, pos );
+		ProcessMouseEvent( GUI::mouse_hover, pos );
 	}else
 	{
 		ResetWindow();
 	}
 }
+
+void GuiWindow::CharInput( boost::uint32_t char_ )
+{
+	ProcessEvent( GUI::char_input, boost::any( char_ ) );
+}
+

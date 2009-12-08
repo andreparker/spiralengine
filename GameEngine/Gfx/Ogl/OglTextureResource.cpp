@@ -31,6 +31,16 @@ m_oglTextureId( 0 ),m_colorChannels(0), m_isValid( false ),m_rect(),m_data(NULL)
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 
 		m_rect = Rect< int32_t >( 0, info.width, info.height, 0 );
+
+		if( data == NULL )
+		{
+			ResLockRtInfo_t info;
+			if( DoLock( info, true ) )
+			{
+				memset( info.data, 0, info.rowBytes * info.rect.bottom );
+				DoUnlock();
+			}
+		}
 	}
 }
 

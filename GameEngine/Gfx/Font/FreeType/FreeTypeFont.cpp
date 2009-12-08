@@ -17,7 +17,7 @@ FreeTypeFont::~FreeTypeFont()
 }
 
 FreeTypeFont::FreeTypeFont( FT_Library library, FT_Face font,const boost::shared_array< boost::int8_t >& data, boost::int32_t width, boost::int32_t height ):
-Font( width, height ),m_library( library ), m_face( font ),m_data( data )
+Font( width, ( font->size->metrics.height >> 6 ) ),m_library( library ), m_face( font ),m_data( data )
 {
 
 }
@@ -47,12 +47,16 @@ boost::uint32_t FindMaxStrSize( const std::string& str )
 void FreeTypeFont::DoCalcSurfaceSize( const std::string& str, boost::int32_t& surfWidth, boost::int32_t& surfHeight )
 {
 	surfWidth = FindMaxStrSize( str ) * (m_face->max_advance_width/2 >> 6 );
-	surfHeight = (m_face->max_advance_height/2 >> 6 ) * ( 1 + count_element_occurences( str.begin(), str.end(), '\n' ) ) + ( GetCharHeight() / 2);
+	surfHeight = GetCharHeight() * ( 1 + count_element_occurences( str.begin(), str.end(), '\n' ) ) + GetCharHeight();
 }
 																															  
 
 struct SurfacePosition
 {
+	SurfacePosition( boost::int32_t x_, boost::int32_t y_ ):
+	x( x_ ),y( y_ ){}
+	SurfacePosition():x(0),y(0){}
+
 	boost::int32_t x,y;
 };
 
@@ -118,13 +122,23 @@ void RenderBitmapAlpha( const SurfacePosition& pos, const FT_Bitmap& bitmap, con
 	RenderBitmapToSurf< StorePixelRgba, 4 >( pos, bitmap, color, surface );
 }
 
+struct TextData
+{
+	TextData( FT_Face face_, const boost::shared_ptr< Surface >& surface, const SurfacePosition& pos ):
+	face( face_ ),renderSurface( surface ),cursorPos( pos ){}
+	
+	FT_Face face;
+	boost::shared_ptr< Surface > renderSurface;
+	SurfacePosition cursorPos;
+};
+
 template< void Render( const SurfacePosition&, const FT_Bitmap&, const Rgba&, boost::shared_ptr< Surface >& ) >
-void DrawText( FT_Face face, boost::shared_ptr< Surface >& surface, const std::string& str, const Rgba& color )
+void DrawText( TextData& data, const std::string& str, const Rgba& color )
 {
 	const char* text = str.c_str();
 
-	SurfacePosition pos = {0,(face->max_advance_height/2) >> 6};
-	bool useKerning = bool( FT_HAS_KERNING( face ) ? true : false );
+	SurfacePosition pos( data.cursorPos.x, ( data.face->size->metrics.height >> 6 ) );
+	bool useKerning = bool( FT_HAS_KERNING( data.face ) ? true : false );
 	FT_UInt preIndex = 0;
 
 	while( *text != 0 )
@@ -133,47 +147,66 @@ void DrawText( FT_Face face, boost::shared_ptr< Surface >& surface, const std::s
 
 		if( c == '\n' )
 		{
-			pos.y += (face->max_advance_height/2) >> 6;
+			pos.y += ( data.face->size->metrics.height >> 6 );
 			pos.x = 0;
 			++text;
 			continue;
 		}
 
-		FT_UInt index = FT_Get_Char_Index( face, c );
-		FT_Error result = FT_Load_Glyph( face, index, FT_LOAD_DEFAULT );
+		FT_UInt index = FT_Get_Char_Index( data.face, c );
+		FT_Error result = FT_Load_Glyph( data.face, index, FT_LOAD_DEFAULT );
 		if( !result )
 		{
 			if( useKerning && index && preIndex )
 			{
 				FT_Vector delta;
 
-				FT_Get_Kerning( face, preIndex, index, 0, &delta );
+				FT_Get_Kerning( data.face, preIndex, index, 0, &delta );
 
 				pos.x += delta.x >> 6;
 			}
 
-			result = FT_Render_Glyph( face->glyph, FT_RENDER_MODE_NORMAL );
-			FT_GlyphSlot slot = face->glyph;
+			result = FT_Render_Glyph( data.face->glyph, FT_RENDER_MODE_NORMAL );
+			FT_GlyphSlot slot = data.face->glyph;
 			if( !result )
 			{
-				SurfacePosition tmpPos = { pos.x + slot->bitmap_left, pos.y - slot->bitmap_top  };
-				Render( tmpPos, slot->bitmap, color, surface );
+				SurfacePosition tmpPos( pos.x + slot->bitmap_left, pos.y - slot->bitmap_top  );
+				Render( tmpPos, slot->bitmap, color, data.renderSurface );
 			}
 
-			pos.x += face->glyph->advance.x >> 6;  // advance is in 26.6 format, convert to int
+			pos.x += data.face->glyph->advance.x >> 6;  // advance is in 26.6 format, convert to int
 			preIndex = index;
 		}
 
 		++text;
 	}
+
+	data.cursorPos.x = pos.x;
+	data.cursorPos.y = pos.y - (( data.face->size->metrics.height >> 6 )) ;
 }
 
 void FreeTypeFont::DoRenderAlpha( boost::shared_ptr< Surface >& surface, const std::string& str, const Rgba& color )
 {
-	DrawText< RenderBitmapAlpha >( m_face, surface, str, color );
+	TextData renderInfo( m_face, surface, SurfacePosition() );
+	DrawText< RenderBitmapAlpha >( renderInfo, str, color );
 }
 
 void FreeTypeFont::DoRenderOpaque( boost::shared_ptr< Surface >& surface, const std::string& str, const Rgba& color )
 {
-	DrawText< RenderBitmapOpaque >( m_face, surface, str, color );
+	TextData renderInfo( m_face, surface, SurfacePosition() );
+	DrawText< RenderBitmapOpaque >( renderInfo, str, color );
+}
+
+void FreeTypeFont::DoRenderAlpha( boost::shared_ptr< Surface >& surface, boost::uint32_t& cursorX, const std::string& str, const Rgba& color )
+{
+	TextData renderInfo( m_face, surface, SurfacePosition(cursorX,0) );
+	DrawText< RenderBitmapAlpha >( renderInfo, str, color );
+	cursorX = renderInfo.cursorPos.x;
+}
+
+void FreeTypeFont::DoRenderOpaque( boost::shared_ptr< Surface >& surface, boost::uint32_t& cursorX, const std::string& str, const Rgba& color )
+{
+	TextData renderInfo( m_face, surface, SurfacePosition(cursorX,0) );
+	DrawText< RenderBitmapOpaque >( renderInfo, str, color );
+	cursorX = renderInfo.cursorPos.x;
 }

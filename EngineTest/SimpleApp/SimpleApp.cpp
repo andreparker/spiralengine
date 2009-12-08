@@ -29,7 +29,7 @@ bool App::DoInit( boost::int32_t /*argc*/, std::list< boost::shared_array< char 
 	std::string text = "Testing Font rendering code using true type font.\nThis font is arial narrow.\nTesting newline code";
 	m_arialN->CalcSurfaceSize( text, width, height );
 	shared_ptr< Surface > surf = make_surface( width, height, 3 );
-	m_arialN->RenderOpaque( surf, text, Rgba( 0.0f, 1.0f, 0.0f ) );
+	m_arialN->RenderOpaque( surf, text, Rgba( 1.0f, 1.0f, 1.0f ) );
 
 
 	shared_ptr< Texture > fontTexture = surf->CreateTextureFromData( gfxDriver );
@@ -38,18 +38,20 @@ bool App::DoInit( boost::int32_t /*argc*/, std::list< boost::shared_array< char 
 	m_fontSprite->SetPosition( 400.0f, 500.0f );
 	//m_fontSprite->SetAlphaBlend( true );
 	
-	m_button = make_shared< GUI::GuiButton >( Math::make_vector( 512.0f,384.0f), Rect< SpReal >( 0, 64, 32, 0 ), 
+	m_button = make_shared< GUI::GuiButton >( Math::make_vector( 128.0f,450.0f), Rect< SpReal >( 0, 64, 32, 0 ), 
 		Rect< SpReal >( 0.0f, 1.0f, 1.0f, 0.0f ), button_texture, true );
-	m_window = make_shared< GUI::GuiWindow >( Math::make_vector( 512.0f, 600.0f ), Rect< SpReal >( 0, 128, 128, 0 ),
+	m_window = make_shared< GUI::GuiWindow >( Math::make_vector( 0.0f, 100.0f ), Rect< SpReal >( 0, 512, 512, 0 ),
 		Rect< SpReal >( 0.0f, 1.0f, 1.0f, 0.0f ), window_texture, true );
-	shared_ptr< GUI::GuiButton > button = make_shared< GUI::GuiButton >( Math::make_vector( 32.0f ,32.0f ), Rect< SpReal >( 0, 64, 32, 0 ), 
+	shared_ptr< GUI::GuiButton > button = make_shared< GUI::GuiButton >( Math::make_vector( 32.0f ,450.0f ), Rect< SpReal >( 0, 64, 32, 0 ), 
 		Rect< SpReal >( 0.0f, 1.0f, 1.0f, 0.0f ), button_texture, true );
 
+	shared_ptr< GUI::GuiEditBox > editbox = make_shared< GUI::GuiEditBox >( Math::make_vector( 32.0f,400.0f ), gfxDriver, Rgba( 1.0f, 1.0f, 1.0f ), Rgba(), m_arialN, 16, "Edit Box ......." );
 	button->ConnectHandler( GUI::button_Press, bind( &App::ButtonPress, this, _1, _2, _3 ) );
 	m_window->AddChild( button );
+	m_window->AddChild( m_button );
+	m_window->AddChild( editbox );
 
 	m_button->ConnectHandler( GUI::button_Press, bind( &App::ButtonPress, this, _1, _2, _3 ) );
-	engine->GetGuiManager()->AddElement( m_button );
 	engine->GetGuiManager()->AddElement( m_window );
 
 	button->Show();

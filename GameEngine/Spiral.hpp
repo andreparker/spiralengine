@@ -38,5 +38,6 @@
 #include "Gfx/gui/GuiButton.hpp"
 #include "Gfx/gui/Gui.hpp"
 #include "Gfx/gui/GuiWindowEvents.hpp"
+#include "Gfx/gui/GuiEditBox.hpp"
 
 #endif

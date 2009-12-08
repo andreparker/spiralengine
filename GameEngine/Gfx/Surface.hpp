@@ -10,10 +10,12 @@ namespace Spiral
 {
 	class Texture;
 	class GfxDriver;
+	class Rgba;
 
 	class Surface : boost::noncopyable
 	{
 	public:
+		virtual ~Surface();
 		/*!
 		   @function  Surface
 		   @brief     constructs a surface
@@ -23,7 +25,6 @@ namespace Spiral
 		   @param     boost::int32_t elementSize - size in bytes of each element
 		*/
 		Surface( boost::int32_t width, boost::int32_t height, boost::int32_t elementSize );
-		~Surface();
 
 		/*!
 		   @function  CreateTextureFromData
@@ -59,6 +60,14 @@ namespace Spiral
 		*/
 		static boost::shared_ptr< Surface > CreateRgba32bitSurface( boost::int32_t width, boost::int32_t height );
 
+		/*!
+		   @function  Fill
+		   @brief     
+		   @return    void
+		   @param     const Rgba & color
+		*/
+		void Fill( const Rgba& color );
+
 		boost::int32_t GetWidth()const
 		{
 			return m_width;
@@ -69,7 +78,7 @@ namespace Spiral
 			return m_height;
 		}
 
-		const boost::int8_t* GetConstData()const
+		virtual const boost::int8_t* GetConstData()const
 		{
 			return m_data.get();
 		}
@@ -90,8 +99,12 @@ namespace Spiral
 		}
 	protected:
 		Surface();
+		Surface( boost::int32_t width, boost::int32_t height, boost::int32_t elementSize, boost::int32_t dummy );
 
 	private:
+		void Fill_24( const Rgba& color );
+		void Fill_32( const Rgba& color );
+
 		boost::int32_t m_width,m_height,m_elementSize;
 		boost::scoped_array< boost::int8_t > m_data;
 	};
