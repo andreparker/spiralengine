@@ -21,11 +21,13 @@ namespace Spiral
 		virtual void DoCalcSurfaceSize( const std::string& str, boost::int32_t& surfWidth, boost::int32_t& surfHeight );
 		virtual void DoRenderAlpha( boost::shared_ptr< Surface >& surface, const std::string& str, const Rgba& color );
 		virtual void DoRenderOpaque( boost::shared_ptr< Surface >& surface, const std::string& str, const Rgba& color );
-	
+		virtual void DoRenderAlpha( boost::shared_ptr< Surface >& surface, boost::uint32_t& cursorX, const std::string& str, const Rgba& color );
+		virtual void DoRenderOpaque( boost::shared_ptr< Surface >& surface, boost::uint32_t& cursorX, const std::string& str, const Rgba& color );
+
 	private:
 		FT_Library m_library;
 		FT_Face m_face;
-		boost::shared_array< boost::int8_t > m_data;
+		boost::shared_array< boost::int8_t > m_data;		// holds the free type data (actual file...)
 	};
 }
 

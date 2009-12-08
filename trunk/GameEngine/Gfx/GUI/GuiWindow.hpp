@@ -31,6 +31,7 @@ namespace GUI
 		typedef boost::function< void( boost::int32_t, GuiWindow*, const boost::any& ) > WindowEventHandler;
 		GuiWindow( const Math::SpVector2r& position, const Rect< SpReal >& rect, const Rect< SpReal >& textCoords,const boost::shared_ptr< Texture >& texture, bool bAlpha );
 		GuiWindow( const Math::SpVector2r& position, const Rect< SpReal >& rect, const boost::shared_ptr< Texture >& texture, bool bAlpha );
+		virtual ~GuiWindow(){}
 
 		bool hasAlpha()const
 		{
@@ -71,6 +72,16 @@ namespace GUI
 		boost::uint32_t GetID()const
 		{
 			return m_windowId;
+		}
+
+		void AllowFocus( bool allow = true )
+		{
+			m_allowFocus = allow;
+		}
+
+		bool FocusAllowed()const
+		{
+			return m_allowFocus;
 		}
 
 		/*!
@@ -127,13 +138,22 @@ namespace GUI
 		MAKE_ALIGNED_NEW
 	protected:
 		/*!
-		   @function  ProcessEvent
+		   @function  ProcessMouseEvent
 		   @brief     processes a event and calls appropriate handlers
 		   @return    void
 		   @param     boost::int32_t eventId
 		   @param     const mouse_position & pos
 		*/
-		void ProcessEvent( boost::int32_t eventId, const mouse_position& pos );
+		void ProcessMouseEvent( boost::int32_t eventId, const mouse_position& pos );
+
+		/*!
+		   @function  ProcessEvent
+		   @brief     process all events
+		   @return    void
+		   @param     boost::int32_t eventId
+		   @param     const boost::any & data
+		*/
+		void ProcessEvent( boost::int32_t eventId, const boost::any& data );
 
 		/*!
 		   @function  CallHandler
@@ -190,6 +210,7 @@ namespace GUI
 		virtual void MouseDown( const mouse_position& pos );
 		virtual void MouseUp( const mouse_position& pos );
 		virtual void MouseHover( const mouse_position& pos );
+		virtual void CharInput( boost::uint32_t char_ );
 
 		bool ContainsPoint( SpReal x, SpReal y )const
 		{
@@ -208,6 +229,9 @@ namespace GUI
 	private:
 		static boost::int32_t window_ID;
 
+		typedef std::list< boost::shared_ptr< GuiWindow > >::iterator WindowItr;
+		typedef std::multimap< boost::int32_t, WindowEventHandler >::iterator handleItr;
+
 		bool IsVisible()const
 		{
 			return m_show;
@@ -218,16 +242,15 @@ namespace GUI
 		Rect< SpReal > m_rect;
 		Rect< SpReal > m_textCoords;
 		boost::shared_ptr< Texture > m_texture;
-		typedef std::list< boost::shared_ptr< GuiWindow > >::iterator WindowItr;
 		std::list< boost::shared_ptr< GuiWindow > > m_children;
 		boost::uint32_t m_windowId;
-		typedef std::multimap< boost::int32_t, WindowEventHandler >::iterator handleItr;
 		std::multimap< boost::int32_t, WindowEventHandler > m_eventHandlers; 
 
 		bool m_hasFocus;
 		bool m_alpha;
 		bool m_dirty;		///< used to update world positioning
-		bool m_show;
+		bool m_show;		///< shows the window
+		bool m_allowFocus;  ///< enable/disables focus on the window
 	};
 }
 }

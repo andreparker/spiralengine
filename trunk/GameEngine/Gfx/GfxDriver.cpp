@@ -27,7 +27,7 @@ bool GfxDriver::CreateTexture(const TextureInfo_t &info, shared_ptr<Texture> &te
 		copyImage = true;
 	}
 
-	if( copyImage )
+	if( copyImage && data )
 	{
 		// set up for transfer to a power of 2 surface
 		GfxUtil::Image::ImageDesc src,dst;

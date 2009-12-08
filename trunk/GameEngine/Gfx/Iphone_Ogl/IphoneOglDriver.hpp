@@ -51,7 +51,7 @@ namespace Spiral
 	private:
 		
 		EAGLContext *m_renderContext;   ///< context to render to 
-		CAEAGLLayer* m_layer;			///< needed for render/frame buffer creation
+		CAEAGLLayer *m_layer;			///< needed for render/frame buffer creation
 	};
 }
 

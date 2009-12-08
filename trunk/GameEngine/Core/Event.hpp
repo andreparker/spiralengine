@@ -44,6 +44,11 @@ namespace Spiral
 			return ( m_catagory.m_bits == result || result == bits ); // result must be the same after the and
 		}
 
+		bool IsCat( const std::bitset<32>& bits )const
+		{
+			return bool( m_catagory.m_bits.to_ulong() == bits.to_ulong() );
+		}
+
 		boost::int32_t m_eventId;
 		EventCatagory m_catagory;
 	};

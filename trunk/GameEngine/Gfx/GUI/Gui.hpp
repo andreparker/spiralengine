@@ -12,6 +12,7 @@ namespace Spiral
 namespace GUI
 {
 	class GuiWindow;
+	struct mouse_position;
 
 	class GuiManager
 	{
@@ -51,6 +52,25 @@ namespace GUI
 		*/
 		void Input( const Event& inputEvent, const boost::any& data );
 	private:
+		
+		/*!
+		   @function  HandleMouseInput
+		   @brief     calls mouse handlers
+		   @return    void
+		   @param     const Event & inputEvent
+		   @param     const mouse_position & position
+		*/
+		void HandleMouseInput( const Event& inputEvent, const mouse_position& position );
+
+		/*!
+		   @function  HandleCharInput
+		   @brief     character input
+		   @return    void
+		   @param     const Event & inputEvent
+		   @param     boost::uint32_t char_
+		*/
+		void HandleCharInput( const Event& inputEvent, boost::uint32_t char_ );
+
 		void TraverseRender( const boost::shared_ptr< GfxDriver >& gfxDrvier,const boost::shared_ptr< GuiWindow >& window )const;
 
 		typedef std::list< boost::shared_ptr< GuiWindow > >::iterator gui_window_itr;

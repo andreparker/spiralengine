@@ -36,6 +36,7 @@ namespace Spiral
 		   @param     const Rgba & color - color of the text
 		*/
 		void RenderAlpha( boost::shared_ptr< Surface >& surface, const std::string& str, const Rgba& color );
+		void RenderAlpha( boost::shared_ptr< Surface >& surface, boost::uint32_t& cursorX, const std::string& str, const Rgba& color );
 
 		/*!
 		   @function  RenderOpaque
@@ -46,6 +47,7 @@ namespace Spiral
 		   @param     const Rgba & color - color of the text
 		*/
 		void RenderOpaque( boost::shared_ptr< Surface >& surface, const std::string& str, const Rgba& color );
+		void RenderOpaque( boost::shared_ptr< Surface >& surface, boost::uint32_t& cursorX, const std::string& str, const Rgba& color );
 		
 		/*!
 		   @function  GetCharWidth
@@ -75,6 +77,8 @@ namespace Spiral
 		virtual void DoCalcSurfaceSize( const std::string& str, boost::int32_t& surfWidth, boost::int32_t& surfHeight ) = 0;
 		virtual void DoRenderAlpha( boost::shared_ptr< Surface >& surface, const std::string& str, const Rgba& color ) = 0;
 		virtual void DoRenderOpaque( boost::shared_ptr< Surface >& surface, const std::string& str, const Rgba& color ) = 0;
+		virtual void DoRenderAlpha( boost::shared_ptr< Surface >& surface, boost::uint32_t& cursorX, const std::string& str, const Rgba& color ) = 0;
+		virtual void DoRenderOpaque( boost::shared_ptr< Surface >& surface, boost::uint32_t& cursorX, const std::string& str, const Rgba& color ) = 0;
 	};
 }
 

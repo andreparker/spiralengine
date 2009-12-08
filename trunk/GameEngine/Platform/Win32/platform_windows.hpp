@@ -25,6 +25,7 @@ public:
 	void LeftMouseDownCallBack( WPARAM wParam, LPARAM lParam );
 	void LeftMouseUpCallBack( WPARAM wParam, LPARAM lParam );
 	void MouseMoveCallBack( WPARAM wParam, LPARAM lParam );
+	void CharInputCallBack( WPARAM wParam, LPARAM lParam );
 
 	void SetEventPublisher( const boost::shared_ptr< Spiral::EventPublisher >& publisher )
 	{

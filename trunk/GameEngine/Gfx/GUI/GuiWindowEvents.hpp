@@ -15,7 +15,8 @@ namespace GUI
 		mouse_hover,
 		focus_gained,
 		focus_lost,
-		button_Press
+		button_Press,
+		char_input
 	}GuiWindowEvent;
 
 
