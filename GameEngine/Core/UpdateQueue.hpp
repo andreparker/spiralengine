@@ -1,24 +1,40 @@
 #ifndef UPDATE_QUEUE_HPP
 #define UPDATE_QUEUE_HPP
 
+#include "Sp_DataTypes.hpp"
 #include "Singleton.ipp"
 #include <boost/function.hpp>
-#include <stack>
+#include <list>
 
 namespace Spiral
 {
 
+	
+
 	typedef boost::function< void() > UPDATE_CALL_BACK;
+
+	struct CallBackInfo
+	{
+		CallBackInfo( const UPDATE_CALL_BACK& update, SpReal delayTick, SpReal currentTick ):
+		callback( update ), m_delayTick( delayTick ), m_currentStartTick( currentTick ){}
+
+		UPDATE_CALL_BACK callback;
+		const SpReal m_delayTick;
+		SpReal m_currentStartTick;
+	};
+
 	class UpdateQueue : public Singleton< UpdateQueue >
 	{
 		DECL_SINGLETON( UpdateQueue )
 	public:
-		UpdateQueue(){}
+		UpdateQueue();
 
-		void Add( const UPDATE_CALL_BACK& callback );
-		void Update();
+		void Add( const UPDATE_CALL_BACK& callback, SpReal delayTick = 0.0f );
+		void Tick( SpReal tick );
 	private:
-		std::stack< UPDATE_CALL_BACK > m_callbacks;
+		std::list< CallBackInfo > m_callbacks;
+		SpReal m_ticks;
+
 	};
 
 	typedef SingletonHandle<UpdateQueue> UpdateQueue_handle;

@@ -11,6 +11,8 @@
 using namespace Spiral;
 using namespace boost;
 
+const uint32_t kPadding = 4;
+
 FreeTypeFont::~FreeTypeFont()
 {
 
@@ -137,7 +139,7 @@ void DrawText( TextData& data, const std::string& str, const Rgba& color )
 {
 	const char* text = str.c_str();
 
-	SurfacePosition pos( data.cursorPos.x, ( data.face->size->metrics.height >> 6 ) );
+	SurfacePosition pos( data.cursorPos.x, ( data.face->size->metrics.height >> 6 ) - kPadding );
 	bool useKerning = bool( FT_HAS_KERNING( data.face ) ? true : false );
 	FT_UInt preIndex = 0;
 

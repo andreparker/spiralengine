@@ -14,6 +14,9 @@ bool GfxDriver::CreateTexture(const TextureInfo_t &info, shared_ptr<Texture> &te
 	bool copyImage = false;
 	int32_t newWidth = info.width,
 		newHeight = info.height;
+	const int8_t* finalData = data;
+	TextureInfo_t newInfo;
+	scoped_array< int8_t > newImageData;
 
 	if( !PowerOf2( info.width ) )
 	{
@@ -38,7 +41,7 @@ bool GfxDriver::CreateTexture(const TextureInfo_t &info, shared_ptr<Texture> &te
 		dst.rowBytes = dst.width * dst.colorChannel;
 
 		const int32_t imageSize = newWidth * newHeight * dst.colorChannel;
-		scoped_array< int8_t > newImageData( new int8_t[ imageSize ] );
+		newImageData.reset( new int8_t[ imageSize ] );
 		memset( newImageData.get(), 0, imageSize );
 
 		dst.data = newImageData.get();
@@ -52,17 +55,21 @@ bool GfxDriver::CreateTexture(const TextureInfo_t &info, shared_ptr<Texture> &te
 		GfxUtil::Image::Blit( src, dst, 0, 0 );
 
 		// update our info
-		TextureInfo_t newInfo;
 		newInfo.width = newWidth;
 		newInfo.height = newHeight;
 		newInfo.bitDepth = info.bitDepth;
 		newInfo.bManaged = info.bManaged;
+		finalData = newImageData.get();
 
-		return DoCreateTexture( newInfo, texture, newImageData.get() );
 	}else
 	{
-		return DoCreateTexture( info, texture, data );
+		newInfo.width = newWidth;
+		newInfo.height = newHeight;
+		newInfo.bitDepth = info.bitDepth;
+		newInfo.bManaged = info.bManaged;
 	}
+
+	return DoCreateTexture( newInfo, texture, finalData );
 	
 }
 

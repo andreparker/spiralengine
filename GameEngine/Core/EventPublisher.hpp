@@ -27,7 +27,7 @@ namespace Spiral
 		   @return    void
 		   @param     boost::shared_ptr<EventSubscriber> & subscriber
 		*/
-		void RemoveSubscriber( boost::shared_ptr<EventSubscriber>& subscriber );
+		void RemoveSubscriber( const boost::shared_ptr<EventSubscriber>& subscriber );
 
 		/*!
 		   @function  AddSubscriber
@@ -35,7 +35,7 @@ namespace Spiral
 		   @return    void
 		   @param     boost::shared_ptr<EventSubscriber> & subscriber
 		*/
-		void AddSubscriber( boost::shared_ptr<EventSubscriber>& subscriber );
+		void AddSubscriber( const boost::shared_ptr<EventSubscriber>& subscriber );
 
 		/*!
 		   @function  Publish
