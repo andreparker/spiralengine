@@ -29,7 +29,7 @@ namespace Spiral
 	};
 	
 	template< class S >
-	class SingletonHandle : private boost::noncopyable
+	class SingletonHandle
 	{
 	public:
 		

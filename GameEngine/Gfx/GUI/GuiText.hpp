@@ -43,11 +43,14 @@ namespace GUI
 		   @param     const std::string & text
 		*/
 		void SetText( const std::string& text );
+		void DrawChar( char c );
 
+		void EraseEnd();
+		void ClearBox();
 	private:
 
 		void DrawString( const std::string& text );
-		void DrawChar( char c );
+		
 	private:
 		std::string m_text;
 		boost::uint32_t m_charPos;

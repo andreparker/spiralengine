@@ -7,7 +7,11 @@
 #include "../../Resource/Resource.hpp"
 #include "../../Resource/ResLockImpl.hpp"
 #include "../SurfaceUP.hpp"
+#include "GuiWindowEvents.hpp"
 #include "GuiText.hpp"
+#include "../../Core/UpdateQueue.hpp"
+
+#include <boost/bind.hpp>
 
 using namespace Spiral;
 using namespace Spiral::GUI;
@@ -20,6 +24,8 @@ GuiWindow( position, Rect<SpReal>(), shared_ptr<Texture>(), false ), m_textBox()
 {
 	Rect<SpReal> rect;
 	
+	ConnectHandler( char_input, bind( &GuiEditBox::OnChar, this, _1, _2, _3 ) );
+	
 	// calculate the window size from our font
 	int32_t width = maxCharLen * font->GetCharWidth();
 	int32_t height = font->GetCharHeight();
@@ -29,7 +35,6 @@ GuiWindow( position, Rect<SpReal>(), shared_ptr<Texture>(), false ), m_textBox()
 
 	shared_ptr<Surface> windowSurf = make_surface( width, height, 3 );
 	
-
 	// set background color of the text window
 	windowSurf->Fill( backColor );
 	
@@ -42,25 +47,6 @@ GuiWindow( position, Rect<SpReal>(), shared_ptr<Texture>(), false ), m_textBox()
 	
     m_textBox = make_shared<GuiText>( Math::make_vector<SpReal>(0.0f,0.0f), gfxDriver, forColor, maxCharLen, font, defText );
 	
-	// create the edit texture and display window for the text
-// 	TextureInfo_t info;
-// 	info.bitDepth = 32;
-// 	info.bManaged = false;
-// 	info.width    = width;
-// 	info.height   = height;
-// 
-// 	gfxDriver->CreateTexture( info, m_editTexture );
-// 
-// 	m_editSurface = make_surfaceUP( m_editTexture->GetWidth(), m_editTexture->GetHeight(), 4, NULL );
-// 
-// 	// adjust textcoords to fit window if texture is adjusted to a power of 2
-// 	
-// 	Rect<SpReal> textCoords( 0, static_cast<SpReal>(width)/m_editTexture->GetWidth(), 
-// 							    static_cast<SpReal>(height)/m_editTexture->GetHeight(), 0 );
-// 
-// 
-// 	shared_ptr<GuiWindow> textWindow = GuiWindow::Create( Math::make_vector<SpReal>(0.0f,0.0f), rect, 
-// 														  textCoords, m_editTexture, true );
 	AddChild( m_textBox );
 
 	// show the window and also disable focus of it
@@ -73,7 +59,7 @@ GuiWindow( position, Rect<SpReal>(), shared_ptr<Texture>(), false ), m_textBox()
 
 void GuiEditBox::DrawString( const std::string& str )
 {
-	m_textBox->DrawString( str );
+	m_textBox->SetText( str );
 }
 
 const std::string& GuiEditBox::GetText() const
@@ -84,4 +70,23 @@ const std::string& GuiEditBox::GetText() const
 void GuiEditBox::SetText( const std::string& text )
 {
 	m_textBox->SetText( text );
+}
+
+void GuiEditBox::OnChar( boost::int32_t eventId, GuiWindow* window, const boost::any& data )
+{
+	// this will not work, function being called from a thread
+	// opengl cannot render in different threads
+	// TODO: add update function for post updates for GuiWindows 
+	char c = any_cast<uint32_t>(data);
+	//m_textBox->DrawChar( c );
+	UpdateQueue_handle queue;
+
+	if( c == 0x08 )
+	{
+		queue->Add( bind( &GuiText::EraseEnd, cref(m_textBox) ) );
+	}else
+	{
+		queue->Add( bind( &GuiText::DrawChar, cref(m_textBox), c ) );
+	}
+	
 }

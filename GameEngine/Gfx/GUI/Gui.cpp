@@ -10,6 +10,7 @@
 
 using namespace Spiral;
 using namespace Spiral::GUI;
+using namespace boost;
 
 GuiManager::GuiManager():
 m_windowList()
@@ -58,6 +59,13 @@ void GuiManager::Input( const Event& inputEvent, const boost::any& data )
 		MouseEvent event_data = boost::any_cast< MouseEvent >( data );
 		mouse_position position( static_cast<SpReal>(event_data.pos.x), static_cast<SpReal>(event_data.pos.y) );
 		HandleMouseInput( inputEvent, position );
+	}else if( inputEvent.hasCat( Catagory_KeyBoard::value ) )
+	{
+		if( inputEvent.IsCat( Catagory_KeyBoard_Char::value ) )
+		{
+			HandleCharInput( inputEvent, boost::any_cast< uint32_t >( data ) );
+		}
+		
 	}
 }
 
@@ -66,12 +74,12 @@ void GuiManager::HandleMouseInput( const Event& inputEvent, const mouse_position
 	if( inputEvent.IsCat( Catagory_Mouse_MouseDown::value ) )
 	{
 		std::for_each( m_windowList.begin(), m_windowList.end(), boost::bind( &GuiWindow::MouseDown, _1, boost::cref(position) ) );
-	}
-	if( inputEvent.IsCat( Catagory_Mouse_Up::value ) )
+	}else
+		if( inputEvent.IsCat( Catagory_Mouse_Up::value ) )
 	{
 		std::for_each( m_windowList.begin(), m_windowList.end(), boost::bind( &GuiWindow::MouseUp, _1, boost::cref(position) ) );
-	}
-	if( inputEvent.IsCat( Catagory_Mouse_Move::value ) )
+	}else
+		if( inputEvent.IsCat( Catagory_Mouse_Move::value ) )
 	{
 		std::for_each( m_windowList.begin(), m_windowList.end(), boost::bind( &GuiWindow::MouseHover, _1, boost::cref(position) ) );
 	}

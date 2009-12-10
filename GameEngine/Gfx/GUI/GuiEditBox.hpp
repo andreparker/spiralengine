@@ -50,6 +50,7 @@ namespace GUI
 	private:
 
 		void DrawString( const std::string& str );
+		void OnChar( boost::int32_t eventId, GuiWindow* window, const boost::any& data );
 	private:
 
 		boost::shared_ptr<GuiText> m_textBox;
