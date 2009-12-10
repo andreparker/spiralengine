@@ -27,7 +27,7 @@ GuiWindow( position, Rect<SpReal>(), shared_ptr<Texture>(), false ), m_textBox()
 	ConnectHandler( char_input, bind( &GuiEditBox::OnChar, this, _1, _2, _3 ) );
 	
 	// calculate the window size from our font
-	int32_t width = maxCharLen * font->GetCharWidth();
+	int32_t width = maxCharLen * (font->GetCharWidth()/2);
 	int32_t height = font->GetCharHeight();
 
 	rect.Set( 0, static_cast< SpReal >( width ), 0, static_cast< SpReal >( height ) );
@@ -78,15 +78,14 @@ void GuiEditBox::OnChar( boost::int32_t eventId, GuiWindow* window, const boost:
 	// opengl cannot render in different threads
 	// TODO: add update function for post updates for GuiWindows 
 	char c = any_cast<uint32_t>(data);
-	//m_textBox->DrawChar( c );
 	UpdateQueue_handle queue;
 
 	if( c == 0x08 )
 	{
-		queue->Add( bind( &GuiText::EraseEnd, cref(m_textBox) ) );
+		queue->Add( bind( &GuiText::EraseEnd, cref(m_textBox) ), 0.05f );
 	}else
 	{
-		queue->Add( bind( &GuiText::DrawChar, cref(m_textBox), c ) );
+		queue->Add( bind( &GuiText::DrawChar, cref(m_textBox), c ), 0.05f );
 	}
 	
 }

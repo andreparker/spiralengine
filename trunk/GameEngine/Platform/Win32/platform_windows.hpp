@@ -4,6 +4,11 @@
 #include "../../Core/Application.hpp"
 #include "WindowsLogger.hpp"
 #include "BaseWindow.h"
+
+#include "../../Core/MemoryOperators.hpp"
+#include "../../Core/MemoryManager.hpp"
+#include "../../Core/MemoryPolicyMalloc.hpp"
+
 #include "../../Core/EventPublisher.hpp"
 #include "../../Core/EventSubscriber.hpp"
 #include "../../Core/Event.hpp"

@@ -78,6 +78,8 @@ namespace Spiral
 		*/
 		void WriteAnalysis( const boost::shared_ptr<OFile>& file )const;
 
+		bool SetAllocInfo( const char* fileName, boost::int32_t lineNumber );
+
 		boost::uint32_t BytesAllocated()const
 		{
 			return m_totalAllocatedSize;
@@ -108,6 +110,9 @@ namespace Spiral
 		boost::uint32_t m_totalAllocations;
 		boost::uint32_t m_managerId;
 		boost::mutex m_mutex;
+	private:
+		const char* m_srcFileName;
+		boost::int32_t m_lineNumber;
 
 		void AddBlock( MemoryAllocBlock* block );
 		void RemoveBlock( const MemoryAllocBlock* block );
@@ -156,9 +161,16 @@ namespace Spiral
 		m_memoryPolicyClass.UnInitialize();
 	}
 
+	TEMPL_MEMORYPOLICY bool MemoryManager<MemoryPolicy,MemoryBudget>::SetAllocInfo( const char* fileName, boost::int32_t lineNumber )
+	{
+		m_srcFileName = fileName;
+		m_lineNumber = lineNumber;
+		return false;		// returns false for macro use
+	}
+
 	TEMPL_MEMORYPOLICY void* MemoryManager<MemoryPolicy,MemoryBudget>::Alloc(boost::uint32_t bytes)
 	{
-		return Alloc( bytes, UnKnownSrcFile, 0 );
+		return Alloc( bytes, m_srcFileName, m_lineNumber );
 	}
 
 	TEMPL_MEMORYPOLICY void* MemoryManager<MemoryPolicy,MemoryBudget>::Alloc( boost::uint32_t bytes, const char* srcFileName, boost::int32_t lineNumber )
@@ -175,7 +187,7 @@ namespace Spiral
 				block->srcFileName = srcFileName;
 				block->next = NULL;
 
-				AddBlock( block );
+				//AddBlock( block );
 
 				ptr = ( ((char*)ptr) + MemoryBlockSize );
 			}
@@ -193,7 +205,7 @@ namespace Spiral
 			while( m_mutex.try_lock() == false ){}
 
 			ptr = (((char*)ptr) - MemoryBlockSize );
-			RemoveBlock( static_cast<MemoryAllocBlock*>( ptr ) );
+			//RemoveBlock( static_cast<MemoryAllocBlock*>( ptr ) );
 			m_memoryPolicyClass.Dealloc( ptr );
 
 			m_mutex.unlock();
@@ -277,6 +289,10 @@ namespace Spiral
 		--m_totalAllocations;
 		m_totalAllocatedSize -= block->bytes;
 	}
+
+//#undef new
+//#define new MemoryManager< MallocPolicy, 0 >::instance().SetAllocInfo( __FILE__, __LINE__ ) ? NULL : new
+
 }
 
 #endif

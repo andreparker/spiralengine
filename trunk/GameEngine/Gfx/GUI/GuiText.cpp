@@ -16,7 +16,7 @@ using namespace boost;
 GuiText::GuiText( const Math::SpVector2r& position, const boost::shared_ptr<GfxDriver>& gfxDriver, const Rgba& textColor,
 				 boost::uint32_t maxCharLen, const boost::shared_ptr<Font>& font, const std::string& text ):
 GuiWindow( position, Rect<SpReal>(), shared_ptr<Texture>(), true ), m_text( text ), m_charPos( 0 ),
-m_font( font ),m_editSurface(),m_maxCharLen( maxCharLen ),m_fontColor( textColor ),m_oldCursorPos()
+m_font( font ),m_editSurface(),m_maxCharLen( maxCharLen ),m_fontColor( textColor )
 {
 	boost::int32_t width = font->GetCharWidth() * m_maxCharLen;
 	boost::int32_t height = font->GetCharHeight();
@@ -50,10 +50,9 @@ void GuiText::DrawString( const std::string& str )
 	ResLockRtInfo_t info;
 	if( res->Lock( info, false ) )
 	{
-		shared_ptr<Surface> surf = m_editSurface;
-		m_editSurface->SetDataPtr( info.data );
-		m_oldCursorPos.push( m_charPos );
-		m_font->RenderAlpha( surf, m_charPos, str, m_fontColor );
+		SurfaceUP* surf = static_cast<SurfaceUP*>( m_editSurface.get() );
+		surf->SetDataPtr( info.data );
+		m_font->RenderAlpha( m_editSurface, m_charPos, str, m_fontColor );
 		res->Unlock();
 	}
 }
@@ -99,9 +98,9 @@ void GuiText::ClearBox()
 	ResLockRtInfo_t info;
 	if( res->Lock( info, false ) )
 	{
-		shared_ptr<Surface> surf = m_editSurface;
-		m_editSurface->SetDataPtr( info.data );
-		m_editSurface->Fill( Rgba( 0.0f, 0.0f, 0.0f, 0.0f ) );
+		SurfaceUP* surf = static_cast<SurfaceUP*>( m_editSurface.get() );
+		surf->SetDataPtr( info.data );
+		surf->Fill( Rgba( 0.0f, 0.0f, 0.0f, 0.0f ) );
 		res->Unlock();
 	}
 }

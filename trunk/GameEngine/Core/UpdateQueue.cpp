@@ -3,17 +3,35 @@
 using namespace Spiral;
 using namespace boost;
 
-void UpdateQueue::Add( const UPDATE_CALL_BACK& callback )
+void UpdateQueue::Add( const UPDATE_CALL_BACK& callback, SpReal delayTick/* = 0.0f */ )
 {
-	m_callbacks.push( callback );
+	CallBackInfo info( callback, delayTick, m_ticks );
+	m_callbacks.push_back( info );
 }
 
-void UpdateQueue::Update()
+void UpdateQueue::Tick( SpReal tick )
 {
-	while( !m_callbacks.empty() )
+	std::list< CallBackInfo >::iterator itr = m_callbacks.begin();
+	std::list< CallBackInfo >::iterator itrLast;
+	m_ticks += tick;
+
+	while( itr != m_callbacks.end() )
 	{
-		UPDATE_CALL_BACK callback = m_callbacks.top();
-		callback();
-		m_callbacks.pop();
+		CallBackInfo& info = *itr;
+		if( m_ticks - info.m_currentStartTick > info.m_delayTick )
+		{
+			info.callback();
+			itrLast = itr++;
+			m_callbacks.erase( itrLast );
+			continue;
+		}
+
+		++itr;
 	}
+}
+
+UpdateQueue::UpdateQueue():
+m_callbacks(),m_ticks(0.0f)
+{
+
 }

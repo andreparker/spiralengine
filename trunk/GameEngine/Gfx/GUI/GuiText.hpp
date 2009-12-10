@@ -8,7 +8,7 @@
 namespace Spiral
 {
 
-	class SurfaceUP;
+	class Surface;
 	class GfxDriver;
 	class Font;
 namespace GUI
@@ -55,10 +55,9 @@ namespace GUI
 		std::string m_text;
 		boost::uint32_t m_charPos;
 		boost::shared_ptr<Font> m_font;
-		boost::shared_ptr<SurfaceUP> m_editSurface;
+		boost::shared_ptr<Surface> m_editSurface;
 		const boost::uint32_t m_maxCharLen;
 		Rgba m_fontColor;
-		std::stack<boost::uint32_t> m_oldCursorPos;
 
 	};
 }

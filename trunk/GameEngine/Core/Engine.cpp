@@ -108,8 +108,8 @@ bool Engine::Initialize( shared_ptr< GfxDriver >& gfxDriver, any& data )
 
 void Engine::UnInitialize()
 {
-	//LOG_I( module + "^w Detaching event publisher from thread....\n" );
-	//m_eventPublisherThread.detach();
+	LOG_I( module + "^w Detaching event publisher from thread....\n" );
+	m_eventPublisherThread.detach();
 	LOG_I( module + "^w Clearing resource catalog....\n" );
 	ClearCatalog();
 }
@@ -136,10 +136,11 @@ void Engine::Tick( SpReal ticks )
 		m_gfxDriver->ClearBuffer( info );
 	}
 	
-	m_eventPublisher->ProcessEventQueue();
+	//m_eventPublisher->ProcessEventQueue();
+	
 	m_stateMachine->Tick( ticks, this );
 	m_gameObjectList->Tick( ticks );
-	UpdateQueue::instance().Update();
+	UpdateQueue::instance().Tick( ticks );
 	
 	BuildSpriteDrawList();
 	
@@ -551,8 +552,8 @@ void Engine::SetGfxValues()
 
 void Engine::InitEventPublisher()
 {
-	//LOG_I( module + " ^wCreating EventPublisher thread....\n" );
-	//m_eventPublisherThread = boost::thread( &EventPublisher::ProcessEventQueueThreaded, m_eventPublisher );
+	LOG_I( module + " ^wCreating EventPublisher thread....\n" );
+	m_eventPublisherThread = boost::thread( &EventPublisher::ProcessEventQueueThreaded, m_eventPublisher );
 
 	m_eventPublisher->AddSubscriber( m_inputSubscriber );
 

@@ -26,14 +26,14 @@ inline void Lock_Wait( boost::mutex& m )
 	while( m.try_lock() == false ){}
 }
 
-void EventPublisher::RemoveSubscriber( boost::shared_ptr<EventSubscriber>& subscriber )
+void EventPublisher::RemoveSubscriber( const boost::shared_ptr<EventSubscriber>& subscriber )
 {
 	Lock_Wait( m_subscriberMutex );
 	m_subscribers.remove( subscriber );
 	m_subscriberMutex.unlock();
 }
 
-void EventPublisher::AddSubscriber( boost::shared_ptr<EventSubscriber>& subscriber )
+void EventPublisher::AddSubscriber( const boost::shared_ptr<EventSubscriber>& subscriber )
 {
 	Lock_Wait( m_subscriberMutex );
 	m_subscribers.push_back( subscriber );
@@ -91,8 +91,8 @@ void EventPublisher::ProcessEventQueue()
 
 	while( !m_eventQueue->empty() )
 	{
-		detail::EventData eventData = m_eventQueue->front();
-		m_eventQueue->pop();
+		detail::EventData& eventData = m_eventQueue->front();
+		
 
 		for( SubIter itr = m_subscribers.begin(); itr != m_subscribers.end(); ++itr )
 		{
@@ -102,6 +102,8 @@ void EventPublisher::ProcessEventQueue()
 				subscriber->Recieve( eventData );
 			}
 		}
+		
+		m_eventQueue->pop();
 	}
 
 }

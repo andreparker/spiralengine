@@ -230,6 +230,12 @@ m_quit(false)
 	RegisterHandler( WM_CHAR, boost::bind( &AppWindow::CharInputCallBack, this, _1, _2 ) );
 }
 
+// variables used to pass data a long to events
+// they are used to avoid many allocations that boost::any does
+boost::any charInputData,mouseMoveData,
+           mouseLUpData,mouseLDownData,
+		   keyUpData,keyDownData;
+
 void AppWindow::Initialize()
 {
 	m_sysAppEventSubscriber = make_shared< EventSubscriber >( Event( Event::EVENT_ANY, Catagory_App_Status::value ) );
@@ -252,7 +258,8 @@ void AppWindow::KeyUpCallback( WPARAM wParam, LPARAM /*lParam*/ )
 {
 	if( m_eventPublisher )
 	{
-		m_eventPublisher->Publish( Event( event_keyboard_key, Catagory_KeyBoard_KeyUp::value ), any( int32_t(wParam) ) );
+		keyUpData = int32_t(wParam);
+		m_eventPublisher->Publish( Event( event_keyboard_key, Catagory_KeyBoard_KeyUp::value ), keyUpData );
 	}
 }
 
@@ -260,7 +267,8 @@ void AppWindow::KeyDownCallback( WPARAM wParam, LPARAM /*lParam*/ )
 {
 	if( m_eventPublisher )
 	{
-		m_eventPublisher->Publish( Event( event_keyboard_key, Catagory_KeyBoard_KeyDown::value ), any( int32_t(wParam) ) );
+		keyDownData = int32_t(wParam);
+		m_eventPublisher->Publish( Event( event_keyboard_key, Catagory_KeyBoard_KeyDown::value ), keyDownData );
 	}
 }
 
@@ -270,7 +278,8 @@ void AppWindow::LeftMouseDownCallBack( WPARAM wParam, LPARAM lParam )
 	{
 		int x,y;
 		GetMousePosLPARAM( x, y, lParam );
-		m_eventPublisher->Publish( Event( event_mouse, Catagory_Mouse_MouseDown::value ), any( MouseEvent( MouseEvent::mouse1, x, y ) )  );
+		mouseLDownData = MouseEvent( MouseEvent::mouse1, x, y );
+		m_eventPublisher->Publish( Event( event_mouse, Catagory_Mouse_MouseDown::value ), mouseLDownData  );
 	}
 }
 
@@ -280,7 +289,8 @@ void AppWindow::LeftMouseUpCallBack( WPARAM wParam, LPARAM lParam )
 	{
 		int x,y;
 		GetMousePosLPARAM( x, y, lParam );
-		m_eventPublisher->Publish( Event( event_mouse, Catagory_Mouse_Up::value ), any( MouseEvent( MouseEvent::mouse1, x, y ) )  );
+		mouseLUpData = MouseEvent( MouseEvent::mouse1, x, y );
+		m_eventPublisher->Publish( Event( event_mouse, Catagory_Mouse_Up::value ), mouseLUpData  );
 	}
 }
 
@@ -290,7 +300,8 @@ void AppWindow::MouseMoveCallBack( WPARAM wParam, LPARAM lParam )
 	{
 		int x,y;
 		GetMousePosLPARAM( x, y, lParam );
-		m_eventPublisher->Publish( Event( event_mouse, Catagory_Mouse_Move::value ), any( MouseEvent( MouseEvent::mouse1, x, y ) )  );
+		mouseMoveData = MouseEvent( MouseEvent::mouse1, x, y );
+		m_eventPublisher->Publish( Event( event_mouse, Catagory_Mouse_Move::value ), mouseMoveData  );
 	}
 }
 
@@ -298,6 +309,7 @@ void AppWindow::CharInputCallBack( WPARAM wParam, LPARAM /*lParam*/ )
 {
 	if( m_eventPublisher )
 	{
-		m_eventPublisher->Publish( Event( event_keyboard_char, Catagory_KeyBoard_Char::value ), any( uint32_t( wParam ) ) );
+		charInputData = uint32_t( wParam );
+		m_eventPublisher->Publish( Event( event_keyboard_char, Catagory_KeyBoard_Char::value ), charInputData );
 	}
 }

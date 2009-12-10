@@ -49,6 +49,10 @@ OglTextureResource::~OglTextureResource()
 	if( m_oglTextureId )
 	{
 		glDeleteTextures( 1, reinterpret_cast<const GLuint*>(&m_oglTextureId) );
+		if( m_data )
+		{
+			m_data.reset();
+		}
 	}
 }
 
