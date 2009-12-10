@@ -95,7 +95,8 @@ void OglTextureResource::DoUnlock()
 {
 	GLint format = GetColorComponentFormat( m_colorChannels );
 	glBindTexture( GL_TEXTURE_2D, static_cast<GLuint>(m_oglTextureId) );
-	glTexImage2D( GL_TEXTURE_2D, 0, format, m_rect.right, m_rect.bottom, 0, format, GL_UNSIGNED_BYTE, m_data.get() );
+	glTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, m_rect.right, m_rect.bottom, format, GL_UNSIGNED_BYTE, m_data.get() );
+	//glTexImage2D( GL_TEXTURE_2D, 0, format, m_rect.right, m_rect.bottom, 0, format, GL_UNSIGNED_BYTE, m_data.get() );
 
 	m_mutex.unlock();
 }

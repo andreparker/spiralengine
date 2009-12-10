@@ -45,7 +45,7 @@ bool App::DoInit( boost::int32_t /*argc*/, std::list< boost::shared_array< char 
 	shared_ptr< GUI::GuiButton > button = make_shared< GUI::GuiButton >( Math::make_vector( 32.0f ,450.0f ), Rect< SpReal >( 0, 64, 32, 0 ), 
 		Rect< SpReal >( 0.0f, 1.0f, 1.0f, 0.0f ), button_texture, true );
 
-	shared_ptr< GUI::GuiEditBox > editbox = make_shared< GUI::GuiEditBox >( Math::make_vector( 32.0f,400.0f ), gfxDriver, Rgba( 1.0f, 1.0f, 1.0f ), Rgba(), m_arialN, 16, "Edit Box ......." );
+	shared_ptr< GUI::GuiEditBox > editbox = make_shared< GUI::GuiEditBox >( Math::make_vector( 32.0f,400.0f ), gfxDriver, Rgba( 1.0f, 1.0f, 1.0f ), Rgba(), m_arialN, 16, "" );
 	button->ConnectHandler( GUI::button_Press, bind( &App::ButtonPress, this, _1, _2, _3 ) );
 	m_window->AddChild( button );
 	m_window->AddChild( m_button );
@@ -130,11 +130,14 @@ m_camera(NULL)
 
 void App::KeyDown( const Event& event, const any& data )
 {
-	int32_t key = any_cast<int32_t>(data);
-	if( key == 27 )
+	if( event.IsCat( Catagory_KeyBoard_KeyDown::value ))
 	{
-		// close the app
-		m_engine->GetEventPublisher()->Publish( Event( event_AppStatus_shutdown, Catagory_App_Status::value ), any() );
+		int32_t key = any_cast<int32_t>(data);
+		if( key == 27 )
+		{
+			// close the app
+			m_engine->GetEventPublisher()->Publish( Event( event_AppStatus_shutdown, Catagory_App_Status::value ), any() );
+		}
 	}
 }
 

@@ -5,6 +5,7 @@
 #include "../GfxImpl.hpp"
 #include "../GfxDriver.hpp"
 #include "../Font.hpp"
+#include "../Color.hpp"
 #include "../../Resource/Resource.hpp"
 #include "../../Resource/ResLockImpl.hpp"
 
@@ -39,7 +40,7 @@ m_font( font ),m_editSurface(),m_maxCharLen( maxCharLen ),m_fontColor( textColor
 	SetRect( rect );
 	SetTexCoords( texCoords );
 	SetTexture( textTexture );
-	SetText( m_text );
+	SetText( text );
 }
 
 void GuiText::DrawString( const std::string& str )
@@ -57,13 +58,50 @@ void GuiText::DrawString( const std::string& str )
 	}
 }
 
-void GuiText::DrawChar( char /*c*/ )
+void GuiText::DrawChar( char c )
 {
-
+	if( m_maxCharLen > m_text.length() )
+	{
+		m_text += c;
+		m_charPos = 0;
+		DrawString( m_text );
+	}
 }
 
 void GuiText::SetText( const std::string& text )
 {
-	m_text = text;
-	DrawString( text );
+	if( m_maxCharLen > m_text.length() )
+	{
+		m_text = text;
+		m_charPos = 0;
+		DrawString( m_text );
+	}
+	
+}
+
+void GuiText::EraseEnd()
+{
+	if( m_text.length() )
+	{
+		m_charPos = 0;
+		m_text.erase( m_text.length()-1, 1 );
+		
+		ClearBox();
+	}
+
+	DrawString( m_text );
+}
+
+void GuiText::ClearBox()
+{
+	shared_ptr< Resource > res = GetTexture()->GetResource();
+
+	ResLockRtInfo_t info;
+	if( res->Lock( info, false ) )
+	{
+		shared_ptr<Surface> surf = m_editSurface;
+		m_editSurface->SetDataPtr( info.data );
+		m_editSurface->Fill( Rgba( 0.0f, 0.0f, 0.0f, 0.0f ) );
+		res->Unlock();
+	}
 }

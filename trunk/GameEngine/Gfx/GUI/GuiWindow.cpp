@@ -197,7 +197,8 @@ void GuiWindow::MouseHover( const mouse_position& pos )
 {
 	if( ContainsPoint( pos.x, pos.y ) )
 	{
-		ProcessMouseEvent( GUI::mouse_hover, pos );
+		GuiWindow* topMostWindow = FindTopMostChild( pos.x, pos.y );
+		topMostWindow->CallHandler( GUI::mouse_hover, this, boost::any( pos ) );
 	}else
 	{
 		ResetWindow();
@@ -209,3 +210,20 @@ void GuiWindow::CharInput( boost::uint32_t char_ )
 	ProcessEvent( GUI::char_input, boost::any( char_ ) );
 }
 
+
+GuiWindow* GuiWindow::FindTopMostChild( SpReal x, SpReal y ) const
+{
+	GuiWindow* window = NULL;
+	if( ContainsPoint( x, y ) )
+	{
+		for( Const_WindowItr itr = m_children.begin(); itr != m_children.end(); ++itr )
+		{
+			window = (*itr)->FindTopMostChild( x, y );
+			if( window ) return window;
+		}
+
+		window = const_cast<GuiWindow*>(this);
+	}
+
+	return window;
+}

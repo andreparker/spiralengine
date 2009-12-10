@@ -137,6 +137,16 @@ namespace GUI
 
 		MAKE_ALIGNED_NEW
 	protected:
+
+		/*!
+		   @function  FindTopMostChild
+		   @brief     finds the top most child that the coordinates lie in
+		   @return    GuiWindow*
+		   @param     SpReal x
+		   @param     SpReal y
+		*/
+		GuiWindow* FindTopMostChild( SpReal x, SpReal y )const;
+
 		/*!
 		   @function  ProcessMouseEvent
 		   @brief     processes a event and calls appropriate handlers
@@ -230,6 +240,7 @@ namespace GUI
 		static boost::int32_t window_ID;
 
 		typedef std::list< boost::shared_ptr< GuiWindow > >::iterator WindowItr;
+		typedef std::list< boost::shared_ptr< GuiWindow > >::const_iterator Const_WindowItr;
 		typedef std::multimap< boost::int32_t, WindowEventHandler >::iterator handleItr;
 
 		bool IsVisible()const

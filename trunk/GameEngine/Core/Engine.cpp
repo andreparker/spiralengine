@@ -30,6 +30,7 @@
 #include "EventSubscriber.hpp"
 #include "GeneralException.hpp"
 #include "EngineAttributes.hpp"
+#include "UpdateQueue.hpp"
 
 #include <algorithm>
 #include <boost/make_shared.hpp>
@@ -107,8 +108,8 @@ bool Engine::Initialize( shared_ptr< GfxDriver >& gfxDriver, any& data )
 
 void Engine::UnInitialize()
 {
-	LOG_I( module + "^w Detaching event publisher from thread....\n" );
-	m_eventPublisherThread.detach();
+	//LOG_I( module + "^w Detaching event publisher from thread....\n" );
+	//m_eventPublisherThread.detach();
 	LOG_I( module + "^w Clearing resource catalog....\n" );
 	ClearCatalog();
 }
@@ -135,14 +136,19 @@ void Engine::Tick( SpReal ticks )
 		m_gfxDriver->ClearBuffer( info );
 	}
 	
+	m_eventPublisher->ProcessEventQueue();
 	m_stateMachine->Tick( ticks, this );
 	m_gameObjectList->Tick( ticks );
+	UpdateQueue::instance().Update();
+	
 	BuildSpriteDrawList();
 	
 	// wait for threads to finish
 	m_threadManager.join_all();
 
 	DrawSpriteList();
+
+	
 	m_guiManager->Present( m_gfxDriver );
 	m_gfxDriver->Present();
 }
@@ -545,8 +551,8 @@ void Engine::SetGfxValues()
 
 void Engine::InitEventPublisher()
 {
-	LOG_I( module + " ^wCreating EventPublisher thread....\n" );
-	m_eventPublisherThread = boost::thread( &EventPublisher::ProcessEventQueueThreaded, m_eventPublisher );
+	//LOG_I( module + " ^wCreating EventPublisher thread....\n" );
+	//m_eventPublisherThread = boost::thread( &EventPublisher::ProcessEventQueueThreaded, m_eventPublisher );
 
 	m_eventPublisher->AddSubscriber( m_inputSubscriber );
 

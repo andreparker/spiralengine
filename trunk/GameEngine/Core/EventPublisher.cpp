@@ -10,7 +10,7 @@
 using namespace Spiral;
 using namespace boost;
 
-const int32_t maxQueueSize = 15;
+const int32_t maxQueueSize = 50;
 
 EventPublisher::EventPublisher():
 m_subscribers(),
@@ -88,21 +88,20 @@ void EventPublisher::ProcessEventQueueThreaded()
 
 void EventPublisher::ProcessEventQueue()
 {
-	while( true )
-	{
-		while( !m_eventQueue->empty() )
-		{
-			detail::EventData eventData = m_eventQueue->front();
-			m_eventQueue->pop();
 
-			for( SubIter itr = m_subscribers.begin(); itr != m_subscribers.end(); ++itr )
+	while( !m_eventQueue->empty() )
+	{
+		detail::EventData eventData = m_eventQueue->front();
+		m_eventQueue->pop();
+
+		for( SubIter itr = m_subscribers.begin(); itr != m_subscribers.end(); ++itr )
+		{
+			EventSubscriber* subscriber = (*itr).get();
+			if( subscriber->GetEvent() == eventData.event )
 			{
-				EventSubscriber* subscriber = (*itr).get();
-				if( subscriber->GetEvent() == eventData.event )
-				{
-					subscriber->Recieve( eventData );
-				}
+				subscriber->Recieve( eventData );
 			}
 		}
 	}
+
 }
