@@ -104,14 +104,44 @@ namespace Spiral
 
 
 
-#define LOG_I Spiral::log< Spiral::Int2Bit<logFlag_system_init>::value >
-#define LOG_E Spiral::log< Spiral::Int2Bit<logFlag_error>::value >
-#define LOG_P Spiral::log< Spiral::Int2Bit<logFlag_platform>::value >
+#define LOG_I Spiral::log< Spiral::Int2Bit<Spiral::logFlag_system_init>::value >
+#define LOG_E Spiral::log< Spiral::Int2Bit<Spiral::logFlag_error>::value >
+#define LOG_P Spiral::log< Spiral::Int2Bit<Spiral::logFlag_platform>::value >
 
 #ifdef _DEBUG
-#define LOG_D Spiral::log< Spiral::Int2Bit<logFlag_results>::value >
+#define LOG_D Spiral::log< Spiral::Int2Bit<Spiral::logFlag_results>::value >
 #else 
 #define LOG_D (void)
+#endif
+
+class LogScopeObject
+{
+public:
+	LogScopeObject( const std::string str ):
+	  m_str( str )
+	{
+		LOG_D( ( "^r" + m_space + m_str + ": Enter...\n") );
+		m_space += " ";
+	}
+
+	~LogScopeObject()
+	{
+		if( m_space.length() )
+		{
+			m_space.erase( m_space.length()-1, 1 );
+		}
+
+		LOG_D( ( "^r" + m_space + m_str + ": Exit...\n") );
+	}
+private:
+	static std::string m_space;
+	const std::string m_str;
+};
+
+#ifdef _DEBUG
+#define FUNCTION_LOG LogScopeObject funcLog( __FUNCTION__ );
+#else 
+#define FUNCTION_LOG (void)
 #endif
 
 #endif

@@ -4,6 +4,7 @@
 #include <stack>
 #include "GuiWindow.hpp"
 #include "../Color.hpp"
+#include "../../Core/Sp_DataTypes.hpp"
 
 namespace Spiral
 {
@@ -19,7 +20,7 @@ namespace GUI
 	public:
 		virtual ~GuiText(){}
 		GuiText( const Math::SpVector2r& position, const boost::shared_ptr<GfxDriver>& gfxDriver,
-			const Rgba& textColor, boost::uint32_t maxCharLen, const boost::shared_ptr<Font>& font, const std::string& text );
+			const Rgba& textColor, boost::uint32_t maxCharLen, const boost::shared_ptr<Font>& font, const SpString& text, bool multiLine = false );
 
 		void SetCharPos( boost::uint32_t posX )
 		{
@@ -31,9 +32,14 @@ namespace GUI
 			return m_charPos;
 		}
 
-		const std::string& GetText()const
+		const SpString& GetText()const
 		{
 			return m_text;
+		}
+
+		bool IsMultiLine()const
+		{
+			return m_multiline;
 		}
 
 		/*!
@@ -42,22 +48,23 @@ namespace GUI
 		   @return    void
 		   @param     const std::string & text
 		*/
-		void SetText( const std::string& text );
-		void DrawChar( char c );
+		void SetText( const SpString& text );
+		void DrawChar( SpChar c );
 
 		void EraseEnd();
 		void ClearBox();
 	private:
 
-		void DrawString( const std::string& text );
+		void DrawString( const SpString& text );
 		
 	private:
-		std::string m_text;
+		SpString m_text;
 		boost::uint32_t m_charPos;
 		boost::shared_ptr<Font> m_font;
 		boost::shared_ptr<Surface> m_editSurface;
 		const boost::uint32_t m_maxCharLen;
 		Rgba m_fontColor;
+		bool m_multiline;
 
 	};
 }

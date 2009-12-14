@@ -22,6 +22,10 @@ namespace Spiral
 class AppWindow : public BaseWindow
 {
 public:
+	virtual ~AppWindow() 
+	{
+	}
+
 	AppWindow( HINSTANCE hInst, CONST WNDCLASSEX* wcx = NULL );
 
 	void Initialize();

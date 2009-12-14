@@ -59,7 +59,8 @@ m_eventPublisherThread(),
 m_threadManager(),
 m_fontFactory(),
 m_guiManager(),
-m_inputSubscriber()
+m_inputSubscriber(),
+m_threadsEnabled(false)
 {
 }
 
@@ -69,6 +70,7 @@ Engine::~Engine()
 
 bool Engine::Initialize( shared_ptr< GfxDriver >& gfxDriver, any& data ) 
 {
+	FUNCTION_LOG
 	if( gfxDriver )
 	{
 		LOG_I( version );
@@ -108,8 +110,11 @@ bool Engine::Initialize( shared_ptr< GfxDriver >& gfxDriver, any& data )
 
 void Engine::UnInitialize()
 {
-	LOG_I( module + "^w Detaching event publisher from thread....\n" );
-	m_eventPublisherThread.detach();
+	if( m_threadsEnabled == true )
+	{
+		DisableThreads();
+	}
+
 	LOG_I( module + "^w Clearing resource catalog....\n" );
 	ClearCatalog();
 }
@@ -136,7 +141,10 @@ void Engine::Tick( SpReal ticks )
 		m_gfxDriver->ClearBuffer( info );
 	}
 	
-	//m_eventPublisher->ProcessEventQueue();
+	if( m_threadsEnabled == false )
+	{
+		m_eventPublisher->ProcessEventQueue();
+	}
 	
 	m_stateMachine->Tick( ticks, this );
 	m_gameObjectList->Tick( ticks );
@@ -145,8 +153,11 @@ void Engine::Tick( SpReal ticks )
 	BuildSpriteDrawList();
 	
 	// wait for threads to finish
-	m_threadManager.join_all();
-
+	if( m_threadsEnabled == true )
+	{
+		m_threadManager.join_all();
+	}
+	
 	DrawSpriteList();
 
 	
@@ -397,16 +408,24 @@ void Engine::BuildSpriteDrawList()
 	if( GetAttr<bool>( EngineAttribute( EngineAttribute::EnableSprites ) ) && 
 		m_spriteLayerCount && m_spriteDrawList->NeedsBuild() )
 	{
-		LOG_D( module + "^w Creating sprite list build thread.\n" );
-		m_threadManager.create_thread( boost::bind( &Engine::SpriteUpdateListThread, this ) );
+		if( m_threadsEnabled == true )
+		{
+			LOG_D( module + "^w Creating sprite list build thread.\n" );
+			m_threadManager.create_thread( boost::bind( &Engine::SpriteUpdateListThread, this ) );
+		}else
+		{
+			SpriteUpdateListThread();
+		}
+		
 	}
 }
 
 void Engine::DrawSpriteList()
 {
-	// draw no blended
+	
 	if( GetAttr<bool>( EngineAttribute( EngineAttribute::EnableSprites ) ) )
 	{
+		// draw no blended
 		if( !m_spriteDrawList->m_opaqueList.empty() )
 		{
 			m_gfxDriver->Draw( m_spriteDrawList->m_opaqueList );
@@ -435,10 +454,11 @@ void Engine::InitializeAttributes()
 	m_attributes[ EngineAttribute::ClearDepthBuffer ] = any( true );
 	m_attributes[ EngineAttribute::ClearColor ] = any( Rgba() );
 	m_attributes[ EngineAttribute::EnableSprites ] = any( true );
+	m_attributes[ EngineAttribute::EnableThreading ] = any( false );
 	m_attrDirtyFlag = true;
 }
 
-boost::any Engine::GetAttribute( const EngineAttribute& attr )
+const boost::any& Engine::GetAttribute( const EngineAttribute& attr )
 {
 	return m_attributes[ attr.m_attribute ];
 }
@@ -447,7 +467,9 @@ void Engine::UpdateAttributes()
 {
 	if( m_attrDirtyFlag )
 	{
+		FUNCTION_LOG
 		UpdateBufferAttributes();
+		UpdateThreadAttributes();
 		m_attrDirtyFlag = false;
 	}
 }
@@ -461,7 +483,6 @@ void Engine::UpdateBufferAttributes()
 		m_gfxDriver->Set( ClearInfoType_t( ClearInfoType_t::ColorValue ), color );
 		bits.set( BufferInfo_t::COLOR_BUFFER );
 	}
-
 	if( GetAttr<bool>( EngineAttribute(EngineAttribute::ClearDepthBuffer) ) )
 	{
 		bits.set( BufferInfo_t::DEPTH_BUFFER );
@@ -517,6 +538,7 @@ void Engine::ClearFontCatalog()
 
 void Engine::CreateModules()
 {
+	FUNCTION_LOG
 	LOG_I( module + " ^wCreating engine modules....\n" );
 	m_stateMachine    = make_shared< GameStateMachine >();
 	m_gameObjectList  = make_shared< GameObjectHandler >();
@@ -531,6 +553,7 @@ void Engine::CreateModules()
 
 void Engine::SetGfxValues()
 {
+	FUNCTION_LOG
 	int32_t vidWidth = m_variables->GetVarValue( "vid_width", EmptyType<int32_t>() );
 	int32_t vidHeight = m_variables->GetVarValue( "vid_height", EmptyType<int32_t>() );
 	int32_t vidFullscreen = m_variables->GetVarValue( "vid_fullscreen", EmptyType<int32_t>() );
@@ -552,11 +575,7 @@ void Engine::SetGfxValues()
 
 void Engine::InitEventPublisher()
 {
-	LOG_I( module + " ^wCreating EventPublisher thread....\n" );
-	m_eventPublisherThread = boost::thread( &EventPublisher::ProcessEventQueueThreaded, m_eventPublisher );
-
 	m_eventPublisher->AddSubscriber( m_inputSubscriber );
-
 	m_inputSubscriber->AddCallback( boost::bind( &GUI::GuiManager::Input, m_guiManager, _1, _2 ) );
 }
 
@@ -588,4 +607,30 @@ bool Engine::UnCacheTexture( const std::string& textureName )
 	}
 
 	return found;
+}
+
+void Engine::EnableThreads()
+{
+	LOG_I( module + " ^wCreating EventPublisher thread....\n" );
+	m_eventPublisherThread = boost::thread( &EventPublisher::ProcessEventQueueThreaded, ref( m_eventPublisher ) );
+}
+
+void Engine::DisableThreads()
+{
+	LOG_I( module + " ^wDestroying EventPublisher thread....\n" );
+	m_eventPublisherThread.detach();
+	m_eventPublisherThread.join();
+}
+
+void Engine::UpdateThreadAttributes()
+{
+	if( m_threadsEnabled == false && GetAttr<bool>( EngineAttribute(EngineAttribute::EnableThreading) ) == true )
+	{
+		UpdateQueue::instance().Add( bind( &Engine::EnableThreads, this ) );
+		m_threadsEnabled = true;
+	}else if( m_threadsEnabled == true && GetAttr<bool>( EngineAttribute(EngineAttribute::EnableThreading) ) == false )
+	{
+		UpdateQueue::instance().Add( bind( &Engine::DisableThreads, this ) );
+		m_threadsEnabled = false;
+	}
 }

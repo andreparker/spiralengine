@@ -12,7 +12,8 @@ namespace Spiral
 			ClearColorBuffer,
 			ClearColor,
 			ClearDepthBuffer,
-			EnableSprites
+			EnableSprites,
+			EnableThreading
 		}AttributeType;
 
 		EngineAttribute( AttributeType attr ):

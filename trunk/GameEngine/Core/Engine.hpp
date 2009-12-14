@@ -50,7 +50,7 @@ namespace GUI
 		~Engine();
 
 		void SetAttribute( const EngineAttribute& attr, const boost::any& value );
-		boost::any GetAttribute( const EngineAttribute& attr );
+		const boost::any& GetAttribute( const EngineAttribute& attr );
 
 		/*!
 		   @function  LoadFont
@@ -259,6 +259,9 @@ namespace GUI
 
 	private:
 		
+		void EnableThreads();
+		void DisableThreads();
+
 		/*!
 		   @function  ClearTextureCatalog
 		   @brief     clears and resets the texture catalog
@@ -322,6 +325,13 @@ namespace GUI
 		void UpdateBufferAttributes();
 
 		/*!
+		   @function  UpdateThreadAttributes
+		   @brief     turns threading on or off
+		   @return    void
+		*/
+		void UpdateThreadAttributes();
+
+		/*!
 		   @function  SpriteUpdateListThread
 		   @brief     updates the sprites list in a thread
 		   @return    void
@@ -360,6 +370,7 @@ namespace GUI
 		boost::shared_ptr< GUI::GuiManager > m_guiManager;
 		boost::shared_ptr< EventSubscriber > m_inputSubscriber;
 		boost::any m_attributes[ AttributeCount ];
+		bool m_threadsEnabled;
 
 		Engine();
 	};

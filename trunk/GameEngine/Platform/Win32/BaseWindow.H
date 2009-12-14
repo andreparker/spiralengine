@@ -15,7 +15,9 @@
 class BaseWindow
 {
 public:
-	void RegisterHandler( UINT uMsg, boost::function< void( WPARAM , LPARAM ) > callBack );
+	virtual ~BaseWindow();
+
+	void RegisterHandler( UINT uMsg, const boost::function< void( WPARAM , LPARAM ) >& callBack );
 	// many different ways to register
 	virtual BOOL RegisterWindow();
 	virtual BOOL RegisterWindow(UINT style, HICON hIcon, HCURSOR hCursor, HBRUSH hbrBackground, 

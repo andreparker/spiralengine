@@ -9,6 +9,7 @@
 
 #include <boost/shared_ptr.hpp>
 #include <boost/cstdint.hpp>
+#include "../../Core/Sp_DataTypes.hpp"
 
 namespace Spiral
 {
@@ -20,12 +21,12 @@ namespace GUI
 	class GuiList : public GuiWindow
 	{
 	public:
-		GuiList( const Math::SpVector2r& position, const std::string itemList[], boost::uint32_t itemCount,
+		GuiList( const Math::SpVector2r& position, const SpString itemList[], boost::uint32_t itemCount,
 			boost::uint32_t maxListSize, boost::uint32_t maxItemNameLength, const boost::shared_ptr< Font >& font );
 		virtual ~GuiList();
 
-		bool AddItem( const std::string& item );
-		bool GetItem( boost::uint32_t index, std::string& item )const;
+		bool AddItem( const SpString& item );
+		bool GetItem( boost::uint32_t index, SpString& item )const;
 		
 		void Construct( const boost::shared_ptr< GfxDriver >& gfxDriver );
 
@@ -39,9 +40,9 @@ namespace GUI
 			return m_needsConstruct;
 		}
 	private:
-		std::list< std::string > m_items;
-		typedef std::list< std::string >::iterator ItemItr;
-		typedef std::list< std::string >::const_iterator Const_ItemItr;
+		std::list< SpString > m_items;
+		typedef std::list< SpString >::iterator ItemItr;
+		typedef std::list< SpString >::const_iterator Const_ItemItr;
 		boost::shared_ptr< Font > m_font;
 		const boost::uint32_t m_maxItemNameLength;
 		const boost::uint32_t m_maxListSize;
