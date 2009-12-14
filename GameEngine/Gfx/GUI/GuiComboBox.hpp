@@ -5,6 +5,7 @@
 #include <boost/scoped_ptr.hpp>
 
 #include "GuiWindow.hpp"
+#include "../../Core/Sp_DataTypes.hpp"
 
 namespace Spiral
 {
@@ -29,7 +30,7 @@ namespace GUI
 		boost::int32_t GetItemInt( boost::int32_t index )const;
 		SpReal GetItemReal( boost::int32_t index )const;
 
-		bool AddItemText( const std::string& item );
+		bool AddItemText( const SpString& item );
 		bool AddItemInt( boost::int32_t item );
 		bool AddItemReal( SpReal item );
 

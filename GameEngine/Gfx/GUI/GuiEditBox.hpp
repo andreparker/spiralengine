@@ -6,6 +6,7 @@
 
 #include "GuiWindow.hpp"
 #include "../Color.hpp"
+#include "../../Core/Sp_DataTypes.hpp"
 
 namespace Spiral
 {
@@ -31,14 +32,14 @@ namespace GUI
 		   @param     const std::string & defText	- defualt text in the box
 		*/
 		GuiEditBox( const Math::SpVector2r& position, const boost::shared_ptr<GfxDriver>& gfxDriver,const Rgba& backColor,
-					const Rgba& forColor, const boost::shared_ptr<Font>& font, boost::uint32_t maxCharLen, const std::string& defText );
+					const Rgba& forColor, const boost::shared_ptr<Font>& font, boost::uint32_t maxCharLen, const SpString& defText );
 
 		/*!
 		   @function  GetText
 		   @brief     gets the contents of the text box
 		   @return    const std::string&
 		*/
-		const std::string& GetText()const;
+		const SpString& GetText()const;
 
 		/*!
 		   @function  SetText
@@ -46,22 +47,14 @@ namespace GUI
 		   @return    void
 		   @param     const std::string & text
 		*/
-		void SetText( const std::string& text );
+		void SetText( const SpString& text );
 	private:
 
-		void DrawString( const std::string& str );
+		void DrawString( const SpString& str );
 		void OnChar( boost::int32_t eventId, GuiWindow* window, const boost::any& data );
 	private:
 
 		boost::shared_ptr<GuiText> m_textBox;
-// 		boost::uint32_t m_cursorPos;
-// 		std::string m_text;
-// 		boost::shared_ptr<Font> m_font;
-// 		boost::shared_ptr<Texture> m_editTexture;		// texture that the text will be rendered to
-// 		const boost::uint32_t m_maxCharLen;				// max characters in the edit box
-// 		std::stack<boost::uint32_t> m_oldCursorPos;		// last char positon
-// 		boost::shared_ptr<SurfaceUP> m_editSurface;     // surface to allow text to be rendered
-// 		Rgba m_forgroundColor;							// text color
 	};
 }
 }

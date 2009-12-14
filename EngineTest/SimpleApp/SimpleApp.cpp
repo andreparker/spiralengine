@@ -24,38 +24,50 @@ bool App::DoInit( boost::int32_t /*argc*/, std::list< boost::shared_array< char 
 	m_sprite_alpha->SetPosition( 50.0f, 50.0f );
 	m_sprite_alpha->SetAlphaBlend( true );
 	
-	m_arialN = engine->LoadFont( "c:/windows/fonts/arialn.ttf", "arial_n", 16, 16 );
+	m_arialN = engine->LoadFont( "c:/windows/fonts/arialn.ttf", "arial_n", 16, 10 );
 	int32_t width = 1024,height = 1024;
-	std::string text = "Testing Font rendering code using true type font.\nThis font is arial narrow.\nTesting newline code";
-	m_arialN->CalcSurfaceSize( text, width, height );
-	shared_ptr< Surface > surf = make_surface( width, height, 3 );
-	m_arialN->RenderOpaque( surf, text, Rgba( 1.0f, 1.0f, 1.0f ) );
+	SpString text = L"Testing Font rendering code using true type font.\nThis font is arial narrow.\nTesting newline code";
 
 
-	shared_ptr< Texture > fontTexture = surf->CreateTextureFromData( gfxDriver );
+	shared_ptr< GUI::GuiText > guiText = make_shared< GUI::GuiText >( Math::make_vector<SpReal>(32.0f, 100.0f),gfxDriver,Rgba(1.0f,1.0f,1.0f),text.length()+1,m_arialN,text,true );
+	shared_ptr< GUI::GuiText > guiButtonText1 = make_shared< GUI::GuiText >( Math::make_vector<SpReal>(8.0f, 10.0f),gfxDriver,Rgba(1.0f,1.0f,1.0f),10,m_arialN,L"Button 1" );
+	shared_ptr< GUI::GuiText > guiButtonText2 = make_shared< GUI::GuiText >( Math::make_vector<SpReal>(8.0f, 10.0f),gfxDriver,Rgba(1.0f,1.0f,1.0f),10,m_arialN,L"Button 2" );
 
-	gfxDriver->CreateSprite( m_fontSprite, fontTexture, Rect< SpReal >( 0.0f, 1.0f, 1.0f, 0.0f ), Rect< SpReal >( 32.0f, width*2, height*2, 8.0f ) );
-	m_fontSprite->SetPosition( 400.0f, 500.0f );
-	//m_fontSprite->SetAlphaBlend( true );
+	guiButtonText1->AllowFocus(false);
+	guiButtonText2->AllowFocus(false);
+	guiButtonText1->Show();
+	guiButtonText2->Show();
+
+	guiText->AllowFocus(false);
+	guiText->Show();
 	
 	m_button = make_shared< GUI::GuiButton >( Math::make_vector( 128.0f,450.0f), Rect< SpReal >( 0, 64, 32, 0 ), 
 		Rect< SpReal >( 0.0f, 1.0f, 1.0f, 0.0f ), button_texture, true );
-	m_window = make_shared< GUI::GuiWindow >( Math::make_vector( 0.0f, 100.0f ), Rect< SpReal >( 0, 512, 512, 0 ),
-		Rect< SpReal >( 0.0f, 1.0f, 1.0f, 0.0f ), window_texture, true );
+	m_button->AddChild( guiButtonText2 );
+	m_button->Show();
+
 	shared_ptr< GUI::GuiButton > button = make_shared< GUI::GuiButton >( Math::make_vector( 32.0f ,450.0f ), Rect< SpReal >( 0, 64, 32, 0 ), 
 		Rect< SpReal >( 0.0f, 1.0f, 1.0f, 0.0f ), button_texture, true );
+	button->AddChild( guiButtonText1 );
+	button->Show();
+	
 
-	shared_ptr< GUI::GuiEditBox > editbox = make_shared< GUI::GuiEditBox >( Math::make_vector( 32.0f,400.0f ), gfxDriver, Rgba( 1.0f, 1.0f, 1.0f ), Rgba(), m_arialN, 32, "" );
+	shared_ptr< GUI::GuiEditBox > editbox = make_shared< GUI::GuiEditBox >( Math::make_vector( 32.0f,332.0f ), gfxDriver, Rgba( 1.0f, 1.0f, 1.0f ), Rgba(), m_arialN, 32, L"Edit box 2" );
+	shared_ptr< GUI::GuiEditBox > editbox1 = make_shared< GUI::GuiEditBox >( Math::make_vector( 32.0f,300.0f ), gfxDriver, Rgba( 1.0f, 1.0f, 1.0f ), Rgba(), m_arialN, 32, L"Edit box 1" );
 	button->ConnectHandler( GUI::button_Press, bind( &App::ButtonPress, this, _1, _2, _3 ) );
+
+	m_window = make_shared< GUI::GuiWindow >( Math::make_vector( 0.0f, 100.0f ), Rect< SpReal >( 0, 512, 512, 0 ),
+		Rect< SpReal >( 0.0f, 1.0f, 1.0f, 0.0f ), window_texture, true );
 	m_window->AddChild( button );
 	m_window->AddChild( m_button );
 	m_window->AddChild( editbox );
+	m_window->AddChild( editbox1 );
+	m_window->AddChild( guiText );
 
 	m_button->ConnectHandler( GUI::button_Press, bind( &App::ButtonPress, this, _1, _2, _3 ) );
 	engine->GetGuiManager()->AddElement( m_window );
 
-	button->Show();
-	m_button->Show();
+	
 	m_window->Show();
 
 	gfxDriver->SetState( RenderState::Depth_Test( RenderState::RS_FALSE ) );
@@ -66,7 +78,6 @@ bool App::DoInit( boost::int32_t /*argc*/, std::list< boost::shared_array< char 
 	{
 		engine->AddSprite( m_sprite.get(), 0 );
 		engine->AddSprite( m_sprite_alpha.get(), 0 );
-		engine->AddSprite( m_fontSprite.get(), 0 );
 		engine->EnableSpriteLayer( 0, true );
 	}
 
@@ -77,6 +88,7 @@ bool App::DoInit( boost::int32_t /*argc*/, std::list< boost::shared_array< char 
 	engine->SetAttribute( EngineAttribute( EngineAttribute::ClearColor ), Rgba( 1.0f, 0.0f , 0.0f ) );
 	engine->SetAttribute( EngineAttribute( EngineAttribute::ClearColorBuffer ), true );
 	engine->SetAttribute( EngineAttribute( EngineAttribute::ClearDepthBuffer ), false );
+	engine->SetAttribute( EngineAttribute( EngineAttribute::EnableThreading ), false );
 
 	
 	m_camera = new Camera( Math::SpVector3r( 0.0f, 0.0f, 0.0f ) );
@@ -107,7 +119,6 @@ bool App::DoUnInit()
 	m_keyDownSubscriber.reset();
 	m_engine.reset(); // release the reference to the engine (IMPORTANT)
 	m_arialN.reset();
-	m_fontSprite.reset();
 
 	return true;
 }
@@ -120,7 +131,6 @@ m_sprite_alpha(),
 m_keyDownSubscriber(),
 m_engine(),
 m_arialN(),
-m_fontSprite(),
 m_button(),
 m_window(),
 m_camera(NULL)

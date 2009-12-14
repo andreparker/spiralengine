@@ -136,7 +136,7 @@ void GuiWindow::DisConnectHandler( boost::int32_t eventId )
 
 void GuiWindow::MouseDown( const mouse_position& pos )
 {
-	if( ContainsPoint( pos.x, pos.y ) )
+	if( m_show && ContainsPoint( pos.x, pos.y ) )
 	{
 		ProcessMouseEvent( GUI::mouse_down, pos );
 	}
@@ -144,7 +144,7 @@ void GuiWindow::MouseDown( const mouse_position& pos )
 
 void GuiWindow::MouseUp( const mouse_position& pos )
 {
-	if( ContainsPoint( pos.x, pos.y ) )
+	if( m_show && ContainsPoint( pos.x, pos.y ) )
 	{
 		ProcessMouseEvent( GUI::mouse_up, pos );
 	}
@@ -207,7 +207,10 @@ void GuiWindow::MouseHover( const mouse_position& pos )
 
 void GuiWindow::CharInput( boost::uint32_t char_ )
 {
-	ProcessEvent( GUI::char_input, boost::any( char_ ) );
+	if( m_show )
+	{
+		ProcessEvent( GUI::char_input, boost::any( char_ ) );
+	}
 }
 
 

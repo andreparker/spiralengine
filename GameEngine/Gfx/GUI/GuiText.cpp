@@ -14,12 +14,21 @@ using namespace Spiral::GUI;
 using namespace boost;
 
 GuiText::GuiText( const Math::SpVector2r& position, const boost::shared_ptr<GfxDriver>& gfxDriver, const Rgba& textColor,
-				 boost::uint32_t maxCharLen, const boost::shared_ptr<Font>& font, const std::string& text ):
+				 boost::uint32_t maxCharLen, const boost::shared_ptr<Font>& font, const SpString& text, bool multiline ):
 GuiWindow( position, Rect<SpReal>(), shared_ptr<Texture>(), true ), m_text( text ), m_charPos( 0 ),
-m_font( font ),m_editSurface(),m_maxCharLen( maxCharLen ),m_fontColor( textColor )
+m_font( font ),m_editSurface(),m_maxCharLen( maxCharLen ),m_fontColor( textColor ),m_multiline(multiline)
 {
-	boost::int32_t width = font->GetCharWidth() * m_maxCharLen;
-	boost::int32_t height = font->GetCharHeight();
+	boost::int32_t width;
+	boost::int32_t height;
+
+	if( m_multiline )
+	{
+		font->CalcSurfaceSize( text, width, height );
+	}else
+	{
+		width = font->GetCharWidth() * m_maxCharLen;
+		height = font->GetCharHeight();
+	}
 
 	shared_ptr<Texture> textTexture;
 	TextureInfo_t info;
@@ -43,7 +52,7 @@ m_font( font ),m_editSurface(),m_maxCharLen( maxCharLen ),m_fontColor( textColor
 	SetText( text );
 }
 
-void GuiText::DrawString( const std::string& str )
+void GuiText::DrawString( const SpString& str )
 {
 	shared_ptr< Resource > res = GetTexture()->GetResource();
 
@@ -57,7 +66,7 @@ void GuiText::DrawString( const std::string& str )
 	}
 }
 
-void GuiText::DrawChar( char c )
+void GuiText::DrawChar( SpChar c )
 {
 	if( m_maxCharLen > m_text.length() )
 	{
@@ -67,7 +76,7 @@ void GuiText::DrawChar( char c )
 	}
 }
 
-void GuiText::SetText( const std::string& text )
+void GuiText::SetText( const SpString& text )
 {
 	if( m_maxCharLen > m_text.length() )
 	{

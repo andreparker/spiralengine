@@ -180,7 +180,7 @@ bool BaseWindow::ProcessMessage( MSG& msg, UINT msgFilterMin, UINT msgFilterMax,
 	return false;
 }
 
-void BaseWindow::RegisterHandler( UINT uMsg, boost::function< void( WPARAM , LPARAM ) > callBack )
+void BaseWindow::RegisterHandler( UINT uMsg, const boost::function< void( WPARAM , LPARAM ) >& callBack )
 {
 	if( m_callbacks.find( uMsg ) == m_callbacks.end() )
 	{
@@ -224,4 +224,9 @@ void BaseWindow::ResizeWindow( RECT* rect, bool fullscreen )
 	rect->right += dx;
 
 	MoveWindow( m_hwnd,rect->left, rect->top, rect->right, rect->bottom ,TRUE );
+}
+
+BaseWindow::~BaseWindow()
+{
+	SetWindowLong( m_hwnd, GWL_USERDATA, (long)(NULL) );
 }

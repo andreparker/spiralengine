@@ -77,3 +77,5 @@ bool LogModule::CanLog( const LogFlags& flags )const
 {
 	return canLog( flags );
 }
+
+std::string LogScopeObject::m_space = "";
