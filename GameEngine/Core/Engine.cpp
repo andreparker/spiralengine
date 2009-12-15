@@ -92,16 +92,7 @@ bool Engine::Initialize( shared_ptr< GfxDriver >& gfxDriver, any& data )
 
 			LOG_I( module + " ^wInitializing CVars....\n" );
 			m_variables->Initialize();
-			{
-				boost::shared_ptr< IFile > configFile;
-				if( FileManager::instance().getFile( "Data/Config/config.cfg", configFile ) )
-				{
-					File_Auto_Close< IFile > ac( configFile );
-					m_variables->ProcessFile( configFile );
-				}
-			}
-
-			SetGfxValues();
+			
 		}
 	}
 
@@ -117,6 +108,18 @@ void Engine::UnInitialize()
 
 	LOG_I( module + "^w Clearing resource catalog....\n" );
 	ClearCatalog();
+
+	LOG_I( module + "^w Clearing state machine....\n" );
+	m_stateMachine->ClearStates();
+
+	LOG_I( module + "^w Clearing object manager....\n" );
+	m_gameObjectList->Clear();
+
+	LOG_I( module + "^w Clearing gui manager....\n" );
+	m_guiManager->Clear();
+
+	LOG_I( module + "^w Uninitializing GfxDriver....\n" );
+	m_gfxDriver->UnInitialize();
 }
 
 void Engine::AddGameObject( shared_ptr< CoreObject >& object )
@@ -633,4 +636,46 @@ void Engine::UpdateThreadAttributes()
 		UpdateQueue::instance().Add( bind( &Engine::DisableThreads, this ) );
 		m_threadsEnabled = false;
 	}
+}
+
+void Engine::ScreenToWorld( const Math::SpVector2r& scr_pos, Math::SpVector2r& world )
+{
+	if( m_camera )
+	{
+		Math::SpMatrix4x4r proj;
+		Math::SpMatrix4x4r view;
+
+		m_camera->GetProjection(proj);
+		m_camera->GetView(view);
+
+		Math::SpVector3r pos = Math::make_vector( scr_pos[0], scr_pos[1], -1.0f );
+
+		Rect<boost::int32_t> viewPort;
+		GetGfxDriver()->GetViewPort( viewPort );
+		Math::UnProject( pos, (view * proj), 
+			Rect<SpReal>( static_cast<SpReal>( viewPort.left ), 
+						  static_cast<SpReal>( viewPort.right ),
+						  static_cast<SpReal>( viewPort.bottom ),
+						  static_cast<SpReal>( viewPort.top ) ), pos );
+		world[0] = pos[0];
+		world[1] = pos[1];
+	}else
+	{
+		throw GeneralException( "Error: no camera set!" );
+	}
+}
+
+bool Engine::LoadConfig( const std::string& fileName )
+{
+	bool cfgLoaded = false;
+	boost::shared_ptr< IFile > configFile;
+	if( FileManager::instance().getFile( fileName, configFile ) )
+	{
+		File_Auto_Close< IFile > ac( configFile );
+		m_variables->ProcessFile( configFile );
+		SetGfxValues();
+		cfgLoaded = true;
+	}
+
+	return cfgLoaded;
 }

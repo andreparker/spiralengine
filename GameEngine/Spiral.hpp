@@ -40,5 +40,6 @@
 #include "Gfx/gui/GuiWindowEvents.hpp"
 #include "Gfx/gui/GuiEditBox.hpp"
 #include "Gfx/gui/GuiText.hpp"
+#include "Gfx/gui/GuiCheckBox.hpp"
 
 #endif

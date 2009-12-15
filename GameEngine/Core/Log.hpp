@@ -114,7 +114,7 @@ namespace Spiral
 #define LOG_D (void)
 #endif
 
-class LogScopeObject
+class LogScopeObject : boost::noncopyable
 {
 public:
 	LogScopeObject( const std::string str ):

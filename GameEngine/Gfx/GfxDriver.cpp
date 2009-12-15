@@ -192,3 +192,8 @@ void GfxDriver::Draw( const Math::SpVector2r& position, const Rect< SpReal >& re
 {
 	DoDraw( position, rect, textureCoords );
 }
+
+void GfxDriver::GetViewPort( Rect<boost::int32_t>& viewPort )
+{
+	DoGetViewPort( viewPort );
+}

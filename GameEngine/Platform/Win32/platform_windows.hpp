@@ -32,6 +32,7 @@ public:
 	void KeyUpCallback( WPARAM wParam, LPARAM lParam );
 	void KeyDownCallback( WPARAM wParam, LPARAM lParam );
 	void LeftMouseDownCallBack( WPARAM wParam, LPARAM lParam );
+
 	void LeftMouseUpCallBack( WPARAM wParam, LPARAM lParam );
 	void MouseMoveCallBack( WPARAM wParam, LPARAM lParam );
 	void CharInputCallBack( WPARAM wParam, LPARAM lParam );

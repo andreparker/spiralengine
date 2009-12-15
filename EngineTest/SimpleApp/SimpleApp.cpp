@@ -16,6 +16,7 @@ bool App::DoInit( boost::int32_t /*argc*/, std::list< boost::shared_array< char 
 	shared_ptr< Texture > alpha_texture = engine->LoadTexture( "Data/ball32_alpha.png", "Ball_alpha" );
 	shared_ptr< Texture > button_texture = engine->LoadTexture( "Data/GUI/def_button.png", "Button_texture" );
 	shared_ptr< Texture > window_texture = engine->LoadTexture( "Data/GUI/def_window.png", "Window_texture" );
+	shared_ptr< Texture > check_boxTexture = engine->LoadTexture( "Data/GUI/def_check.png", "check_texture" );
 	shared_ptr< GfxDriver > gfxDriver = engine->GetGfxDriver();
 
 
@@ -25,7 +26,6 @@ bool App::DoInit( boost::int32_t /*argc*/, std::list< boost::shared_array< char 
 	m_sprite_alpha->SetAlphaBlend( true );
 	
 	m_arialN = engine->LoadFont( "c:/windows/fonts/arialn.ttf", "arial_n", 16, 10 );
-	int32_t width = 1024,height = 1024;
 	SpString text = L"Testing Font rendering code using true type font.\nThis font is arial narrow.\nTesting newline code";
 
 
@@ -52,12 +52,26 @@ bool App::DoInit( boost::int32_t /*argc*/, std::list< boost::shared_array< char 
 	button->Show();
 	
 
-	shared_ptr< GUI::GuiEditBox > editbox = make_shared< GUI::GuiEditBox >( Math::make_vector( 32.0f,332.0f ), gfxDriver, Rgba( 1.0f, 1.0f, 1.0f ), Rgba(), m_arialN, 32, L"Edit box 2" );
-	shared_ptr< GUI::GuiEditBox > editbox1 = make_shared< GUI::GuiEditBox >( Math::make_vector( 32.0f,300.0f ), gfxDriver, Rgba( 1.0f, 1.0f, 1.0f ), Rgba(), m_arialN, 32, L"Edit box 1" );
+	shared_ptr< GUI::GuiEditBox > editbox = make_shared< GUI::GuiEditBox >( Math::make_vector( 32.0f,332.0f ), gfxDriver, 
+		Rgba( 1.0f, 1.0f, 1.0f ), Rgba(), m_arialN, 32, L"Edit box 2" );
+	shared_ptr< GUI::GuiEditBox > editbox1 = make_shared< GUI::GuiEditBox >( Math::make_vector( 32.0f,300.0f ), gfxDriver, 
+		Rgba( 1.0f, 1.0f, 1.0f ), Rgba(), m_arialN, 32, L"Edit box 1" );
 	button->ConnectHandler( GUI::button_Press, bind( &App::ButtonPress, this, _1, _2, _3 ) );
 
 	m_window = make_shared< GUI::GuiWindow >( Math::make_vector( 0.0f, 100.0f ), Rect< SpReal >( 0, 512, 512, 0 ),
 		Rect< SpReal >( 0.0f, 1.0f, 1.0f, 0.0f ), window_texture, true );
+	
+	shared_ptr< GUI::GuiCheckBox > check = make_shared< GUI::GuiCheckBox >( Math::make_vector( 32.0f, 380.0f ),
+		Rect< SpReal >( 0.0f, 16.0f, 16.0f, 0.0f ), Rect< SpReal >( 0.0f, 0.5f, 1.0f, 0.0f ), Rect< SpReal >( 0.5f, 1.0f, 1.0f, 0.0f ),
+		check_boxTexture,check_boxTexture,true,true );
+	check->Show();
+	shared_ptr< GUI::GuiText > guiCheckText = make_shared< GUI::GuiText >( Math::make_vector<SpReal>(50.0f, 380.0f),gfxDriver,
+		Rgba(1.0f,1.0f,1.0f),15,m_arialN,L"Check box",true );
+	guiCheckText->AllowFocus( false );
+	guiCheckText->Show();
+	
+	m_window->AddChild( guiCheckText );
+	m_window->AddChild( check );
 	m_window->AddChild( button );
 	m_window->AddChild( m_button );
 	m_window->AddChild( editbox );
@@ -78,17 +92,17 @@ bool App::DoInit( boost::int32_t /*argc*/, std::list< boost::shared_array< char 
 	{
 		engine->AddSprite( m_sprite.get(), 0 );
 		engine->AddSprite( m_sprite_alpha.get(), 0 );
-		engine->EnableSpriteLayer( 0, true );
+		engine->EnableSpriteLayer( 0, false );
 	}
 
 	m_keyDownSubscriber = make_shared< EventSubscriber >( Event( Event::EVENT_ANY, Catagory_KeyBoard::value ) );
 	m_keyDownSubscriber->AddCallback( boost::bind( &App::KeyDown, this, _1, _2 ) );
 	engine->GetEventPublisher()->AddSubscriber( m_keyDownSubscriber );
 
-	engine->SetAttribute( EngineAttribute( EngineAttribute::ClearColor ), Rgba( 1.0f, 0.0f , 0.0f ) );
+	engine->SetAttribute( EngineAttribute( EngineAttribute::ClearColor ), Rgba( 0.5f, 0.5f , 0.5f ) );
 	engine->SetAttribute( EngineAttribute( EngineAttribute::ClearColorBuffer ), true );
 	engine->SetAttribute( EngineAttribute( EngineAttribute::ClearDepthBuffer ), false );
-	engine->SetAttribute( EngineAttribute( EngineAttribute::EnableThreading ), false );
+	engine->SetAttribute( EngineAttribute( EngineAttribute::EnableThreading ), true );
 
 	
 	m_camera = new Camera( Math::SpVector3r( 0.0f, 0.0f, 0.0f ) );
@@ -117,7 +131,6 @@ bool App::DoUnInit()
 	m_sprite.reset();
 	m_sprite_alpha.reset();
 	m_keyDownSubscriber.reset();
-	m_engine.reset(); // release the reference to the engine (IMPORTANT)
 	m_arialN.reset();
 
 	return true;
@@ -145,8 +158,12 @@ void App::KeyDown( const Event& event, const any& data )
 		int32_t key = any_cast<int32_t>(data);
 		if( key == 27 )
 		{
+			shared_ptr< Spiral::Engine > theEngine = m_engine.lock();
 			// close the app
-			m_engine->GetEventPublisher()->Publish( Event( event_AppStatus_shutdown, Catagory_App_Status::value ), any() );
+			if( theEngine )
+			{
+				theEngine->GetEventPublisher()->Publish( Event( event_AppStatus_shutdown, Catagory_App_Status::value ), any() );
+			}
 		}
 	}
 }

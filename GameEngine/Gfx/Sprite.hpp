@@ -144,7 +144,7 @@ namespace Spiral
 		SpReal m_angle,m_width,m_height;
 		bool m_alphaBlend;
 		bool m_additiveBlend;
-		SpReal m_rotOffsetX,m_rotOffsetY;
+		SpReal m_rotOffsetX,m_rotOffsetY;		// offset to be the rotation pivot point
 
 	};
 }

@@ -134,6 +134,14 @@ namespace Spiral
 		void SetViewPort( boost::int32_t x0, boost::int32_t y0, boost::int32_t x1, boost::int32_t y1 );
 
 		/*!
+		   @function  GetViewPort
+		   @brief     gets the view rect
+		   @return    void
+		   @param     Rect<boost::int32_t> & viewPort
+		*/
+		void GetViewPort( Rect<boost::int32_t>& viewPort );
+
+		/*!
 		   @function  SetState
 		   @brief     Sets a render state
 		   @return    void
@@ -260,7 +268,8 @@ namespace Spiral
 	   virtual void DoGetProjection( Math::SpMatrix4x4r& proj ) = 0;
 
 	   virtual void DoSetViewPort( boost::int32_t x0, boost::int32_t y0, boost::int32_t x1, boost::int32_t y1 ) = 0;
-	   virtual void DoClearBuffer(const BufferInfo_t& buffer) = 0;
+	   virtual void DoGetViewPort( Rect<boost::int32_t>& viewPort ) = 0;
+	   virtual void DoClearBuffer( const BufferInfo_t& buffer ) = 0;
 
 	   virtual void DoSet( const ClearInfoType_t& type, boost::int32_t value ) = 0;
 	   virtual void DoSet( const ClearInfoType_t& type, const Rgba& color ) = 0;

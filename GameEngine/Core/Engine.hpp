@@ -16,6 +16,7 @@
 #include "Sp_DataTypes.hpp"
 #include "../Gfx/SpriteLayerImplFwd.hpp"
 #include "../Gfx/SpriteDrawListImplFwd.hpp"
+#include "../Math/Math.hpp"
 
 namespace Spiral
 {
@@ -256,6 +257,23 @@ namespace GUI
 		{
 			return m_guiManager;
 		}
+
+		/*!
+		   @function  ScreenToWorld
+		   @brief     translates a screen position to world cordinates
+		   @return    void
+		   @param     const Math::SpVector2r & scr_pos
+		   @param     Math::SpVector2r & world
+		*/
+		void ScreenToWorld( const Math::SpVector2r& scr_pos, Math::SpVector2r& world );
+
+		/*!
+		   @function  LoadConfig
+		   @brief     loads a .cfg file
+		   @return    bool
+		   @param     const std::string & fileName
+		*/
+		bool LoadConfig( const std::string& fileName );
 
 	private:
 		
