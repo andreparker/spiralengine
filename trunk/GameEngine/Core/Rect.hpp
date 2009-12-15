@@ -3,6 +3,8 @@
 #ifndef RECT_HPP
 #define RECT_HPP
 
+#include <boost/serialization/nvp.hpp>
+
 namespace Spiral
 {
 	template< class T >
@@ -60,6 +62,14 @@ namespace Spiral
 			return isInBounds;
 		}
 
+		template< class Archive >
+		void serialize( Archive& ar, const unsigned int version )
+		{
+			ar & BOOST_SERIALIZATION_NVP( left );
+			ar & BOOST_SERIALIZATION_NVP( right );
+			ar & BOOST_SERIALIZATION_NVP( bottom );
+			ar & BOOST_SERIALIZATION_NVP( top );
+		}
 
 		T left, right, bottom, top;
 	};

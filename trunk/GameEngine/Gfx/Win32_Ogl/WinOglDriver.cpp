@@ -276,3 +276,8 @@ void WinOglDriver::DoDraw( const Math::SpVector2r& position, const Rect< SpReal 
 {
 	m_glDriver->Draw( position, rect, textureCoords );
 }
+
+void WinOglDriver::DoGetViewPort( Rect<boost::int32_t>& viewPort )
+{
+	m_glDriver->GetViewPort( viewPort );
+}

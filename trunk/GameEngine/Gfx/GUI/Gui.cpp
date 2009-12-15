@@ -1,5 +1,6 @@
 #include "Gui.hpp"
 #include "../GfxDriver.hpp"
+#include "../GfxImpl.hpp"
 #include "../RenderState.hpp"
 #include "../../Core/MouseEvent.hpp"
 #include "../../Core/Events.hpp"
@@ -36,6 +37,7 @@ void GuiManager::TraverseRender( const boost::shared_ptr< GfxDriver >& gfxDrvier
 			if( window->hasAlpha() )
 			{
 				gfxDrvier->SetState( RenderState::Blend( RenderState::RS_TRUE ) );
+				gfxDrvier->Set( BlendMode_t::SrcAlpha() );
 				gfxDrvier->Draw( window->GetWorldPosition(), window->GetRect(), window->GetTextCoords() );
 				gfxDrvier->SetState( RenderState::Blend( RenderState::RS_FALSE ) );
 			}else
@@ -96,3 +98,8 @@ void GuiManager::Present( const boost::shared_ptr< GfxDriver >& gfxDrvier )
 }
 
 
+
+void GUI::GuiManager::Clear()
+{
+	m_windowList.clear();
+}

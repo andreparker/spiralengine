@@ -11,6 +11,7 @@
 #include <boost/scope_exit.hpp>
 #include <boost/make_shared.hpp>
 #include <boost/bind.hpp>
+#include <boost/weak_ptr.hpp>
 
 
 
@@ -23,6 +24,8 @@
 #include "../../Core/FileManager.hpp"
 #include "../../Core/File.hpp"
 #include "../../Core/MouseEvent.hpp"
+#include "../../Math/Math.hpp"
+
 #include <shellapi.h>
 
 using namespace Spiral;
@@ -30,6 +33,7 @@ using namespace boost;
 using namespace std;
 
 const std::string module = "^yPlatform :";
+weak_ptr< Engine > g_engine;
 
 /*!
    @function  GetSeconds
@@ -129,8 +133,10 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 		shared_ptr< AppWindow > spAppWindow( new AppWindow( hInstance ) );
 		shared_ptr< Engine > engine = Engine::Create();
 		shared_ptr< LogModule > winLogger;
+		shared_ptr< GfxDriver > gfxDriver;
 
-		
+		// get a weak pointer to engine
+		g_engine = engine;
 
 		if( spAppWindow )
 		{
@@ -147,10 +153,12 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 			winLogger = make_shared< WindowsLogger >( spAppWindow->Get( EmptyType<HWND>() ) );
 			LogRouter::instance().addLogger( winLogger );
 
-			shared_ptr< GfxDriver > gfxDriver = make_shared< WinOglDriver >();
+			gfxDriver = make_shared< WinOglDriver >();
 			any data = any( spAppWindow->Get( EmptyType<HDC>() ) );
 
 			engine->Initialize( gfxDriver , data );
+			engine->LoadConfig( "Data/Config/Config.cfg" );
+
 			LOG_I( module + " ^wInitializing MainWindow....\n" );
 			spAppWindow->SetEventPublisher( engine->GetEventPublisher() );
 			spAppWindow->Initialize();
@@ -172,9 +180,14 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 		while( false == spAppWindow->ProcessMessage( msg, 0, 0 ) &&
 			   false == spAppWindow->Quit() )
 		{
-			spApp->Run( fracSecs, engine );
-			engine->Tick( fracSecs );
-
+			if( spApp->Run( fracSecs, engine ) )
+			{
+				engine->Tick( fracSecs );
+			}else
+			{
+				break;
+			}
+			
 			fracSecs = GetSeconds< SpReal >( GetTickCount() - tickCount );
 			tickCount = GetTickCount();
 		}
@@ -243,6 +256,18 @@ void AppWindow::Initialize()
 	m_sysAppEventSubscriber->AddCallback( boost::bind( &AppWindow::SysAppEvents, this, _1, _2 ) );
 }
 
+void ScreenToWorld( int& x, int& y )
+{
+	if( !g_engine.expired() )
+	{
+		shared_ptr<Engine> ptr = g_engine.lock();
+		Math::SpVector2r pos = Math::make_vector<SpReal>( static_cast<SpReal>(x), static_cast<SpReal>(y) );
+		ptr->ScreenToWorld( pos, pos );
+		x = static_cast<int>(pos[0]);
+		y = static_cast<int>(pos[1]);
+	}
+}
+
 void AppWindow::SysAppEvents( const Spiral::Event& event, const boost::any& /*data*/ )
 {
 	if( event.m_catagory.m_bits.to_ulong() == Catagory_App_Status::value &&
@@ -278,6 +303,7 @@ void AppWindow::LeftMouseDownCallBack( WPARAM wParam, LPARAM lParam )
 	{
 		int x,y;
 		GetMousePosLPARAM( x, y, lParam );
+		ScreenToWorld( x, y );
 		mouseLDownData = MouseEvent( MouseEvent::mouse1, x, y );
 		m_eventPublisher->Publish( Event( event_mouse, Catagory_Mouse_MouseDown::value ), mouseLDownData  );
 	}
@@ -289,6 +315,7 @@ void AppWindow::LeftMouseUpCallBack( WPARAM wParam, LPARAM lParam )
 	{
 		int x,y;
 		GetMousePosLPARAM( x, y, lParam );
+		ScreenToWorld( x, y );
 		mouseLUpData = MouseEvent( MouseEvent::mouse1, x, y );
 		m_eventPublisher->Publish( Event( event_mouse, Catagory_Mouse_Up::value ), mouseLUpData  );
 	}
@@ -300,6 +327,7 @@ void AppWindow::MouseMoveCallBack( WPARAM wParam, LPARAM lParam )
 	{
 		int x,y;
 		GetMousePosLPARAM( x, y, lParam );
+		ScreenToWorld( x, y );
 		mouseMoveData = MouseEvent( MouseEvent::mouse1, x, y );
 		m_eventPublisher->Publish( Event( event_mouse, Catagory_Mouse_Move::value ), mouseMoveData  );
 	}

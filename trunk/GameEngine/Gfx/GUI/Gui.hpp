@@ -51,6 +51,14 @@ namespace GUI
 		   @param     const boost::any & data
 		*/
 		void Input( const Event& inputEvent, const boost::any& data );
+
+		/*!
+		   @function  Clear
+		   @brief     clears all elements from the gui manager
+		   @return    void
+		*/
+		void Clear();
+
 	private:
 		
 		/*!

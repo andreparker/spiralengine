@@ -37,6 +37,7 @@ namespace Spiral
 		void Set( const BlendMode_t& mode );
 		void ClearBuffer(const BufferInfo_t& buffer);
 		void SetViewPort( boost::int32_t x0, boost::int32_t y0, boost::int32_t x1, boost::int32_t y1 );
+		void GetViewPort( Rect<boost::int32_t>& viewPort );
 		void SetState( const RenderState& state );
 		void Draw( boost::shared_ptr<Geometry>& geometry );
 		bool CreateGeometry( const GeometryType& type, boost::shared_ptr<Geometry>& geometry );

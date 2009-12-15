@@ -419,3 +419,14 @@ void OglDriver::Draw( const Math::SpVector2r& position, const Rect< SpReal >& re
 	glDisableClientState( GL_TEXTURE_COORD_ARRAY );
 
 }
+
+void OglDriver::GetViewPort( Rect<boost::int32_t>& viewPort )
+{
+	GLint values[4];
+	glGetIntegerv( GL_VIEWPORT, values );
+
+	viewPort.left = values[0];
+	viewPort.right = values[2];
+	viewPort.bottom = values[3];
+	viewPort.top = values[1];
+}

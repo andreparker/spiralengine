@@ -82,6 +82,8 @@ namespace Math
 	{
 		return Eigen::Matrix< Scalar, 4, 1 >( vec[0], vec[1], vec[2], c0 );
 	}
+
+	bool UnProject( const SpVector3r& winPos, const SpMatrix4x4r& modelViewProj, const Rect<SpReal>& viewPort, SpVector3r& unProjPos );
 }
 }
 
