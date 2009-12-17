@@ -94,6 +94,7 @@ void GuiManager::HandleCharInput( const Event& inputEvent, boost::uint32_t char_
 
 void GuiManager::Present( const boost::shared_ptr< GfxDriver >& gfxDrvier )
 {
+	//std::for_each( m_windowList.begin(), m_windowList.end(), boost::bind( &GuiWindow::UpdatePositions, _1 ) );
 	std::for_each( m_windowList.begin(), m_windowList.end(), boost::bind( &GuiManager::TraverseRender, this, boost::cref( gfxDrvier ), _1 ) );
 }
 
