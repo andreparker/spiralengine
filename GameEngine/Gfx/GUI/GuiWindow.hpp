@@ -58,10 +58,24 @@ namespace GUI
 			return m_localPosition;
 		}
 
+		Math::SpVector2r WorldToLocal( SpReal x, SpReal y )
+		{
+			return Math::make_vector< SpReal >( x - m_worldPosition[0], y - m_worldPosition[1] );
+		}
+
 		void SetLocalPosition( const Math::SpVector2r& position )
 		{
 			m_localPosition = position;
-			m_dirty = true;
+
+			// update my world and children positions
+			if( m_parent )
+			{
+				
+				UpdatePositions( m_parent->GetWorldPosition() );
+			}else
+			{
+				UpdatePositions();
+			}
 		}
 
 		bool hasFocus()const
@@ -138,6 +152,16 @@ namespace GUI
 		MAKE_ALIGNED_NEW
 	protected:
 
+		void SetParent( GuiWindow* parent )
+		{
+			m_parent = parent;
+		}
+
+		const Math::SpVector2r& GetWorldPosition()const
+		{
+			return m_worldPosition;
+		}
+
 		/*!
 		   @function  FindTopMostChild
 		   @brief     finds the top most child that the coordinates lie in
@@ -190,18 +214,14 @@ namespace GUI
 			m_rect = rt;
 		}
 
-	private:
-
-		void UpdatePositions( const Math::SpVector2r& worldPosition );
 		void UpdatePositions()
 		{
 			UpdatePositions( Math::SpVector2r(0.0f,0.0f) );
 		}
 
-		const Math::SpVector2r& GetWorldPosition()const
-		{
-			return m_worldPosition;
-		}
+	private:
+
+		void UpdatePositions( const Math::SpVector2r& worldPosition );
 
 		bool IsDirty()const
 		{
@@ -262,6 +282,7 @@ namespace GUI
 		bool m_dirty;		///< used to update world positioning
 		bool m_show;		///< shows the window
 		bool m_allowFocus;  ///< enable/disables focus on the window
+		GuiWindow* m_parent;
 	};
 }
 }

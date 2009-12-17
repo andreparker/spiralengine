@@ -17,6 +17,8 @@ bool App::DoInit( boost::int32_t /*argc*/, std::list< boost::shared_array< char 
 	shared_ptr< Texture > button_texture = engine->LoadTexture( "Data/GUI/def_button.png", "Button_texture" );
 	shared_ptr< Texture > window_texture = engine->LoadTexture( "Data/GUI/def_window.png", "Window_texture" );
 	shared_ptr< Texture > check_boxTexture = engine->LoadTexture( "Data/GUI/def_check.png", "check_texture" );
+	shared_ptr< Texture > slider_bgTexture = engine->LoadTexture( "Data/GUI/def_slider_back.png", "slider_bk_texture" );
+	shared_ptr< Texture > slider_texture = engine->LoadTexture( "Data/GUI/def_slider.png", "slider_texture" );
 	shared_ptr< GfxDriver > gfxDriver = engine->GetGfxDriver();
 
 
@@ -70,6 +72,13 @@ bool App::DoInit( boost::int32_t /*argc*/, std::list< boost::shared_array< char 
 	guiCheckText->AllowFocus( false );
 	guiCheckText->Show();
 	
+	shared_ptr< GUI::GuiSlider > guiSlider( new GUI::GuiSlider( Math::make_vector<SpReal>(32.0f, 430.0f ), 
+		Rect<SpReal>( 0.0f, 256.0f, 16.0f, 0.0f ), Rect<SpReal>(0.0f,1.0f,1.0f,0.0f ), Rect<SpReal>(0.0f,1.0f,1.0f,0.0f),16, slider_bgTexture,
+		slider_texture, GUI::GuiSliderDir::HorizontalDir(), true, true ) );
+
+	guiSlider->Show();
+
+	m_window->AddChild( guiSlider );
 	m_window->AddChild( guiCheckText );
 	m_window->AddChild( check );
 	m_window->AddChild( button );
@@ -102,7 +111,7 @@ bool App::DoInit( boost::int32_t /*argc*/, std::list< boost::shared_array< char 
 	engine->SetAttribute( EngineAttribute( EngineAttribute::ClearColor ), Rgba( 0.5f, 0.5f , 0.5f ) );
 	engine->SetAttribute( EngineAttribute( EngineAttribute::ClearColorBuffer ), true );
 	engine->SetAttribute( EngineAttribute( EngineAttribute::ClearDepthBuffer ), false );
-	engine->SetAttribute( EngineAttribute( EngineAttribute::EnableThreading ), true );
+	engine->SetAttribute( EngineAttribute( EngineAttribute::EnableThreading ), false );
 
 	
 	m_camera = new Camera( Math::SpVector3r( 0.0f, 0.0f, 0.0f ) );

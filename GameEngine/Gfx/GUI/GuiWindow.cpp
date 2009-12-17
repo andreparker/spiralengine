@@ -28,9 +28,10 @@ m_windowId( window_ID++ ),
 m_eventHandlers(),
 m_hasFocus(false),
 m_alpha(bAlpha),
-m_dirty(true),
+m_dirty(false),
 m_show(false),
-m_allowFocus(true)
+m_allowFocus(true),
+m_parent(NULL)
 {
 }
 
@@ -44,9 +45,10 @@ m_children(),
 m_windowId( window_ID++ ),
 m_hasFocus(false),
 m_alpha(bAlpha),
-m_dirty(true),
+m_dirty(false),
 m_show(false),
-m_allowFocus(true)
+m_allowFocus(true),
+m_parent(NULL)
 {
 }
 
@@ -55,6 +57,7 @@ void GuiWindow::AddChild( const boost::shared_ptr< GuiWindow >& window )
 	if( window )
 	{
 		m_children.push_back( window );
+		window->SetParent( this );
 		window->UpdatePositions( m_worldPosition );
 	}
 
@@ -63,6 +66,7 @@ void GuiWindow::AddChild( const boost::shared_ptr< GuiWindow >& window )
 void GuiWindow::RemoveChild( const boost::shared_ptr< GuiWindow >& window )
 {
 	m_children.remove( window );
+	window->SetParent( NULL );
 }
 
 void GuiWindow::RemoveChild( boost::uint32_t window_id )
@@ -167,11 +171,13 @@ void GuiWindow::ProcessEvent( boost::int32_t eventId, const boost::any& data )
 	{
 		for( WindowItr itr = m_children.begin(); itr != m_children.end(); ++itr )
 		{
+			
 			if( (*itr)->m_hasFocus )
 			{
 				(*itr)->CallHandler( eventId, (*itr).get(), data );
 				break;
 			}
+			(*itr)->ProcessEvent( eventId, data );
 		}
 	}else
 	{
@@ -195,14 +201,23 @@ void GuiWindow::ResetWindow()
 
 void GuiWindow::MouseHover( const mouse_position& pos )
 {
+	static GuiWindow* lastWindow = NULL;
 	if( ContainsPoint( pos.x, pos.y ) )
 	{
 		GuiWindow* topMostWindow = FindTopMostChild( pos.x, pos.y );
 		topMostWindow->CallHandler( GUI::mouse_hover, this, boost::any( pos ) );
-	}else
-	{
-		ResetWindow();
-	}
+		
+		if( lastWindow != NULL && lastWindow != topMostWindow )
+		{
+			lastWindow->ResetWindow();
+		}
+
+		lastWindow = topMostWindow;
+ 	}
+//	else
+// 	{
+// 		ResetWindow();
+// 	}
 }
 
 void GuiWindow::CharInput( boost::uint32_t char_ )
