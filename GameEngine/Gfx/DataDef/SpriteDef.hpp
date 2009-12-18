@@ -44,6 +44,6 @@ namespace Data
 }
 }
 
-BOOST_CLASS_VERSION( Spiral::Data::SpriteDef, 1 )
+BOOST_CLASS_VERSION( Spiral::Data::SpriteDef, kSpriteDefVersion )
 
 #endif

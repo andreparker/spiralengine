@@ -16,7 +16,8 @@ namespace GUI
 		focus_gained,
 		focus_lost,
 		button_Press,
-		char_input
+		char_input,
+		data_changed
 	}GuiWindowEvent;
 
 

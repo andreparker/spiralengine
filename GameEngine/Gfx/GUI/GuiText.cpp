@@ -8,6 +8,7 @@
 #include "../Color.hpp"
 #include "../../Resource/Resource.hpp"
 #include "../../Resource/ResLockImpl.hpp"
+#include "GuiWindowEvents.hpp"
 
 using namespace Spiral;
 using namespace Spiral::GUI;
@@ -63,6 +64,9 @@ void GuiText::DrawString( const SpString& str )
 		surf->SetDataPtr( info.data );
 		m_font->RenderAlpha( m_editSurface, m_charPos, str, m_fontColor );
 		res->Unlock();
+
+		// report that data has changed
+		CallHandler( data_changed, this, boost::any() );
 	}
 }
 
@@ -82,6 +86,7 @@ void GuiText::SetText( const SpString& text )
 	{
 		m_text = text;
 		m_charPos = 0;
+		ClearBox();
 		DrawString( m_text );
 	}
 	

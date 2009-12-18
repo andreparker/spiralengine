@@ -1,6 +1,7 @@
 #include "SimpleApp.hpp"
 #include <boost/make_shared.hpp>
 #include <boost/bind.hpp>
+#include <boost/lexical_cast.hpp>
 #include <string>
 
 using namespace SimpleApp;
@@ -75,9 +76,17 @@ bool App::DoInit( boost::int32_t /*argc*/, std::list< boost::shared_array< char 
 	shared_ptr< GUI::GuiSlider > guiSlider( new GUI::GuiSlider( Math::make_vector<SpReal>(32.0f, 430.0f ), 
 		Rect<SpReal>( 0.0f, 256.0f, 16.0f, 0.0f ), Rect<SpReal>(0.0f,1.0f,1.0f,0.0f ), Rect<SpReal>(0.0f,1.0f,1.0f,0.0f),16, slider_bgTexture,
 		slider_texture, GUI::GuiSliderDir::HorizontalDir(), true, true ) );
-
 	guiSlider->Show();
+	guiSlider->SetRange( 0, 1000 );
+	guiSlider->ConnectHandler( GUI::data_changed, bind( &App::SliderChanged, this, _1, _2, _3 ) );
 
+	shared_ptr< GUI::GuiEditBox > editboxSlider = make_shared< GUI::GuiEditBox >( Math::make_vector( 300.0f,430.0f ), gfxDriver, 
+		Rgba( 1.0f, 1.0f, 1.0f ), Rgba(), m_arialN, 6, L"0" );
+	editboxSlider->Show();
+
+	m_sliderEditId = editboxSlider->GetID();
+
+	m_window->AddChild( editboxSlider );
 	m_window->AddChild( guiSlider );
 	m_window->AddChild( guiCheckText );
 	m_window->AddChild( check );
@@ -122,6 +131,18 @@ bool App::DoInit( boost::int32_t /*argc*/, std::list< boost::shared_array< char 
 	return true;
 }
 
+void App::SliderChanged( boost::int32_t eventId, Spiral::GUI::GuiWindow* window, const boost::any& data )
+{
+	GUI::GuiSlider* slider = static_cast<GUI::GuiSlider*>( window );
+	GUI::GuiEditBox* edit = static_cast<GUI::GuiEditBox*>( m_window->GetChild( m_sliderEditId ) );
+	boost::int32_t sliderPos = slider->GetSliderPos();
+
+	SpString str = lexical_cast<SpString>( sliderPos );
+	
+	UpdateQueue_handle queue;
+	queue->Add( bind( &GUI::GuiEditBox::SetText, edit, str ) );
+}
+
 bool App::DoRun( SpReal ticks, boost::shared_ptr< Engine >& engine )
 {
 	static SpReal angle = 0.0f;
@@ -155,7 +176,8 @@ m_engine(),
 m_arialN(),
 m_button(),
 m_window(),
-m_camera(NULL)
+m_camera(NULL),
+m_sliderEditId(0)
 {
 
 }
@@ -181,3 +203,4 @@ void App::ButtonPress( boost::int32_t eventId, Spiral::GUI::GuiWindow* window, c
 {
 	LOG_D( "^yApp: ^wButton %1% Pressed!\n", window->GetID() );
 }
+

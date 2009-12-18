@@ -16,6 +16,7 @@
 #include "Core/TypeUtils.hpp"
 #include "Core/EngineAttributes.hpp"
 #include "Core/Log.hpp"
+#include "Core/UpdateQueue.hpp"
 
 #include "Gfx/Color.hpp"
 #include "Gfx/GfxDriver.hpp"

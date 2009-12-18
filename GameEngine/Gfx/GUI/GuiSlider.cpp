@@ -88,6 +88,9 @@ void GuiSlider::OnMouseDown( boost::int32_t eventId, GuiWindow* window, const bo
 
 	m_slider->SetLocalPosition( sliderPos );
 	SliderBoundsCheck();
+
+	// report change
+	CallHandler( data_changed, this, boost::any() );
 }
 
 void GuiSlider::OnMouseHover( boost::int32_t eventId, GuiWindow* window, const boost::any& data )
@@ -121,6 +124,9 @@ void GuiSlider::OnMouseHoverSlider( boost::int32_t eventId, GuiWindow* window, c
 		SaveLastPosition( pos );
 		MoveSlider( delta );
 		SliderBoundsCheck();
+
+		// report change
+		CallHandler( data_changed, this, boost::any() );
 	}
 }
 
