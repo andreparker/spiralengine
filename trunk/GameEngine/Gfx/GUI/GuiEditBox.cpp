@@ -77,7 +77,7 @@ void GuiEditBox::OnChar( boost::int32_t eventId, GuiWindow* window, const boost:
 	// this will not work, function being called from a thread
 	// opengl cannot render in different threads
 	// TODO: add update function for post updates for GuiWindows 
-	SpChar c = any_cast<uint32_t>(data);
+	SpChar c = static_cast<SpChar>( any_cast<uint32_t>(data) );
 	UpdateQueue_handle queue;
 
 	if( c == 0x08 )
@@ -88,4 +88,10 @@ void GuiEditBox::OnChar( boost::int32_t eventId, GuiWindow* window, const boost:
 		queue->Add( bind( &GuiText::DrawChar, cref(m_textBox), c ), 0.05f );
 	}
 	
+}
+
+void GuiEditBox::OnDataChanged( boost::int32_t eventId, GuiWindow* window, const boost::any& data )
+{
+	// rout the call
+	CallHandler( data_changed, this, boost::any() );
 }

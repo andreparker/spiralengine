@@ -20,6 +20,7 @@ namespace SimpleApp
 
 		void KeyDown( const Spiral::Event& event, const boost::any& data );
 		void ButtonPress( boost::int32_t eventId, Spiral::GUI::GuiWindow* window, const boost::any& data );
+		void SliderChanged( boost::int32_t eventId, Spiral::GUI::GuiWindow* window, const boost::any& data );
 	private:
 		boost::shared_ptr< Spiral::Sprite > m_sprite;
 		boost::shared_ptr< Spiral::Sprite > m_sprite_alpha;
@@ -29,6 +30,8 @@ namespace SimpleApp
 		boost::shared_ptr< Spiral::GUI::GuiButton > m_button;
 		boost::shared_ptr< Spiral::GUI::GuiWindow > m_window;
 		Spiral::Camera* m_camera;
+
+		boost::uint32_t m_sliderEditId;
 	};
 }
 #endif

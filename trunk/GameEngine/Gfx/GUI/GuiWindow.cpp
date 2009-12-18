@@ -214,10 +214,13 @@ void GuiWindow::MouseHover( const mouse_position& pos )
 
 		lastWindow = topMostWindow;
  	}
-//	else
-// 	{
-// 		ResetWindow();
-// 	}
+	else
+	{
+		if( lastWindow != NULL )
+		{
+			lastWindow->ResetWindow();
+		}
+	}
 }
 
 void GuiWindow::CharInput( boost::uint32_t char_ )
@@ -244,4 +247,16 @@ GuiWindow* GuiWindow::FindTopMostChild( SpReal x, SpReal y ) const
 	}
 
 	return window;
+}
+
+GuiWindow* GuiWindow::GetChild( boost::uint32_t window_id ) const
+{
+	const_window_itr itr = std::find_if( m_children.begin(), m_children.end(), boost::bind( &GuiWindow::GetID, _1 ) == window_id );
+
+	if( itr != m_children.end() )
+	{
+		return (*itr).get();
+	}
+
+	return NULL;
 }

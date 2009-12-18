@@ -105,6 +105,7 @@ namespace GUI
 		   @param     const boost::shared_ptr< GuiWindow > & window
 		*/
 		void AddChild( const boost::shared_ptr< GuiWindow >& window );
+		GuiWindow* GetChild( boost::uint32_t window_id )const;
 
 		/*!
 		   @function  RemoveChild
@@ -273,6 +274,8 @@ namespace GUI
 		Rect< SpReal > m_rect;
 		Rect< SpReal > m_textCoords;
 		boost::shared_ptr< Texture > m_texture;
+		typedef std::list< boost::shared_ptr< GuiWindow > >::const_iterator const_window_itr;
+		typedef std::list< boost::shared_ptr< GuiWindow > >::iterator window_itr;
 		std::list< boost::shared_ptr< GuiWindow > > m_children;
 		boost::uint32_t m_windowId;
 		std::multimap< boost::int32_t, WindowEventHandler > m_eventHandlers; 
