@@ -15,11 +15,6 @@ bool App::DoInit( boost::int32_t /*argc*/, std::list< boost::shared_array< char 
 
 	shared_ptr< Texture > texture = engine->LoadTexture( "Data/ball32.png", "Ball" );
 	shared_ptr< Texture > alpha_texture = engine->LoadTexture( "Data/ball32_alpha.png", "Ball_alpha" );
-	shared_ptr< Texture > button_texture = engine->LoadTexture( "Data/GUI/def_button.png", "Button_texture" );
-	shared_ptr< Texture > window_texture = engine->LoadTexture( "Data/GUI/def_window.png", "Window_texture" );
-	shared_ptr< Texture > check_boxTexture = engine->LoadTexture( "Data/GUI/def_check.png", "check_texture" );
-	shared_ptr< Texture > slider_bgTexture = engine->LoadTexture( "Data/GUI/def_slider_back.png", "slider_bk_texture" );
-	shared_ptr< Texture > slider_texture = engine->LoadTexture( "Data/GUI/def_slider.png", "slider_texture" );
 	shared_ptr< GfxDriver > gfxDriver = engine->GetGfxDriver();
 
 
@@ -29,13 +24,15 @@ bool App::DoInit( boost::int32_t /*argc*/, std::list< boost::shared_array< char 
 	m_sprite_alpha->SetAlphaBlend( true );
 	
 	m_arialN = engine->LoadFont( "c:/windows/fonts/arialn.ttf", "arial_n", 16, 10 );
+
 	SpString text = L"Testing Font rendering code using true type font.\nThis font is arial narrow.\nTesting newline code";
 
 
-	shared_ptr< GUI::GuiText > guiText = make_shared< GUI::GuiText >( Math::make_vector<SpReal>(32.0f, 100.0f),gfxDriver,Rgba(1.0f,1.0f,1.0f),text.length()+1,m_arialN,text,true );
-	shared_ptr< GUI::GuiText > guiButtonText1 = make_shared< GUI::GuiText >( Math::make_vector<SpReal>(8.0f, 10.0f),gfxDriver,Rgba(1.0f,1.0f,1.0f),10,m_arialN,L"Button 1" );
-	shared_ptr< GUI::GuiText > guiButtonText2 = make_shared< GUI::GuiText >( Math::make_vector<SpReal>(8.0f, 10.0f),gfxDriver,Rgba(1.0f,1.0f,1.0f),10,m_arialN,L"Button 2" );
-
+	shared_ptr< GUI::GuiManager > guiManager = engine->GetGuiManager();
+	shared_ptr< GUI::GuiText > guiText = guiManager->Make_DefTextBox( 32.0f, 100.0f, Rgba(1.0f,1.0f,1.0f), m_arialN, text.length()+1, text );
+	shared_ptr< GUI::GuiText > guiButtonText1 = guiManager->Make_DefTextBox( 8.0f, 10.0f, Rgba(1.0f,1.0f,1.0f), m_arialN, 10, L"Button 1" );
+	shared_ptr< GUI::GuiText > guiButtonText2 = guiManager->Make_DefTextBox( 8.0f, 10.0f, Rgba(1.0f,1.0f,1.0f), m_arialN, 10, L"Button 2" );
+	
 	guiButtonText1->AllowFocus(false);
 	guiButtonText2->AllowFocus(false);
 	guiButtonText1->Show();
@@ -44,50 +41,47 @@ bool App::DoInit( boost::int32_t /*argc*/, std::list< boost::shared_array< char 
 	guiText->AllowFocus(false);
 	guiText->Show();
 	
-	m_button = make_shared< GUI::GuiButton >( Math::make_vector( 128.0f,450.0f), Rect< SpReal >( 0, 64, 32, 0 ), 
-		Rect< SpReal >( 0.0f, 1.0f, 1.0f, 0.0f ), button_texture, true );
+	m_button = guiManager->Make_DefButton( 128.0f, 450.0f, 64.0f, 32.0f ); 
 	m_button->AddChild( guiButtonText2 );
 	m_button->Show();
 
-	shared_ptr< GUI::GuiButton > button = make_shared< GUI::GuiButton >( Math::make_vector( 32.0f ,450.0f ), Rect< SpReal >( 0, 64, 32, 0 ), 
-		Rect< SpReal >( 0.0f, 1.0f, 1.0f, 0.0f ), button_texture, true );
+	shared_ptr< GUI::GuiButton > button = guiManager->Make_DefButton( 32.0f, 450.0f, 64.0f, 32.0f ); 
 	button->AddChild( guiButtonText1 );
 	button->Show();
 	
 
-	shared_ptr< GUI::GuiEditBox > editbox = make_shared< GUI::GuiEditBox >( Math::make_vector( 32.0f,332.0f ), gfxDriver, 
-		Rgba( 1.0f, 1.0f, 1.0f ), Rgba(), m_arialN, 32, L"Edit box 2" );
-	shared_ptr< GUI::GuiEditBox > editbox1 = make_shared< GUI::GuiEditBox >( Math::make_vector( 32.0f,300.0f ), gfxDriver, 
-		Rgba( 1.0f, 1.0f, 1.0f ), Rgba(), m_arialN, 32, L"Edit box 1" );
+	shared_ptr< GUI::GuiEditBox > editbox = guiManager->Make_DefEditBox( 32.0f, 332.0f, Rgba( 1.0f, 1.0f, 1.0f ), Rgba(), m_arialN, 32, L"Edit box 2" );
+	shared_ptr< GUI::GuiEditBox > editbox1 = guiManager->Make_DefEditBox( 32.0f, 300.0f, Rgba( 1.0f, 1.0f, 1.0f ), Rgba(), m_arialN, 32, L"Edit box 1" );
 	button->ConnectHandler( GUI::button_Press, bind( &App::ButtonPress, this, _1, _2, _3 ) );
 
-	m_window = make_shared< GUI::GuiWindow >( Math::make_vector( 0.0f, 100.0f ), Rect< SpReal >( 0, 512, 512, 0 ),
-		Rect< SpReal >( 0.0f, 1.0f, 1.0f, 0.0f ), window_texture, true );
+	m_window = guiManager->Make_DefFrame( 0.0f, 100.0f, 512.0f, 512.0f );
 	
-	shared_ptr< GUI::GuiCheckBox > check = make_shared< GUI::GuiCheckBox >( Math::make_vector( 32.0f, 380.0f ),
-		Rect< SpReal >( 0.0f, 16.0f, 16.0f, 0.0f ), Rect< SpReal >( 0.0f, 0.5f, 1.0f, 0.0f ), Rect< SpReal >( 0.5f, 1.0f, 1.0f, 0.0f ),
-		check_boxTexture,check_boxTexture,true,true );
+	shared_ptr< GUI::GuiCheckBox > check = guiManager->Make_DefCheckBox( 32.0f, 350.0f, 8.0f, 8.0f );
 	check->Show();
-	shared_ptr< GUI::GuiText > guiCheckText = make_shared< GUI::GuiText >( Math::make_vector<SpReal>(50.0f, 380.0f),gfxDriver,
-		Rgba(1.0f,1.0f,1.0f),15,m_arialN,L"Check box",true );
+	
+	shared_ptr< GUI::GuiText > guiCheckText = guiManager->Make_DefTextBox( 50.0f, 350.0f, Rgba(1.0f,1.0f,1.0f), m_arialN, 15, L"Check box" );
 	guiCheckText->AllowFocus( false );
 	guiCheckText->Show();
 	
-	shared_ptr< GUI::GuiSlider > guiSlider( new GUI::GuiSlider( Math::make_vector<SpReal>(32.0f, 430.0f ), 
-		Rect<SpReal>( 0.0f, 256.0f, 16.0f, 0.0f ), Rect<SpReal>(0.0f,1.0f,1.0f,0.0f ), Rect<SpReal>(0.0f,1.0f,1.0f,0.0f),16, slider_bgTexture,
-		slider_texture, GUI::GuiSliderDir::HorizontalDir(), true, true ) );
-	guiSlider->Show();
-	guiSlider->SetRange( 0, 1000 );
-	guiSlider->ConnectHandler( GUI::data_changed, bind( &App::SliderChanged, this, _1, _2, _3 ) );
+	shared_ptr< GUI::GuiSlider > guiSlider0 = guiManager->Make_DefSlider( 32.0f, 370.0f, 256.0f, 16.0f, 16, GUI::GuiSliderDir::HorizontalDir() );
+	shared_ptr< GUI::GuiSlider > guiSlider1 = guiManager->Make_DefSlider( 32.0f, 390.0f, 256.0f, 16.0f, 16, GUI::GuiSliderDir::HorizontalDir() );
+	shared_ptr< GUI::GuiSlider > guiSlider2 = guiManager->Make_DefSlider( 32.0f, 410.0f, 256.0f, 16.0f, 16, GUI::GuiSliderDir::HorizontalDir() );
+	guiSlider1->Show();
+	guiSlider2->Show();
+		
+	guiSlider0->Show();
+	guiSlider0->SetRange( 0, 1000 );
+	guiSlider0->ConnectHandler( GUI::data_changed, bind( &App::SliderChanged, this, _1, _2, _3 ) );
 
-	shared_ptr< GUI::GuiEditBox > editboxSlider = make_shared< GUI::GuiEditBox >( Math::make_vector( 300.0f,430.0f ), gfxDriver, 
-		Rgba( 1.0f, 1.0f, 1.0f ), Rgba(), m_arialN, 6, L"0" );
+	shared_ptr< GUI::GuiEditBox > editboxSlider = guiManager->Make_DefEditBox( 300.0f, 370.0f, Rgba( 1.0f, 1.0f, 1.0f ), Rgba(), m_arialN, 6, L"0" );
 	editboxSlider->Show();
 
 	m_sliderEditId = editboxSlider->GetID();
 
 	m_window->AddChild( editboxSlider );
-	m_window->AddChild( guiSlider );
+	m_window->AddChild( guiSlider0 );
+	m_window->AddChild( guiSlider1 );
+	m_window->AddChild( guiSlider2 );
 	m_window->AddChild( guiCheckText );
 	m_window->AddChild( check );
 	m_window->AddChild( button );
@@ -131,7 +125,7 @@ bool App::DoInit( boost::int32_t /*argc*/, std::list< boost::shared_array< char 
 	return true;
 }
 
-void App::SliderChanged( boost::int32_t eventId, Spiral::GUI::GuiWindow* window, const boost::any& data )
+void App::SliderChanged( boost::int32_t /*eventId*/, Spiral::GUI::GuiWindow* window, const boost::any& /*data*/ )
 {
 	GUI::GuiSlider* slider = static_cast<GUI::GuiSlider*>( window );
 	GUI::GuiEditBox* edit = static_cast<GUI::GuiEditBox*>( m_window->GetChild( m_sliderEditId ) );
@@ -199,7 +193,7 @@ void App::KeyDown( const Event& event, const any& data )
 	}
 }
 
-void App::ButtonPress( boost::int32_t eventId, Spiral::GUI::GuiWindow* window, const boost::any& data )
+void App::ButtonPress( boost::int32_t /*eventId*/, Spiral::GUI::GuiWindow* window, const boost::any& /*data*/ )
 {
 	LOG_D( "^yApp: ^wButton %1% Pressed!\n", window->GetID() );
 }

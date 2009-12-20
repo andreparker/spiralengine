@@ -43,5 +43,6 @@
 #include "Gfx/gui/GuiText.hpp"
 #include "Gfx/gui/GuiCheckBox.hpp"
 #include "Gfx/gui/GuiSlider.hpp"
+#include "Gfx/gui/GuiFrame.hpp"
 
 #endif

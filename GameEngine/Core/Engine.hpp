@@ -68,6 +68,24 @@ namespace GUI
 		bool UnCacheTexture( const std::string& textureName );
 
 		/*!
+		   @function  CacheTexture
+		   @brief     stores the texture into a catalog
+		   @return    bool
+		   @param     const boost::shared_ptr< Texture > & texture
+		   @param     const std::string & textureName - texture tag name
+		*/
+		bool CacheTexture( const boost::shared_ptr< Texture >& texture, const std::string& textureName );
+
+		/*!
+		   @function  LoadTexture
+		   @brief     loads a png image and returns a texture
+		   @return    boost::shared_ptr< Texture >
+		   @param     const std::string & fileName - png filename
+		   @param     const std::string & TextureName - texture name for id
+		*/
+		boost::shared_ptr< Texture > LoadTexture( const std::string& fileName, const std::string& TextureName );
+
+		/*!
 		   @function  CreateSpriteLayers
 		   @brief     create layers for sprites, 0 - layerCount-1
 		   @return    bool
@@ -229,24 +247,15 @@ namespace GUI
 		*/
 		static boost::shared_ptr< Engine > Create();
 
-		boost::shared_ptr< GfxDriver > GetGfxDriver()const
+		const boost::shared_ptr< GfxDriver >& GetGfxDriver()const
 		{
 			return m_gfxDriver;
 		}
 
-		boost::shared_ptr< CVar > GetVariables()const
+		const boost::shared_ptr< CVar >& GetVariables()const
 		{
 			return m_variables;
 		}
-
-		/*!
-		   @function  LoadTexture
-		   @brief     loads a png image and returns a texture
-		   @return    boost::shared_ptr< Texture >
-		   @param     const std::string & fileName - png filename
-		   @param     const std::string & TextureName - texture name for id
-		*/
-		boost::shared_ptr< Texture > LoadTexture( const std::string& fileName, const std::string& TextureName );
 
 		const boost::shared_ptr< EventPublisher >& GetEventPublisher()const
 		{
@@ -368,27 +377,27 @@ namespace GUI
 			return boost::any_cast< const T >( m_attributes[ attr.m_attribute ] );
 		}
 	private:
-		static const boost::int32_t AttributeCount = 10;
+		static const boost::int32_t               kAttributeCount = 10;
 
-		boost::shared_ptr< GameStateMachine > m_stateMachine;
-		boost::shared_ptr< GameObjectHandler > m_gameObjectList;
-		boost::shared_ptr< EventPublisher > m_eventPublisher;
-		boost::shared_ptr< GfxDriver > m_gfxDriver;
-		boost::shared_ptr< CVar > m_variables;
-		boost::scoped_ptr< ResourceCatalog > m_catolog;
-		Camera* m_camera;
-		boost::shared_array< SpriteLayer > m_spriteLayer;
-		boost::int32_t m_spriteLayerCount;
-		boost::shared_ptr< SpriteDrawList > m_spriteDrawList;
-		std::bitset< 8 > m_buffer;
-		bool m_attrDirtyFlag;
-		boost::thread m_eventPublisherThread;
-		boost::thread_group m_threadManager;
-		boost::shared_ptr< FontFactory > m_fontFactory;
-		boost::shared_ptr< GUI::GuiManager > m_guiManager;
-		boost::shared_ptr< EventSubscriber > m_inputSubscriber;
-		boost::any m_attributes[ AttributeCount ];
-		bool m_threadsEnabled;
+		boost::shared_ptr< GameStateMachine >     m_stateMachine;
+		boost::shared_ptr< GameObjectHandler >    m_gameObjectList;
+		boost::shared_ptr< EventPublisher >       m_eventPublisher;
+		boost::shared_ptr< GfxDriver >            m_gfxDriver;
+		boost::shared_ptr< CVar >                 m_variables;
+		boost::scoped_ptr< ResourceCatalog >      m_catolog;
+		Camera*                                   m_camera;
+		boost::shared_array< SpriteLayer >        m_spriteLayer;
+		boost::int32_t                            m_spriteLayerCount;
+		boost::shared_ptr< SpriteDrawList >       m_spriteDrawList;
+		std::bitset< 8 >                          m_buffer;
+		bool                                      m_attrDirtyFlag;
+		boost::thread                             m_eventPublisherThread;
+		boost::thread_group                       m_threadManager;
+		boost::shared_ptr< FontFactory >          m_fontFactory;
+		boost::shared_ptr< GUI::GuiManager >      m_guiManager;
+		boost::shared_ptr< EventSubscriber >      m_inputSubscriber;
+		boost::any                                m_attributes[ kAttributeCount ];
+		bool                                      m_threadsEnabled;
 
 		Engine();
 	};

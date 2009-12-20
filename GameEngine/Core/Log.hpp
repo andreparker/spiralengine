@@ -141,7 +141,7 @@ private:
 #ifdef _DEBUG
 #define FUNCTION_LOG LogScopeObject funcLog( __FUNCTION__ );
 #else 
-#define FUNCTION_LOG (void)
+#define FUNCTION_LOG
 #endif
 
 #endif

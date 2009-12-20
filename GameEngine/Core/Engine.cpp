@@ -39,7 +39,7 @@
 using namespace Spiral;
 using namespace boost;
 
-const std::string version = "^l--------------------Spiral Engine version 1.0--------------------\n";
+const std::string version = "^l=================Spiral Engine version 1.0=================\n";
 const std::string module = "^lEngine :";
 
 Engine::Engine():
@@ -216,7 +216,7 @@ void Engine::RemoveEventSubscriber( boost::shared_ptr<EventSubscriber>& subscrib
 
 boost::shared_ptr< Texture > Engine::LoadTexture( const std::string& fileName, const std::string& TextureName )
 {
-	LOG_I( module + "^w Loading texture - %1% nameTag - %2% ....\n", fileName.c_str(), TextureName.c_str() );
+	LOG_I( module + "^w Loading texture - ^g%1% ^wnameTag - ^g%2% ^w....\n", fileName.c_str(), TextureName.c_str() );
 	boost::shared_ptr< Texture > texture;
 
 	// check catalog for texture
@@ -244,10 +244,11 @@ boost::shared_ptr< Texture > Engine::LoadTexture( const std::string& fileName, c
 				if( m_gfxDriver->CreateTexture( info, texture, newImage->data.get() ) )
 				{
 					// catalog texture
-					m_catolog->m_textureCatalog[ TextureName ] = texture;
-					m_catolog->m_textureSize += texture->Size();
-					LOG_I( module + "^w Texture loaded and cached in catalog.\n" );
-					LOG_I( module + "^w Current Texture Loaded: ^g%1% ^w bytes. \n", m_catolog->m_textureSize );
+					CacheTexture( texture, TextureName );
+					//m_catolog->m_textureCatalog[ TextureName ] = texture;
+					//m_catolog->m_textureSize += texture->Size();
+					//LOG_I( module + "^w Texture loaded and cached in catalog.\n" );
+					//LOG_I( module + "^w Current Texture Loaded: ^g%1% ^w bytes. \n", m_catolog->m_textureSize );
 				}
 			}else
 			{
@@ -511,7 +512,7 @@ boost::shared_ptr< Font > Engine::LoadFont( const std::string& fontFile, const s
 {
 	boost::shared_ptr< Font > font;
 	ResourceCatalog::FontCatalogItr itr = m_catolog->m_fontCatalog.find( fontName );
-	LOG_I( module + "^w Loading font file - %1% nameTag - %2% width - %3% height - %4%....\n", fontFile.c_str(), fontName.c_str(), charWidth, charHeight );
+	LOG_I( module + "^w Loading font file - ^g%1% ^wnameTag - ^g%2% ^wwidth - ^g%3% ^wheight - ^g%4%....\n", fontFile.c_str(), fontName.c_str(), charWidth, charHeight );
 	if( itr != m_catolog->m_fontCatalog.end() )
 	{
 		font = (*itr).second;
@@ -549,7 +550,7 @@ void Engine::CreateModules()
 	m_variables       = make_shared< CVar >();
 	m_spriteDrawList  = make_shared< SpriteDrawList >();
 	m_fontFactory     = make_shared< FreeTypeFactory >();
-	m_guiManager      = make_shared< GUI::GuiManager >();
+	m_guiManager      = make_shared< GUI::GuiManager >( this );
 	m_inputSubscriber = make_shared< EventSubscriber >( Event( Event::EVENT_ANY, Catagory_Input::value ) );
 	m_catolog.reset( new ResourceCatalog );
 }
@@ -678,4 +679,25 @@ bool Engine::LoadConfig( const std::string& fileName )
 	}
 
 	return cfgLoaded;
+}
+
+bool Engine::CacheTexture( const boost::shared_ptr< Texture >& texture, const std::string& textureName )
+{
+	bool textureCached = false;
+
+	LOG_I( module + " ^wAttempting to cache ^g%1% ^wtexture...\n", textureName );
+	ResourceCatalog::TextureCatalogItr itr = m_catolog->m_textureCatalog.find( textureName );
+
+	if( itr == m_catolog->m_textureCatalog.end() )
+	{
+		m_catolog->m_textureCatalog.insert( std::pair< std::string, boost::shared_ptr< Texture > >( textureName, texture ) );
+		m_catolog->m_textureSize += texture->Size();
+		LOG_I( module + " ^wTexture now cached ^g%1% ^wbytes.\n", m_catolog->m_textureSize );
+		textureCached = true;
+	}else
+	{
+		LOG_I( module + " ^rTexture already cached!\n" );
+	}
+
+	return textureCached;
 }
