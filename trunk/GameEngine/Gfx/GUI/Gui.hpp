@@ -1,6 +1,7 @@
 #ifndef GUI_HPP
 #define GUI_HPP
 
+#include "../../Core/Sp_DataTypes.hpp"
 #include "../../Core/EventSubscriber.hpp"
 #include <boost/shared_ptr.hpp>
 #include <list>
@@ -9,15 +10,27 @@ namespace Spiral
 {
 
 	class GfxDriver;
+	class Font;
+	class Rgba;
+
+	class Engine;
 namespace GUI
 {
 	class GuiWindow;
+	class GuiButton;
+	class GuiCheckBox;
+	class GuiText;
+	class GuiSlider;
+	class GuiEditBox;
+	class GuiFrame;
+
 	struct mouse_position;
+	struct GuiSliderDir;
 
 	class GuiManager
 	{
 	public:
-		GuiManager();
+		GuiManager( Engine* engine );
 
 		/*!
 		   @function  AddElement
@@ -59,6 +72,18 @@ namespace GUI
 		*/
 		void Clear();
 
+
+		boost::shared_ptr< GuiButton >   Make_DefButton( SpReal posX, SpReal posY, SpReal width, SpReal height );
+		boost::shared_ptr< GuiWindow >   Make_DefWindow( SpReal posX, SpReal posY, SpReal width, SpReal height );
+		boost::shared_ptr< GuiFrame >    Make_DefFrame( SpReal posX, SpReal posY, SpReal width, SpReal height );
+		boost::shared_ptr< GuiCheckBox > Make_DefCheckBox( SpReal posX, SpReal posY, SpReal width, SpReal height );
+		boost::shared_ptr< GuiText >     Make_DefTextBox( SpReal posX, SpReal posY, const Rgba& fontColor, 
+			             const boost::shared_ptr<Font>& font, boost::uint32_t maxAllowedChar, const SpString& text );
+		boost::shared_ptr< GuiSlider >   Make_DefSlider( SpReal posX, SpReal posY, SpReal width, SpReal height, 
+			                                             boost::uint32_t sliderSize, const GuiSliderDir& dir );
+		boost::shared_ptr< GuiEditBox >  Make_DefEditBox( SpReal posX, SpReal posY, const Rgba& bkColor, const Rgba& fontColor, 
+			                             const boost::shared_ptr<Font>& font, boost::uint32_t maxCharLen, const SpString& text );
+
 	private:
 		
 		/*!
@@ -85,6 +110,7 @@ namespace GUI
 		typedef std::list< boost::shared_ptr< GuiWindow > >::const_iterator const_gui_window_itr;
 
 		std::list< boost::shared_ptr< GuiWindow > > m_windowList;
+		Engine* m_pImplEngine;
 	};
 }
 

@@ -3,7 +3,7 @@
 #ifndef GAME_STATE_HPP
 #define GAME_STATE_HPP
 
-#include <boost/utility.hpp>
+#include <boost/noncopyable.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/cstdint.hpp>
 #include <map>

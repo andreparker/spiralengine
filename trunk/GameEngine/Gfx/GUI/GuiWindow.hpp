@@ -150,8 +150,14 @@ namespace GUI
 		void ConnectHandler( boost::int32_t eventId, const WindowEventHandler& handler );
 		void DisConnectHandler( boost::int32_t eventId );
 
+		GuiWindow* GetParent()const
+		{
+			return m_parent;
+		}
+
 		MAKE_ALIGNED_NEW
 	protected:
+
 
 		void SetParent( GuiWindow* parent )
 		{
