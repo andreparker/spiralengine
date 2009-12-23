@@ -22,6 +22,7 @@ namespace GUI
 
 	private:
 		bool m_buttonDown;
+		bool m_hoverCoordsSet;
 
 		void OnMouseDown( boost::int32_t eventId, GuiWindow* window, const boost::any& data );
 		void OnMouseUp( boost::int32_t eventId, GuiWindow* window, const boost::any& data );

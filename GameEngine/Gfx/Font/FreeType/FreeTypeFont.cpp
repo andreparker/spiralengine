@@ -11,7 +11,7 @@
 using namespace Spiral;
 using namespace boost;
 
-const uint32_t kPadding = 2; // raise it 2 pixels
+const uint32_t kPadding = 2; // raise it 3 pixels
 
 FreeTypeFont::~FreeTypeFont()
 {

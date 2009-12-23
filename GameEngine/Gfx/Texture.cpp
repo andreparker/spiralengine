@@ -1,4 +1,5 @@
 #include "Texture.hpp"
+#include "../Core/Log.hpp"
 
 using namespace Spiral;
 
@@ -18,7 +19,7 @@ m_bitDepth( bitDepth ),m_resource()
 
 Texture::~Texture()
 {
-
+	LOG_D( "^rTexture::~Texture - ^wwidth ^g%1% ^wheight ^g%2% ^wbitDepth ^g%3% ^rDestroyed\n", m_width, m_height, m_bitDepth );
 }
 
 Cloneable* Texture::DoClone()const

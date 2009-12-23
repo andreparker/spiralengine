@@ -102,7 +102,7 @@ namespace Spiral
 }
 
 
-
+#define LOG_ADD_LOGGER( _logger ) LogRouter::instance().addLogger( _logger )
 
 #define LOG_I Spiral::log< Spiral::Int2Bit<Spiral::logFlag_system_init>::value >
 #define LOG_E Spiral::log< Spiral::Int2Bit<Spiral::logFlag_error>::value >

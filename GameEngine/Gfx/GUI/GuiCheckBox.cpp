@@ -15,6 +15,7 @@ GuiCheckBox::GuiCheckBox( const Math::SpVector2r& position, const Rect< SpReal >
 GuiButton( position, rect, bgTextCoords, bgTexture, bBgAlpha ), m_isChecked( false ), m_ckWindow()
 {
 	ConnectHandler( button_Press, bind( &GuiCheckBox::CheckPressed, this, _1, _2, _3 ) );
+	DisConnectHandler( mouse_hover );
 
 	m_ckWindow = make_shared<GuiWindow>( Math::make_vector( 0.0f, 0.0f ), rect, ckTextCoords, ckTexture, bCkAlpha );
 	m_ckWindow->Show( false );

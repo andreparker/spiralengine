@@ -41,16 +41,16 @@ void GuiFrame::OnHoverBar( boost::int32_t eventId, GuiWindow* window, const boos
 	if( m_mouseDown )
 	{
 		const mouse_position pos = boost::any_cast< const mouse_position >( data );
-		
-		SpReal deltaX = pos.x - m_posX;
-		SpReal deltaY = pos.y - m_posY;
-
 		Math::SpVector2r windowPos = GetLocalPosition();
-		windowPos[0] += deltaX;
-		windowPos[1] += deltaY;
-		SetLocalPosition( windowPos );
-		SaveLastPosition( pos );
 		
+		SpReal distX = pos.x - windowPos[0];
+		SpReal distY = pos.y - windowPos[1];
+
+		
+		windowPos[0] += (distX - m_posX);
+		windowPos[1] += (distY - m_posY);
+		SetLocalPosition( windowPos );
+
 	}
 }
 
@@ -66,6 +66,8 @@ void GuiFrame::ResetWindow()
 
 void GuiFrame::SaveLastPosition( const mouse_position& pos )
 {
-	m_posX = pos.x;
-	m_posY = pos.y;
+	Math::SpVector2r windowPos = GetLocalPosition();
+
+	m_posX = pos.x - windowPos[0];
+	m_posY = pos.y - windowPos[1];
 }

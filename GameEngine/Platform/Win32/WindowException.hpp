@@ -13,4 +13,5 @@ public:
 	virtual const char* what()const throw();
 };
 
+#define THROW_WINDOW_EXCEPTION( str ) THROW_BASIC_EXCEPTION( WindowException( str ) )
 #endif

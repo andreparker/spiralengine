@@ -23,6 +23,7 @@ bool App::DoInit( boost::int32_t /*argc*/, std::list< boost::shared_array< char 
 	m_sprite_alpha->SetPosition( 50.0f, 50.0f );
 	m_sprite_alpha->SetAlphaBlend( true );
 	
+	//m_arialN = engine->LoadFont( "c:/windows/fonts/arialn.ttf", "arial_n", 12, 14 );
 	m_arialN = engine->LoadFont( "c:/windows/fonts/arialn.ttf", "arial_n", 16, 10 );
 
 	SpString text = L"Testing Font rendering code using true type font.\nThis font is arial narrow.\nTesting newline code";
@@ -41,18 +42,19 @@ bool App::DoInit( boost::int32_t /*argc*/, std::list< boost::shared_array< char 
 	guiText->AllowFocus(false);
 	guiText->Show();
 	
-	m_button = guiManager->Make_DefButton( 128.0f, 450.0f, 64.0f, 32.0f ); 
-	m_button->AddChild( guiButtonText2 );
-	m_button->Show();
+	shared_ptr< GUI::GuiButton > button0 = guiManager->Make_DefButton( 128.0f, 450.0f, 64.0f, 32.0f ); 
+	button0->AddChild( guiButtonText2 );
+	button0->Show();
 
-	shared_ptr< GUI::GuiButton > button = guiManager->Make_DefButton( 32.0f, 450.0f, 64.0f, 32.0f ); 
-	button->AddChild( guiButtonText1 );
-	button->Show();
+	shared_ptr< GUI::GuiButton > button1 = guiManager->Make_DefButton( 32.0f, 450.0f, 64.0f, 32.0f ); 
+	button1->AddChild( guiButtonText1 );
+	button1->Show();
 	
 
 	shared_ptr< GUI::GuiEditBox > editbox = guiManager->Make_DefEditBox( 32.0f, 332.0f, Rgba( 1.0f, 1.0f, 1.0f ), Rgba(), m_arialN, 32, L"Edit box 2" );
 	shared_ptr< GUI::GuiEditBox > editbox1 = guiManager->Make_DefEditBox( 32.0f, 300.0f, Rgba( 1.0f, 1.0f, 1.0f ), Rgba(), m_arialN, 32, L"Edit box 1" );
-	button->ConnectHandler( GUI::button_Press, bind( &App::ButtonPress, this, _1, _2, _3 ) );
+	button0->ConnectHandler( GUI::button_Press, bind( &App::ButtonPress, this, _1, _2, _3 ) );
+	button1->ConnectHandler( GUI::button_Press, bind( &App::ButtonPress, this, _1, _2, _3 ) );
 
 	m_window = guiManager->Make_DefFrame( 0.0f, 100.0f, 512.0f, 512.0f );
 	
@@ -84,13 +86,13 @@ bool App::DoInit( boost::int32_t /*argc*/, std::list< boost::shared_array< char 
 	m_window->AddChild( guiSlider2 );
 	m_window->AddChild( guiCheckText );
 	m_window->AddChild( check );
-	m_window->AddChild( button );
-	m_window->AddChild( m_button );
+	m_window->AddChild( button0 );
+	m_window->AddChild( button1 );
 	m_window->AddChild( editbox );
 	m_window->AddChild( editbox1 );
 	m_window->AddChild( guiText );
 
-	m_button->ConnectHandler( GUI::button_Press, bind( &App::ButtonPress, this, _1, _2, _3 ) );
+	
 	engine->GetGuiManager()->AddElement( m_window );
 
 	
@@ -154,8 +156,13 @@ bool App::DoUnInit()
 	delete m_camera;
 	m_sprite.reset();
 	m_sprite_alpha.reset();
+
+	shared_ptr< Spiral::Engine > theEngine = m_engine.lock();
+	theEngine->GetEventPublisher()->RemoveSubscriber( m_keyDownSubscriber );
+
 	m_keyDownSubscriber.reset();
 	m_arialN.reset();
+	m_window.reset();
 
 	return true;
 }
@@ -168,7 +175,6 @@ m_sprite_alpha(),
 m_keyDownSubscriber(),
 m_engine(),
 m_arialN(),
-m_button(),
 m_window(),
 m_camera(NULL),
 m_sliderEditId(0)

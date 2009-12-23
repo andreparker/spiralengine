@@ -10,7 +10,7 @@ bool Application::Init( int32_t argc, list< shared_array< char > >& argList, sha
 {
 	if( !engine )
 	{
-		throw GeneralException( "Invalid engine pointer!" );
+		THROW_GENERAL_EXCEPTION( "Invalid engine pointer!" );
 	}
 
 	return DoInit( argc, argList, engine );

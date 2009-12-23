@@ -91,9 +91,8 @@ void EventPublisher::ProcessEventQueue()
 
 	while( !m_eventQueue->empty() )
 	{
-		detail::EventData& eventData = m_eventQueue->front();
+		detail::EventData eventData = m_eventQueue->front();
 		
-
 		for( SubIter itr = m_subscribers.begin(); itr != m_subscribers.end(); ++itr )
 		{
 			EventSubscriber* subscriber = (*itr).get();
@@ -106,4 +105,12 @@ void EventPublisher::ProcessEventQueue()
 		m_eventQueue->pop();
 	}
 
+}
+
+void EventPublisher::ClearEventQueue()
+{
+	while( !m_eventQueue->empty() )
+	{
+		m_eventQueue->pop();
+	}
 }

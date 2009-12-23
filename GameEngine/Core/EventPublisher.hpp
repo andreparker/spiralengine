@@ -60,6 +60,8 @@ namespace Spiral
 		   @return    void
 		*/
 		void ProcessEventQueue();
+
+		void ClearEventQueue();
 	private:
 		typedef std::list< boost::shared_ptr<EventSubscriber> >::iterator SubIter;
 		std::list< boost::shared_ptr<EventSubscriber> > m_subscribers;

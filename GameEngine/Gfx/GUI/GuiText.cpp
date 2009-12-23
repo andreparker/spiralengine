@@ -22,13 +22,15 @@ m_font( font ),m_editSurface(),m_maxCharLen( maxCharLen ),m_fontColor( textColor
 	boost::int32_t width;
 	boost::int32_t height;
 
+	const boost::uint32_t kPadHeight = 4;
+
 	if( m_multiline )
 	{
 		font->CalcSurfaceSize( text, width, height );
 	}else
 	{
 		width = font->GetCharWidth() * m_maxCharLen;
-		height = font->GetCharHeight();
+		height = font->GetCharHeight() + kPadHeight;
 	}
 
 	shared_ptr<Texture> textTexture;

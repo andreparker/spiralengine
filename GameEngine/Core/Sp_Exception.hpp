@@ -9,6 +9,10 @@
 
 namespace Spiral
 {
+	typedef boost::error_info<struct src_file_info_tag, std::string> Ex_SrcFileInfo;
+	typedef boost::error_info<struct function_info_tag, std::string> Ex_FunctionInfo;
+	typedef boost::error_info<struct src_line_info_tag, int >        Ex_SrcLineInfo;
+
 	class BaseException : public std::exception, public boost::exception
 	{
 	protected:
@@ -20,11 +24,7 @@ namespace Spiral
 			 return std::string( "[ " + m_componentName + " ] " );
 		 }
 
-		 std::string& GetGeneralError()const throw()
-		 {
-			 m_final = GetComponentName() + m_errorStr + "\n";
-			 return m_final;
-		 }
+		 std::string& GetGeneralError()const throw();
 
 		 std::string& GetFinal()const
 		 {
@@ -38,5 +38,8 @@ namespace Spiral
 
 	};
 }
+
+#define THROW_BASIC_EXCEPTION( ExClass ) throw ExClass << Spiral::Ex_SrcFileInfo( __FILE__ ) \
+	<< Spiral::Ex_FunctionInfo( __FUNCTION__ ) << Spiral::Ex_SrcLineInfo( __LINE__ )
 
 #endif

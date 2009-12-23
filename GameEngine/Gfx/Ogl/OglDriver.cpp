@@ -55,6 +55,7 @@ bool OglDriver::Initialize( const boost::any& /*data*/ )
 
 bool OglDriver::UnInitialize()
 {
+	m_stateList.clear();
 	return true;
 }
 

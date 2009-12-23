@@ -199,9 +199,10 @@ void GuiWindow::ResetWindow()
 {
 }
 
+GuiWindow* GuiWindow::lastWindow = NULL;
 void GuiWindow::MouseHover( const mouse_position& pos )
 {
-	static GuiWindow* lastWindow = NULL;
+	
 	if( ContainsPoint( pos.x, pos.y ) )
 	{
 		GuiWindow* topMostWindow = FindTopMostChild( pos.x, pos.y );
@@ -210,16 +211,14 @@ void GuiWindow::MouseHover( const mouse_position& pos )
 		if( lastWindow != NULL && lastWindow != topMostWindow )
 		{
 			lastWindow->ResetWindow();
+			lastWindow = NULL;
 		}
 
 		lastWindow = topMostWindow;
  	}
 	else
 	{
-		if( lastWindow != NULL )
-		{
-			lastWindow->ResetWindow();
-		}
+		ResetWindow();	
 	}
 }
 
@@ -235,7 +234,7 @@ void GuiWindow::CharInput( boost::uint32_t char_ )
 GuiWindow* GuiWindow::FindTopMostChild( SpReal x, SpReal y ) const
 {
 	GuiWindow* window = NULL;
-	if( ContainsPoint( x, y ) )
+	if( ContainsPoint( x, y ) && m_allowFocus )
 	{
 		for( Const_WindowItr itr = m_children.begin(); itr != m_children.end(); ++itr )
 		{

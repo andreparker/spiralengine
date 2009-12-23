@@ -60,7 +60,8 @@ m_threadManager(),
 m_fontFactory(),
 m_guiManager(),
 m_inputSubscriber(),
-m_threadsEnabled(false)
+m_threadsEnabled(false),
+m_modulesCreated(false)
 {
 }
 
@@ -68,7 +69,7 @@ Engine::~Engine()
 {
 }
 
-bool Engine::Initialize( shared_ptr< GfxDriver >& gfxDriver, any& data ) 
+bool Engine::Initialize( shared_ptr< GfxDriver >& gfxDriver, const any& data ) 
 {
 	FUNCTION_LOG
 	if( gfxDriver )
@@ -80,19 +81,21 @@ bool Engine::Initialize( shared_ptr< GfxDriver >& gfxDriver, any& data )
 		if( true == result )
 		{
 			m_gfxDriver = gfxDriver;
-			CreateModules();
-
-			InitEventPublisher();
 
 			LOG_I( module + " ^wInitializing Engine attributes....\n" );
 			InitializeAttributes();
 
-			LOG_I( module + " ^wInitializing FontFactory....\n" );
-			m_fontFactory->Initialize();
-
-			LOG_I( module + " ^wInitializing CVars....\n" );
-			m_variables->Initialize();
-			
+			if( m_modulesCreated == false )
+			{
+				CreateModules();
+				InitEventPublisher();	
+				
+				LOG_I( module + " ^wInitializing FontFactory....\n" );
+				m_fontFactory->Initialize();
+				
+				LOG_I( module + " ^wInitializing CVars....\n" );
+				m_variables->Initialize();
+			}
 		}
 	}
 
@@ -144,14 +147,14 @@ void Engine::Tick( SpReal ticks )
 		m_gfxDriver->ClearBuffer( info );
 	}
 	
+	m_stateMachine->Tick( ticks, this );
+	m_gameObjectList->Tick( ticks );
+	UpdateQueue::instance().Tick( ticks );
+
 	if( m_threadsEnabled == false )
 	{
 		m_eventPublisher->ProcessEventQueue();
 	}
-	
-	m_stateMachine->Tick( ticks, this );
-	m_gameObjectList->Tick( ticks );
-	UpdateQueue::instance().Tick( ticks );
 	
 	BuildSpriteDrawList();
 	
@@ -270,6 +273,7 @@ void Engine::ClearCatalog()
 {
 	ClearTextureCatalog();
 	ClearFontCatalog();
+	m_catolog.reset( new ResourceCatalog );
 }
 
 void Engine::ApplyCamera()
@@ -384,7 +388,7 @@ void Engine::ValidateLayerIndex( const std::string& funcName, boost::int32_t lay
 {
 	if( layerIndex < 0 || layerIndex >= m_spriteLayerCount )
 	{
-		throw GeneralException( funcName + " - Invalid layer index or layers not initialized!" );
+		THROW_GENERAL_EXCEPTION( funcName + " - Invalid layer index or layers not initialized!" );
 	}
 }
 
@@ -553,6 +557,7 @@ void Engine::CreateModules()
 	m_guiManager      = make_shared< GUI::GuiManager >( this );
 	m_inputSubscriber = make_shared< EventSubscriber >( Event( Event::EVENT_ANY, Catagory_Input::value ) );
 	m_catolog.reset( new ResourceCatalog );
+	m_modulesCreated = true;
 }
 
 void Engine::SetGfxValues()
@@ -616,6 +621,7 @@ bool Engine::UnCacheTexture( const std::string& textureName )
 void Engine::EnableThreads()
 {
 	LOG_I( module + " ^wCreating EventPublisher thread....\n" );
+	m_eventPublisher->ClearEventQueue();
 	m_eventPublisherThread = boost::thread( &EventPublisher::ProcessEventQueueThreaded, ref( m_eventPublisher ) );
 }
 
@@ -624,6 +630,7 @@ void Engine::DisableThreads()
 	LOG_I( module + " ^wDestroying EventPublisher thread....\n" );
 	m_eventPublisherThread.detach();
 	m_eventPublisherThread.join();
+	m_eventPublisher->ClearEventQueue();
 }
 
 void Engine::UpdateThreadAttributes()
@@ -653,16 +660,13 @@ void Engine::ScreenToWorld( const Math::SpVector2r& scr_pos, Math::SpVector2r& w
 
 		Rect<boost::int32_t> viewPort;
 		GetGfxDriver()->GetViewPort( viewPort );
-		Math::UnProject( pos, (view * proj), 
-			Rect<SpReal>( static_cast<SpReal>( viewPort.left ), 
-						  static_cast<SpReal>( viewPort.right ),
-						  static_cast<SpReal>( viewPort.bottom ),
-						  static_cast<SpReal>( viewPort.top ) ), pos );
+		Math::UnProject( pos, (view * proj), Rect<SpReal>( viewPort ), pos );
+
 		world[0] = pos[0];
 		world[1] = pos[1];
 	}else
 	{
-		throw GeneralException( "Error: no camera set!" );
+		THROW_GENERAL_EXCEPTION( module + "Engine::ScreenToWorld - Error: no camera set!" );
 	}
 }
 
@@ -692,7 +696,20 @@ bool Engine::CacheTexture( const boost::shared_ptr< Texture >& texture, const st
 	{
 		m_catolog->m_textureCatalog.insert( std::pair< std::string, boost::shared_ptr< Texture > >( textureName, texture ) );
 		m_catolog->m_textureSize += texture->Size();
-		LOG_I( module + " ^wTexture now cached ^g%1% ^wbytes.\n", m_catolog->m_textureSize );
+
+		if( m_catolog->m_textureSize > (1024*1024) )
+		{
+			SpReal megaByte = m_catolog->m_textureSize / (1024.0f * 1024.0f );
+			LOG_I( module + " ^wTexture now cached ^g%1% ^wMB.\n", megaByte );
+
+		}else if( m_catolog->m_textureSize > 1024 )
+		{
+			SpReal kiloByte = m_catolog->m_textureSize / 1024.0f;
+			LOG_I( module + " ^wTexture now cached ^g%1% ^wKB.\n", kiloByte );
+		}else
+		{
+			LOG_I( module + " ^wTexture now cached ^g%1% ^wbytes.\n", m_catolog->m_textureSize );
+		}
 		textureCached = true;
 	}else
 	{

@@ -8,7 +8,7 @@ using namespace boost;
 
 GuiButton::GuiButton( const Math::SpVector2r& position, const Rect< SpReal >& rect, const Rect< SpReal >& textCoords,const boost::shared_ptr< Texture >& texture, bool bAlpha ):
 GuiWindow( position, rect, textCoords, texture, bAlpha ),
-m_buttonDown(false)
+m_buttonDown(false),m_hoverCoordsSet(false)
 {
 	ConnectHandler( mouse_down, bind( &GuiButton::OnMouseDown, this, _1, _2, _3 ) );
 	ConnectHandler( mouse_up, bind( &GuiButton::OnMouseUp, this, _1, _2, _3 ) );
@@ -38,10 +38,16 @@ void GuiButton::OnMouseUp( boost::int32_t /*eventId*/, GuiWindow* /*window*/, co
 
 void GuiButton::OnMouseHover( boost::int32_t /*eventId*/, GuiWindow* /*window*/, const boost::any& /*data*/ )
 {
-
+	if( m_hoverCoordsSet == false )
+	{
+		SetTexCoords( Rect< SpReal >( 0.5f, 1.0f, 1.0f, 0.0f ) );
+		m_hoverCoordsSet = true;
+	}
 }
 
 void GuiButton::ResetWindow()
 {
+	SetTexCoords( Rect< SpReal >( 0.0f, 0.5f, 1.0f, 0.0f ) );
+	m_hoverCoordsSet = false;
 	m_buttonDown = false;
 }

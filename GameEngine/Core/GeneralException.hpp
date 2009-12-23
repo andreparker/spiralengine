@@ -16,4 +16,6 @@ namespace Spiral
 	};
 }
 
+#define THROW_GENERAL_EXCEPTION( str ) THROW_BASIC_EXCEPTION( Spiral::GeneralException( str ) )
+
 #endif

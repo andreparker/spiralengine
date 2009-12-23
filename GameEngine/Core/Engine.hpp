@@ -165,7 +165,7 @@ namespace GUI
 		   @param     boost::shared_ptr< GfxDriver >& gfxDriver
 		   @param     boost::any & data - data to initialize the engine
 		*/
-		bool Initialize( boost::shared_ptr< GfxDriver >& gfxDriver, boost::any& data );
+		bool Initialize( boost::shared_ptr< GfxDriver >& gfxDriver, const boost::any& data );
 
 		/*!
 		   @function  InitializeStateMachine
@@ -398,6 +398,7 @@ namespace GUI
 		boost::shared_ptr< EventSubscriber >      m_inputSubscriber;
 		boost::any                                m_attributes[ kAttributeCount ];
 		bool                                      m_threadsEnabled;
+		bool                                      m_modulesCreated;
 
 		Engine();
 	};
