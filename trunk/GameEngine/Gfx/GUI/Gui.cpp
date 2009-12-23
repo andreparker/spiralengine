@@ -31,6 +31,8 @@ m_windowList(),
 m_pImplEngine( engine )
 {}
 
+
+
 void GuiManager::AddElement( const boost::shared_ptr< GuiWindow >& window )
 {
 	m_windowList.push_back( window );
@@ -116,13 +118,14 @@ void GuiManager::Present( const boost::shared_ptr< GfxDriver >& gfxDrvier )
 void GuiManager::Clear()
 {
 	m_windowList.clear();
+	GuiWindow::lastWindow = NULL;
 }
 
 boost::shared_ptr< GuiButton > GuiManager::Make_DefButton( SpReal posX, SpReal posY, SpReal width, SpReal height )
 {
 	shared_ptr< Texture > button_texture = m_pImplEngine->LoadTexture( "Data/GUI/def_button.png", "Button_texture" );
 	shared_ptr< GuiButton > button = make_shared< GuiButton >( Math::make_vector( posX,posY), Rect< SpReal >( 0, width, height, 0 ), 
-		Rect< SpReal >( 0.0f, 1.0f, 1.0f, 0.0f ), button_texture, true );
+		Rect< SpReal >( 0.0f, 0.5f, 1.0f, 0.0f ), button_texture, true );
 	return button;
 }
 

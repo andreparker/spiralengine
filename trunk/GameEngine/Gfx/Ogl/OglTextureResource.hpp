@@ -23,6 +23,11 @@ namespace Spiral
 		{
 			return m_oglTextureId;
 		}
+
+		void DestroyCache()
+		{
+			m_data.reset();
+		}
 	private:
 		OglTextureResource();
 		/*!

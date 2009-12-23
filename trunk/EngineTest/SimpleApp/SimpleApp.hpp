@@ -27,7 +27,6 @@ namespace SimpleApp
 		boost::shared_ptr< Spiral::EventSubscriber > m_keyDownSubscriber;
 		boost::weak_ptr< Spiral::Engine > m_engine;
 		boost::shared_ptr< Spiral::Font > m_arialN;
-		boost::shared_ptr< Spiral::GUI::GuiButton > m_button;
 		boost::shared_ptr< Spiral::GUI::GuiFrame > m_window;
 		Spiral::Camera* m_camera;
 

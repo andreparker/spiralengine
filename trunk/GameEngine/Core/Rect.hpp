@@ -18,6 +18,13 @@ namespace Spiral
 		Rect( const Rect& rect_ ):
 			left( rect_.left ), right( rect_.right ), bottom( rect_.bottom ),top( rect_.top ){}
 
+		template< class R >
+		explicit Rect( const Rect<R>& rect_ ):
+		    left( static_cast<T>(rect_.left) ), 
+			right( static_cast<T>(rect_.right) ),
+			bottom( static_cast<T>(rect_.bottom) ),
+			top( static_cast<T>(rect_.top) ){}
+
 		void Set( type left_, type right_, type top_, type bottom_ )
 		{
 			left = left_;

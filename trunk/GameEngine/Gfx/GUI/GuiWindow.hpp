@@ -292,6 +292,8 @@ namespace GUI
 		bool m_show;		///< shows the window
 		bool m_allowFocus;  ///< enable/disables focus on the window
 		GuiWindow* m_parent;
+	private:
+		static GuiWindow* lastWindow;
 	};
 }
 }

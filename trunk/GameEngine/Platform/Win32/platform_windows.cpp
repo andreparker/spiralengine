@@ -26,6 +26,8 @@
 #include "../../Core/MouseEvent.hpp"
 #include "../../Math/Math.hpp"
 
+#include "../../Editor/Editor.hpp"
+
 #include <shellapi.h>
 
 using namespace Spiral;
@@ -33,6 +35,10 @@ using namespace boost;
 using namespace std;
 
 const std::string module = "^yPlatform :";
+shared_ptr< GfxDriver > g_gfxDriver;
+list< shared_array<char> > g_argList;
+int g_argc = 0;
+bool g_keys[256] = {false};
 weak_ptr< Engine > g_engine;
 
 /*!
@@ -119,6 +125,24 @@ void InitializeWindow( shared_ptr< Engine >& engine, shared_ptr< AppWindow >& ap
 	appWindow->Show();
 }
 
+void SwapCurrentRunningApp( shared_ptr<Application>& currentApp, shared_ptr<Application>& newRunApp, const any& data )
+{
+	shared_ptr< Engine > engine( g_engine );
+
+	if( engine )
+	{
+		currentApp->UnInit();
+		engine->UnInitialize();
+
+		engine->Initialize( g_gfxDriver, data );
+		engine->LoadConfig( "Data/Config/Config.cfg" );
+		newRunApp->Init( g_argc, g_argList, engine );
+		
+		swap( currentApp, newRunApp );
+	}
+
+}
+
 int APIENTRY WinMain(HINSTANCE hInstance,
 					 HINSTANCE /*hPrevInstance*/,
 					 LPTSTR    /*lpCmdLine*/,
@@ -127,13 +151,14 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 
 	try
 	{
-		list< shared_array<char> > argList;
-		int argc = ParseCommandLine( argList );
-		shared_ptr< Application > spApp = CreateApp();
+		
+		g_argc = ParseCommandLine( g_argList );
+		shared_ptr< Application > spGameApp = CreateApp();
+		shared_ptr< Application > spEditorApp( new Editor::App );
 		shared_ptr< AppWindow > spAppWindow( new AppWindow( hInstance ) );
 		shared_ptr< Engine > engine = Engine::Create();
 		shared_ptr< LogModule > winLogger;
-		shared_ptr< GfxDriver > gfxDriver;
+		any windowData;
 
 		// get a weak pointer to engine
 		g_engine = engine;
@@ -142,21 +167,31 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 		{
 			if( !spAppWindow->RegisterWindow() )
 			{
-				throw WindowException( "Could not register window" );
+				THROW_WINDOW_EXCEPTION( "Could not register window" );
 			}
 
 			if( !spAppWindow->Create( WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU ) )
 			{
-				throw WindowException( "Could not create window" );
+				THROW_WINDOW_EXCEPTION( "Could not create window" );
 			}
 
 			winLogger = make_shared< WindowsLogger >( spAppWindow->Get( EmptyType<HWND>() ) );
-			LogRouter::instance().addLogger( winLogger );
+			LOG_ADD_LOGGER( winLogger );
 
-			gfxDriver = make_shared< WinOglDriver >();
-			any data = any( spAppWindow->Get( EmptyType<HDC>() ) );
+			g_gfxDriver = make_shared< WinOglDriver >();
+			windowData = any( spAppWindow->Get( EmptyType<HDC>() ) );
 
-			engine->Initialize( gfxDriver , data );
+
+			engine->Initialize( g_gfxDriver , windowData );
+			
+			if( FileManager::instance().openPack( "Data.zip" ) )
+			{
+				LOG_I( module + " ^rAll resource data being read from %1% file.\n", "Data.zip" );
+			}else
+			{
+				LOG_I( module + " ^rAll resource data being read from file io.\n" );
+			}
+
 			engine->LoadConfig( "Data/Config/Config.cfg" );
 
 			LOG_I( module + " ^wInitializing MainWindow....\n" );
@@ -166,7 +201,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 			InitializeWindow( engine, spAppWindow );
 
 			LOG_I( module + " ^wInitializing Application....\n" );
-			spApp->Init( argc, argList, engine );
+			spGameApp->Init( g_argc, g_argList, engine );
 
 
 			LOG_I( module + " ^wInitialization Complete.\n" );
@@ -175,12 +210,16 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 		MSG msg;
 		DWORD tickCount = GetTickCount();
 		SpReal fracSecs = 0.015f;
+		SpReal appChangeDelay = 0.0f;
+
+		shared_ptr< Application > currentAppRunning = spGameApp;
+		shared_ptr< Application > nextAppRunning = spEditorApp;
 
 		// returns true if WM_QUIT is encountered
 		while( false == spAppWindow->ProcessMessage( msg, 0, 0 ) &&
 			   false == spAppWindow->Quit() )
 		{
-			if( spApp->Run( fracSecs, engine ) )
+			if( currentAppRunning->Run( fracSecs, engine ) )
 			{
 				engine->Tick( fracSecs );
 			}else
@@ -188,13 +227,21 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 				break;
 			}
 			
+			if( g_keys[ VK_F2 ] == true && appChangeDelay >= 1.0f )
+			{
+				SwapCurrentRunningApp( currentAppRunning, nextAppRunning, windowData );
+				appChangeDelay = 0.0f;
+			}
+
 			fracSecs = GetSeconds< SpReal >( GetTickCount() - tickCount );
+			appChangeDelay += fracSecs;
 			tickCount = GetTickCount();
 		}
 
 		LOG_I( module + "^w Shutting down...\n" );
-		spApp->UnInit();
+		currentAppRunning->UnInit();
 		engine->UnInitialize();
+		FileManager::instance().closePack();
 	}
 	catch ( std::exception& error )
 	{
@@ -284,6 +331,7 @@ void AppWindow::KeyUpCallback( WPARAM wParam, LPARAM /*lParam*/ )
 	if( m_eventPublisher )
 	{
 		keyUpData = int32_t(wParam);
+		g_keys[ wParam ] = false;
 		m_eventPublisher->Publish( Event( event_keyboard_key, Catagory_KeyBoard_KeyUp::value ), keyUpData );
 	}
 }
@@ -293,6 +341,7 @@ void AppWindow::KeyDownCallback( WPARAM wParam, LPARAM /*lParam*/ )
 	if( m_eventPublisher )
 	{
 		keyDownData = int32_t(wParam);
+		g_keys[ wParam ] = true;
 		m_eventPublisher->Publish( Event( event_keyboard_key, Catagory_KeyBoard_KeyDown::value ), keyDownData );
 	}
 }

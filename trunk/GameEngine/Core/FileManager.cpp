@@ -6,6 +6,7 @@
 #include "zipfile.hpp"
 #include "binaryfile.hpp"
 #include "GeneralException.hpp"
+#include "Log.hpp"
 
 using namespace Spiral;
 using namespace boost;
@@ -34,15 +35,15 @@ bool CreateFileImpl
 )
 {
 
-	FstreamType* ofs = new FstreamType( fileName.c_str(), FstreamType::binary );
-	bool isOpen = ofs->is_open();
+	FstreamType* fs = new FstreamType( fileName.c_str(), FstreamType::binary );
+	bool isOpen = fs->is_open();
 
 	// delet the file if it did not open
-	BOOST_SCOPE_EXIT( (isOpen)(ofs) )
+	BOOST_SCOPE_EXIT( (isOpen)(fs) )
 	{
 		if( false == isOpen )
 		{
-			delete ofs;
+			delete fs;
 		}
 	}BOOST_SCOPE_EXIT_END;
 
@@ -50,8 +51,11 @@ bool CreateFileImpl
 	if( isOpen )
 	{
 		FileImpl* newFile;
-		newFile = new FileImpl( ofs );
+		newFile = new FileImpl( fs );
 		file.reset(newFile);
+	}else
+	{
+		LOG_I( "^ybool CreateFileImpl: ^rERROR ^wFile: ^g%1% ^rcannot be opened.\n", fileName );
 	}
 
 	return isOpen;
@@ -68,6 +72,11 @@ bool FileManager::openPack
 {
 	_zipHandle = OpenZip( packFile.c_str(), "" );
 	_zipExists = bool( _zipHandle != NULL );
+
+	if( !_zipExists )
+	{
+		LOG_I( "^yFileManager::openPack: ^rWARNING ^wFile: ^g%1% ^rdoes not exist or cannot be loaded.\n", packFile );
+	}
 
 	return _zipExists;
 }
@@ -162,10 +171,12 @@ bool FileManager::getFile
 			return true;
 		}else // look in file dir
 		{
+			LOG_I( "^yFileManager::getFile: ^rWARNING ^wFile: ^g%1% ^rcannot locate file in zip, using file from directory.\n", fileName );
 			return createFile( fileName, file );
 		}
 	}else if( !_zipCreated )
 	{
+		LOG_I( "^yFileManager::getFile: ^rWARNING ^wFile: ^g%1% ^rno zip, file is being loaded from file system.\n", fileName );
 		// use binary file object
 		return createFile( fileName, file );
 	}
@@ -186,7 +197,7 @@ bool FileManager::addFile
 {
 	if( _zipCreated == false )
 	{
-		throw GeneralException( "FileManager::addFile - error, no zip created!" );
+		THROW_GENERAL_EXCEPTION( "FileManager::addFile - error, no zip created!" );
 	}
 
 	return bool( ZipAdd( _zipHandle, fileName.c_str(), fileName.c_str() ) == ZR_OK );

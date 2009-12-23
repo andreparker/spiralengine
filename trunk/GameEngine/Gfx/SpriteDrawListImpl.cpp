@@ -23,7 +23,7 @@ void Impl::SpriteDrawList::AddSprite( Sprite* sprite )
 		}
 	}else
 	{
-		throw GeneralException( "SpriteDrawList::AddSprite - Null sprite added!" );
+		THROW_GENERAL_EXCEPTION( "SpriteDrawList::AddSprite - Null sprite added!" );
 	}
 
 }
