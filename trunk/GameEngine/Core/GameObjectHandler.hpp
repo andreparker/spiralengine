@@ -20,7 +20,7 @@ namespace Spiral
 
 	typedef std::set< boost::shared_ptr<CoreObject>, obj_comp > Object_set;
 
-	class GameObjectHandler : public CoreObject, public boost::noncopyable 
+	class GameObjectHandler : public CoreObject, boost::noncopyable 
 	{
 	public:
 		GameObjectHandler();
@@ -31,7 +31,7 @@ namespace Spiral
 		*/
 		void Add
 		(
-			boost::shared_ptr< CoreObject >& obj ///< object to add 
+			const boost::shared_ptr< CoreObject >& obj ///< object to add 
 		);
 
 		/*!
@@ -61,6 +61,12 @@ namespace Spiral
 		   @return     void
 		*/
 		void Clear();
+
+	protected:
+		const Object_set& GetObjects()const
+		{
+			return m_objects;
+		}
 
 	private:
 		Object_set m_objects; ///< list of game objects

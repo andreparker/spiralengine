@@ -17,6 +17,8 @@
 
 #include "WindowException.hpp"
 #include "../../Gfx/Win32_Ogl/WinOglDriver.hpp"
+#include "../../Audio/oal/OAL_AudioDriver.hpp"
+
 #include "../../Core/Engine.hpp"
 #include "../../Core/CVar.hpp"
 #include "../../Core/MemoryManager.hpp"
@@ -25,6 +27,8 @@
 #include "../../Core/File.hpp"
 #include "../../Core/MouseEvent.hpp"
 #include "../../Math/Math.hpp"
+#include "../../Core/GameObjectCreator.hpp"
+#include "../../Gfx/VisualObjectCreator.hpp"
 
 #include "../../Editor/Editor.hpp"
 
@@ -35,7 +39,10 @@ using namespace boost;
 using namespace std;
 
 const std::string module = "^yPlatform :";
+
 shared_ptr< GfxDriver > g_gfxDriver;
+shared_ptr< Audio::AudioDriver > g_audioDriver;
+
 list< shared_array<char> > g_argList;
 int g_argc = 0;
 bool g_keys[256] = {false};
@@ -134,7 +141,7 @@ void SwapCurrentRunningApp( shared_ptr<Application>& currentApp, shared_ptr<Appl
 		currentApp->UnInit();
 		engine->UnInitialize();
 
-		engine->Initialize( g_gfxDriver, data );
+		engine->Initialize( g_gfxDriver, g_audioDriver, data );
 		engine->LoadConfig( "Data/Config/Config.cfg" );
 		newRunApp->Init( g_argc, g_argList, engine );
 		
@@ -179,10 +186,12 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 			LOG_ADD_LOGGER( winLogger );
 
 			g_gfxDriver = make_shared< WinOglDriver >();
+			g_audioDriver = make_shared< Audio::OalAudioDriver >();
+
 			windowData = any( spAppWindow->Get( EmptyType<HDC>() ) );
 
 
-			engine->Initialize( g_gfxDriver , windowData );
+			engine->Initialize( g_gfxDriver , g_audioDriver, windowData );
 			
 			if( FileManager::instance().openPack( "Data.zip" ) )
 			{
@@ -203,8 +212,14 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 			LOG_I( module + " ^wInitializing Application....\n" );
 			spGameApp->Init( g_argc, g_argList, engine );
 
-
 			LOG_I( module + " ^wInitialization Complete.\n" );
+
+			LOG_D( "^y========================================\n" );
+			LOG_D( "^yListing Game Objects...\n" );
+			GameObjectCreator::instance().LogClassNames();
+			LOG_D( "^yListing Visual Objects...\n" );
+			VisualObjectCreator::instance().LogVisualObjects();
+			LOG_D( "^y========================================\n" );
 		}
 
 		MSG msg;

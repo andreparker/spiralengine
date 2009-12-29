@@ -7,7 +7,8 @@ using namespace Spiral;
 using namespace boost;
 
 App::App():
-m_engine(),m_camera(),m_spriteEditor()
+m_engine(),m_camera(),m_spriteEditor(),m_editorBg(),
+m_bgTexture(),m_bgTextCoords(),m_bgRect()
 {
 }
 
@@ -25,17 +26,27 @@ bool App::DoInit( boost::int32_t argc, std::list< shared_array< char > >& argLis
 	gfxDriver->SetState( RenderState::Texture( RenderState::RS_TRUE ) );
 	gfxDriver->SetState( RenderState::Cull_Face( RenderState::RS_FALSE ) );
 	engine->SetAttribute( EngineAttribute( EngineAttribute::ClearColor ), Rgba( 0.5f, 0.5f , 0.5f ) );
-	engine->SetAttribute( EngineAttribute( EngineAttribute::ClearColorBuffer ), true );
+	engine->SetAttribute( EngineAttribute( EngineAttribute::ClearColorBuffer ), false );
 	engine->SetAttribute( EngineAttribute( EngineAttribute::ClearDepthBuffer ), false );
 	engine->SetAttribute( EngineAttribute( EngineAttribute::EnableThreading ), false );
 
 	shared_ptr< Font > arialn = engine->LoadFont( "c:/windows/fonts/arialn.ttf", "arial_n", 12, 14 );
+	m_bgTexture = engine->LoadTexture( "Data/GUI/edit_background.png", "edit_bg_texture" );
+
 	shared_ptr< GUI::GuiManager > guiManager = engine->GetGuiManager();
+
+	m_bgTextCoords.Set( 0.0f, 1024.0f/m_bgTexture->GetWidth(),0.0f, 1024.0f/m_bgTexture->GetHeight() );
+	m_bgRect.Set(0.0f,1024.0f,0.0f,1024.0f);
+	m_editorBg = make_shared< GUI::GuiWindow >( Math::make_vector(0.0f,0.0f),m_bgRect,m_bgTextCoords, shared_ptr<Texture>(), false );
+	m_editorBg->Show();
 
 	CreateEditorButtons( guiManager, arialn );
 
 	m_spriteEditor = make_shared< GuiSpriteEditor >();
 	m_spriteEditor->Initialize( engine );
+	m_editorBg->AddChild( m_spriteEditor->GetMainWindow() );
+
+	guiManager->AddElement( m_editorBg );
 
 	return isInitialize;
 }
@@ -43,13 +54,18 @@ bool App::DoInit( boost::int32_t argc, std::list< shared_array< char > >& argLis
 
 bool App::DoRun( Spiral::SpReal ticks, boost::shared_ptr< Spiral::Engine >& engine )
 {
-
+	engine->GetGfxDriver()->Bind( m_bgTexture );
+	engine->GetGfxDriver()->Draw( Math::make_vector(0.0f,0.0f), m_bgRect, m_bgTextCoords );
+	
 	return true;
 }
 
 bool App::DoUnInit()
 {
 	m_spriteEditor.reset();
+	m_editorBg.reset();
+	m_bgTexture.reset();
+
 	return true;
 }
 
@@ -84,8 +100,8 @@ void App::CreateEditorButtons( const shared_ptr< GUI::GuiManager >& guiManager,c
 	gameEditorButton->Show();
 	visualEditorButton->Show();
 
-	guiManager->AddElement( spriteEditorButton );
-	guiManager->AddElement( particleEditorButton );
-	guiManager->AddElement( gameEditorButton );
-	guiManager->AddElement( visualEditorButton );
+	m_editorBg->AddChild( spriteEditorButton );
+	m_editorBg->AddChild( particleEditorButton );
+	m_editorBg->AddChild( gameEditorButton );
+	m_editorBg->AddChild( visualEditorButton );
 }

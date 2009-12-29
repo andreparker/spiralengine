@@ -9,6 +9,7 @@
  Needed Sdks:
  - Boost-C++ (bjam to build needed libs)
  - wxWidgets (for Console App) Note: Build wxWidgets as static libs
+ - OpenAL SDK
 
 
  Note: for console to work correctly, it needs to be renamed to Console inside the generate bin folder inside your ide-folder-name

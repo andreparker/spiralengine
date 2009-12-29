@@ -10,9 +10,11 @@
 #include "../Gfx/gui/GuiEditBoxFwd.hpp"
 #include "../Gfx/gui/GuiCheckBoxFwd.hpp"
 #include "../Gfx/gui/GuiFrameFwd.hpp"
+#include "../Gfx/gui/GuiWindowFwd.hpp"
 #include "../Gfx/gui/GuiFwd.hpp"
 #include "../Gfx/ColorFwd.hpp"
 #include "../Gfx/FontFwd.hpp"
+
 
 #include "../Core/EngineFwd.hpp"
 
@@ -26,6 +28,10 @@ namespace Editor
 		bool Initialize( const boost::shared_ptr< Spiral::Engine >& engine );
 		void Show( bool show = true );
 
+		const boost::shared_ptr<Spiral::GUI::GuiFrame>& GetMainWindow()const
+		{
+			return m_parentWindow;
+		}
 	private:
 		boost::shared_ptr<Spiral::GUI::GuiFrame> m_parentWindow;
 		boost::shared_ptr<Spiral::GUI::GuiEditBox> m_editImageName;

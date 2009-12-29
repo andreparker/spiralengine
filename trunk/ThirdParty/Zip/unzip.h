@@ -82,6 +82,9 @@ ZRESULT FindZipItem(HZIP hz, const TCHAR *name, bool ic, int *index, ZIPENTRY *z
 // If nothing was found, then index is set to -1 and the function returns
 // an error code.
 
+void    ResetZipItem( HZIP hz );
+unsigned int    ZipGetTotalBytesRead();
+
 ZRESULT UnzipItem(HZIP hz, int index, const TCHAR *fn);
 ZRESULT UnzipItem(HZIP hz, int index, void *z,unsigned int len);
 ZRESULT UnzipItemHandle(HZIP hz, int index, HANDLE h);

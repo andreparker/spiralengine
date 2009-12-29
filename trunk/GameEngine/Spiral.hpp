@@ -17,6 +17,7 @@
 #include "Core/EngineAttributes.hpp"
 #include "Core/Log.hpp"
 #include "Core/UpdateQueue.hpp"
+#include "Core/GameObject.hpp"
 
 #include "Gfx/Color.hpp"
 #include "Gfx/GfxDriver.hpp"
@@ -34,6 +35,8 @@
 #include "Gfx/Sprite.hpp"
 #include "Gfx/Font.hpp"
 #include "Gfx/Surface.hpp"
+#include "Gfx/Texture.hpp"
+#include "Gfx/VisualGameObject.hpp"
 
 #include "Gfx/gui/GuiWindow.hpp"
 #include "Gfx/gui/GuiButton.hpp"
@@ -44,5 +47,10 @@
 #include "Gfx/gui/GuiCheckBox.hpp"
 #include "Gfx/gui/GuiSlider.hpp"
 #include "Gfx/gui/GuiFrame.hpp"
+
+#include "Audio/AudioInfo.hpp"
+#include "Audio/AudioDriver.hpp"
+#include "Audio/AudioObject.hpp"
+#include "Audio/AudioStreamObject.hpp"
 
 #endif

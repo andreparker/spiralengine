@@ -29,7 +29,7 @@ GameObjectHandler::~GameObjectHandler()
 	}
 }
 
-void GameObjectHandler::Add( boost::shared_ptr< CoreObject >& obj )
+void GameObjectHandler::Add( const boost::shared_ptr< CoreObject >& obj )
 {
 	if( obj )
 	{

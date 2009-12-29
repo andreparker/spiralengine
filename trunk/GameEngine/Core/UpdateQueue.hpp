@@ -19,7 +19,7 @@ namespace Spiral
 		callback( update ), m_delayTick( delayTick ), m_currentStartTick( currentTick ){}
 
 		UPDATE_CALL_BACK callback;
-		const SpReal m_delayTick;
+		SpReal m_delayTick;
 		SpReal m_currentStartTick;
 	};
 

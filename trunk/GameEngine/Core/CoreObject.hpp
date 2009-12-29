@@ -37,6 +37,8 @@ namespace Spiral
 	private:
 		boost::int32_t m_id; ///< the objects id number
 
+	protected:
+
 		/*!
 			@function    DoTick
 			@brief       Ticks the current object

@@ -8,6 +8,9 @@ using namespace SimpleApp;
 using namespace Spiral;
 using namespace boost;
 
+IMPL_GAME_OBJECT( SimpleApp::TestGameObject );
+IMPL_VISUAL_OBJECT( SimpleApp::TestVisualObject, SimpleApp::TestGameObject );
+
 bool App::DoInit( boost::int32_t /*argc*/, std::list< boost::shared_array< char > >& /*argList*/, boost::shared_ptr< Engine >& engine )
 {
 	// cache of the engine pointer
@@ -102,6 +105,8 @@ bool App::DoInit( boost::int32_t /*argc*/, std::list< boost::shared_array< char 
 	gfxDriver->SetState( RenderState::Texture( RenderState::RS_TRUE ) );
 	gfxDriver->SetState( RenderState::Cull_Face( RenderState::RS_FALSE ) );
 
+	m_gTest = engine->CreateGameObject<TestGameObject>();
+
 	if( engine->CreateSpriteLayers( 1 ) )
 	{
 		engine->AddSprite( m_sprite.get(), 0 );
@@ -123,6 +128,21 @@ bool App::DoInit( boost::int32_t /*argc*/, std::list< boost::shared_array< char 
 	m_camera->SetProjection( Projection::CreateOrtho2D( 0.0f , 0.0f , 1024.0f , 768.0f ) );
 	engine->SetCamera( m_camera );
 
+//===============================================================================
+//    Specify your own Ogg for this to work
+//===============================================================================
+// 	boost::shared_ptr< Audio::AudioDriver > audioDriver = engine->GetAudioDriver();
+// 
+// 	Audio::AudioInfo info;
+// 	info.numBitsPerSample = 16;
+// 	info.numChannels = 2;
+// 	info.rate = 44100;
+// 
+// 	audioDriver->CreateAudioStreamObject( m_testSong, info, 2 );
+// 	FileManager::instance().getFile( "Data/Audio/Collar.ogg", m_OggStreamFile );
+// 
+// 	m_testSong->SetStreamFile( m_OggStreamFile );
+// 	m_testSong->Play( false );
 
 	return true;
 }
@@ -163,6 +183,8 @@ bool App::DoUnInit()
 	m_keyDownSubscriber.reset();
 	m_arialN.reset();
 	m_window.reset();
+	//m_testSong->Stop();
+	//m_OggStreamFile->Close();
 
 	return true;
 }
@@ -177,7 +199,8 @@ m_engine(),
 m_arialN(),
 m_window(),
 m_camera(NULL),
-m_sliderEditId(0)
+m_sliderEditId(0),
+m_testSong()
 {
 
 }

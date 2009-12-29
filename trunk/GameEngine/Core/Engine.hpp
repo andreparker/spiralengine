@@ -12,6 +12,9 @@
 #include <boost/function.hpp>
 #include <boost/cstdint.hpp>
 #include <boost/thread.hpp>
+#include <boost/type_traits.hpp>
+#include <boost/static_assert.hpp>
+#include <boost/assert.hpp>
 
 #include "Sp_DataTypes.hpp"
 #include "../Gfx/SpriteLayerImplFwd.hpp"
@@ -24,11 +27,19 @@ namespace Spiral
 	class GameState;
 	class GameStateMachine;
 	class GameObjectHandler;
+	class VisualObjectHandler;
+	class VisualGameObject;
+	class GameObject;
 	class VisualGameState;
 	class CoreObject;
 	class EventPublisher;
 	class EventSubscriber;
 	class CVar;
+
+namespace Audio
+{
+	class AudioDriver;
+}
 
 	class Texture;
 	class GfxDriver;
@@ -165,7 +176,8 @@ namespace GUI
 		   @param     boost::shared_ptr< GfxDriver >& gfxDriver
 		   @param     boost::any & data - data to initialize the engine
 		*/
-		bool Initialize( boost::shared_ptr< GfxDriver >& gfxDriver, const boost::any& data );
+		bool Initialize( boost::shared_ptr< GfxDriver >& gfxDriver, boost::shared_ptr< Audio::AudioDriver >& audioDriver,
+			             const boost::any& data );
 
 		/*!
 		   @function  InitializeStateMachine
@@ -206,14 +218,6 @@ namespace GUI
 		   @param     boost::shared_ptr<EventSubscriber> & subscriber
 		*/
 		void RemoveEventSubscriber( boost::shared_ptr<EventSubscriber>& subscriber );
-
-		/*!
-		   @function  AddGameObject
-		   @brief     add a game object to the engine
-		   @return    void
-		   @param     boost::shared_ptr< CoreObject > & object
-		*/
-		void AddGameObject( boost::shared_ptr< CoreObject >& object );
 
 		/*!
 		   @function  AddGameState
@@ -267,6 +271,11 @@ namespace GUI
 			return m_guiManager;
 		}
 
+		const boost::shared_ptr< Audio::AudioDriver >& GetAudioDriver()const
+		{
+			return m_audioDriver;
+		}
+
 		/*!
 		   @function  ScreenToWorld
 		   @brief     translates a screen position to world cordinates
@@ -284,10 +293,27 @@ namespace GUI
 		*/
 		bool LoadConfig( const std::string& fileName );
 
+
+		template< class ObjectType >
+		boost::shared_ptr<ObjectType> CreateGameObject()
+		{
+			VisualGameObject* visualObject = CreateVisual( ObjectType::kClassName );
+			ObjectType* gameObject = new ObjectType;
+
+			boost::shared_ptr<ObjectType> object( gameObject );
+			boost::shared_ptr<VisualGameObject> visual( visualObject );
+			StoreObjects( object, visual );
+
+			return object;
+		}
+
 	private:
 		
 		void EnableThreads();
 		void DisableThreads();
+
+		VisualGameObject* CreateVisual( const char* gameObjectType );
+		void StoreObjects( const boost::shared_ptr<GameObject>& obj, const boost::shared_ptr<VisualGameObject>& vis );
 
 		/*!
 		   @function  ClearTextureCatalog
@@ -381,8 +407,10 @@ namespace GUI
 
 		boost::shared_ptr< GameStateMachine >     m_stateMachine;
 		boost::shared_ptr< GameObjectHandler >    m_gameObjectList;
+		boost::shared_ptr< VisualObjectHandler >  m_visualObjectList;
 		boost::shared_ptr< EventPublisher >       m_eventPublisher;
 		boost::shared_ptr< GfxDriver >            m_gfxDriver;
+		boost::shared_ptr< Audio::AudioDriver >   m_audioDriver;
 		boost::shared_ptr< CVar >                 m_variables;
 		boost::scoped_ptr< ResourceCatalog >      m_catolog;
 		Camera*                                   m_camera;
