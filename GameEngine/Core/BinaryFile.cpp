@@ -18,7 +18,7 @@ m_fileSize(0),m_istream( ifs )
 int32_t IBinaryFile::DoRead( int8_t* buffer, int32_t count)
 {
 	m_istream->read( reinterpret_cast<char*>(buffer) , count  );
-	return m_istream->bad() ? 0 : count; 
+	return m_istream->gcount();
 }
 
 uint32_t IBinaryFile::DoSize() const
@@ -26,8 +26,31 @@ uint32_t IBinaryFile::DoSize() const
 	return m_fileSize;
 }
 
-void IBinaryFile::DoSeek( seek_e /*&position*/, int32_t /*bytes*/ )
+void IBinaryFile::DoSeek( seek_e position, int32_t bytes )
 {
+	ios_base::seekdir direction;
+
+	if( m_istream->eof() )
+	{
+		m_istream->clear();
+	}
+	
+	switch( position )
+	{
+	case SK_BEGIN:
+		direction = ios_base::beg;
+		break;
+	case SK_CUR:
+		direction = ios_base::cur;
+		break;
+	case SK_END:
+		direction = ios_base::end;
+		break;
+	default:
+		direction = ios_base::beg;
+	}
+
+	m_istream->seekg( bytes, direction );
 }
 
 void IBinaryFile::DoClose()

@@ -10,9 +10,9 @@ m_zipHandle( handle ), m_entryInfo( *entryInfo ),m_fileIdx( fileIdx ),m_isEof( f
 
 /*!
 
-@brief gets the size of the file
+	@brief gets the size of the file
 
-@return size of the file
+	@return size of the file
 */
 uint32_t IZipFile::DoSize() const
 {
@@ -21,15 +21,15 @@ uint32_t IZipFile::DoSize() const
 
 /*!
 
-@brief reads num bytes from a file
+	@brief reads num bytes from a file
 
-@return num bytes read
+	@return num bytes read
 */
 int32_t IZipFile::DoRead
 ( 
  int8_t* buffer, ///< pointer to a buffer to recieve data  
  int32_t count ///< number of bytes to read
- )
+)
 {
 	if( !Eof() )
 	{
@@ -39,7 +39,7 @@ int32_t IZipFile::DoRead
 			m_isEof = true;
 		}
 
-		return count;
+		return static_cast<int32_t>(ZipGetTotalBytesRead());
 	}
 
 	return 0;
@@ -47,7 +47,7 @@ int32_t IZipFile::DoRead
 
 /*!
 
-@brief moves the read cursor
+	@brief moves the read cursor
 */
 void IZipFile::DoSeek
 ( 
@@ -56,6 +56,9 @@ void IZipFile::DoSeek
  )
 {
 	/// not yet impliminted
+	// reset so on next read, offset is at beginning of zip file
+	ResetZipItem( m_zipHandle );
+	m_isEof = false;
 }
 
 /*!

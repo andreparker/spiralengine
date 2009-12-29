@@ -112,8 +112,6 @@ bool GuiSpriteEditor::Initialize( const boost::shared_ptr< Spiral::Engine >& eng
 	m_editRotationOffsetY->Show();
 	m_saveData->Show();
 	m_loadData->Show();
-	
-	guiManager->AddElement( m_parentWindow );
 
 	return isInitialized;
 }

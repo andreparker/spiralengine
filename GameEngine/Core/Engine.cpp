@@ -6,6 +6,9 @@
 #include "ResourceCatalog.hpp"
 #include "Camera.hpp"
 #include "Events.hpp"
+#include "GameObject.hpp"
+
+#include "../Audio/AudioDriver.hpp"
 
 #include "../Gfx/GfxDriver.hpp"
 #include "../Gfx/GfxImpl.hpp"
@@ -15,6 +18,11 @@
 #include "../Gfx/Utility/Image.hpp"
 #include "../Gfx/SpriteLayerImpl.hpp"
 #include "../Gfx/SpriteDrawListImpl.hpp"
+#include "../Gfx/VisualObjectHandler.hpp"
+#include "../Gfx/VisualGameObject.hpp"
+
+#include "GameObjectCreator.hpp"
+#include "../Gfx/VisualObjectCreator.hpp"
 
 #include "../Gfx/Font/FreeType/FreeTypeFactory.hpp"
 #include "../Gfx/Font/FreeType/FreeTypeFont.hpp"
@@ -45,8 +53,10 @@ const std::string module = "^lEngine :";
 Engine::Engine():
 m_stateMachine(),
 m_gameObjectList(),
+m_visualObjectList(),
 m_eventPublisher(),
 m_gfxDriver(),
+m_audioDriver(),
 m_variables(),
 m_catolog(),
 m_camera(NULL),
@@ -69,18 +79,24 @@ Engine::~Engine()
 {
 }
 
-bool Engine::Initialize( shared_ptr< GfxDriver >& gfxDriver, const any& data ) 
+bool Engine::Initialize( shared_ptr< GfxDriver >& gfxDriver,boost::shared_ptr< Audio::AudioDriver >& audioDriver, const any& data ) 
 {
 	FUNCTION_LOG
 	if( gfxDriver )
 	{
 		LOG_I( version );
 		LOG_I( module + " ^wInitializing GfxDriver....\n" );
-		bool result = gfxDriver->Initialize( data );
+		bool result0 = gfxDriver->Initialize( data );
+		
+		LOG_I( module + " ^wInitializing AudioDriver....\n\n" );
+		LOG_I( "^y========================================\n" );
+		bool result1 = audioDriver->Initialize();
+		LOG_I( "^y========================================\n" );
 
-		if( true == result )
+		if( true == result0 && true == result1 )
 		{
 			m_gfxDriver = gfxDriver;
+			m_audioDriver = audioDriver;
 
 			LOG_I( module + " ^wInitializing Engine attributes....\n" );
 			InitializeAttributes();
@@ -99,7 +115,7 @@ bool Engine::Initialize( shared_ptr< GfxDriver >& gfxDriver, const any& data )
 		}
 	}
 
-	return bool( m_gfxDriver );
+	return bool( m_gfxDriver && m_audioDriver );
 }
 
 void Engine::UnInitialize()
@@ -123,19 +139,15 @@ void Engine::UnInitialize()
 
 	LOG_I( module + "^w Uninitializing GfxDriver....\n" );
 	m_gfxDriver->UnInitialize();
-}
 
-void Engine::AddGameObject( shared_ptr< CoreObject >& object )
-{
-	if( object )
-	{
-		m_gameObjectList->Add( object );
-	}
+	LOG_I( module + "^w Uninitializing AudioDriver....\n" );
+	m_audioDriver->UnInitialize();
 }
 
 void Engine::ClearObjectList()
 {
 	m_gameObjectList->Clear();
+	m_visualObjectList->Clear();
 }
 
 void Engine::Tick( SpReal ticks )
@@ -149,10 +161,13 @@ void Engine::Tick( SpReal ticks )
 	
 	m_stateMachine->Tick( ticks, this );
 	m_gameObjectList->Tick( ticks );
+	m_visualObjectList->Tick( ticks );
+
 	UpdateQueue::instance().Tick( ticks );
 
 	if( m_threadsEnabled == false )
 	{
+		m_audioDriver->UpdateStreamAudioList();
 		m_eventPublisher->ProcessEventQueue();
 	}
 	
@@ -550,6 +565,7 @@ void Engine::CreateModules()
 	LOG_I( module + " ^wCreating engine modules....\n" );
 	m_stateMachine    = make_shared< GameStateMachine >();
 	m_gameObjectList  = make_shared< GameObjectHandler >();
+	m_visualObjectList= make_shared< VisualObjectHandler >( this );
 	m_eventPublisher  = make_shared< EventPublisher >();
 	m_variables       = make_shared< CVar >();
 	m_spriteDrawList  = make_shared< SpriteDrawList >();
@@ -717,4 +733,20 @@ bool Engine::CacheTexture( const boost::shared_ptr< Texture >& texture, const st
 	}
 
 	return textureCached;
+}
+
+VisualGameObject* Engine::CreateVisual( const char* gameObjectType )
+{
+	return VisualObjectCreator::instance().CreateFromGameObjectName( gameObjectType );
+}
+
+void Engine::StoreObjects( const boost::shared_ptr<GameObject>& obj, const boost::shared_ptr<VisualGameObject>& vis )
+{
+	if( vis )
+	{
+		vis->SetGameObject( obj.get() );
+		m_visualObjectList->Add( vis );
+	}
+
+	m_gameObjectList->Add( obj );
 }

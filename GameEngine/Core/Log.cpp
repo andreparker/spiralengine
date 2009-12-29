@@ -40,7 +40,7 @@ void LogRouter::logNoArg( const LogFlags& flags, const string& msg )const
 {
 	BOOST_FOREACH( shared_ptr< LogModule > logger, m_loggers )
 	{
-		if( logger->CanLog( flags ) )
+		if( logger && logger->CanLog( flags ) )
 		{
 			logger->Log( msg );
 		}

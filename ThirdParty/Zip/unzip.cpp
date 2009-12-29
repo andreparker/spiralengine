@@ -156,6 +156,14 @@ void zfree(void *buf)
 }
 */
 
+static unsigned int s_TotalBytesRead = 0;  // number of bytes read when reading a file entry
+
+unsigned int ZipGetTotalBytesRead()
+{
+	return s_TotalBytesRead;
+}
+
+//namespace{
 
 typedef struct tm_unz_s
 { unsigned int tm_sec;            // seconds after the minute - [0,59]
@@ -3615,8 +3623,11 @@ int unzOpenCurrentFile (unzFile file, const char *password)
 //  return <0 with error code if there is an error. (in which case *reached_eof is meaningless)
 //    (UNZ_ERRNO for IO error, or zLib error for uncompress error)
 int unzReadCurrentFile  (unzFile file, voidp buf, unsigned len, bool *reached_eof)
-{ int err=UNZ_OK;
+{ 
+	int err=UNZ_OK;
   uInt iRead = 0;
+  s_TotalBytesRead = 0;
+
   if (reached_eof!=0) *reached_eof=false;
 
   unz_s *s = (unz_s*)file;
@@ -3636,11 +3647,23 @@ int unzReadCurrentFile  (unzFile file, voidp buf, unsigned len, bool *reached_eo
 
   while (pfile_in_zip_read_info->stream.avail_out>0)
   { if ((pfile_in_zip_read_info->stream.avail_in==0) && (pfile_in_zip_read_info->rest_read_compressed>0))
-    { uInt uReadThis = UNZ_BUFSIZE;
-      if (pfile_in_zip_read_info->rest_read_compressed<uReadThis) uReadThis = (uInt)pfile_in_zip_read_info->rest_read_compressed;
-      if (uReadThis == 0) {if (reached_eof!=0) *reached_eof=true; return UNZ_EOF;}
-      if (lufseek(pfile_in_zip_read_info->file, pfile_in_zip_read_info->pos_in_zipfile + pfile_in_zip_read_info->byte_before_the_zipfile,SEEK_SET)!=0) return UNZ_ERRNO;
-      if (lufread(pfile_in_zip_read_info->read_buffer,uReadThis,1,pfile_in_zip_read_info->file)!=1) return UNZ_ERRNO;
+    { 
+		uInt uReadThis = UNZ_BUFSIZE;
+      if (pfile_in_zip_read_info->rest_read_compressed<uReadThis) 
+		  uReadThis = (uInt)pfile_in_zip_read_info->rest_read_compressed;
+      
+	  if (uReadThis == 0) 
+	  {
+		  if (reached_eof!=0) 
+		  {
+			  *reached_eof=true;
+			  return UNZ_EOF;
+		  }
+	  }
+      if (lufseek(pfile_in_zip_read_info->file, pfile_in_zip_read_info->pos_in_zipfile + pfile_in_zip_read_info->byte_before_the_zipfile,SEEK_SET)!=0) 
+		  return UNZ_ERRNO;
+      if (lufread(pfile_in_zip_read_info->read_buffer,uReadThis,1,pfile_in_zip_read_info->file)!=1) 
+		  return UNZ_ERRNO;
       pfile_in_zip_read_info->pos_in_zipfile += uReadThis;
       pfile_in_zip_read_info->rest_read_compressed-=uReadThis;
       pfile_in_zip_read_info->stream.next_in = (Byte*)pfile_in_zip_read_info->read_buffer;
@@ -3661,7 +3684,9 @@ int unzReadCurrentFile  (unzFile file, voidp buf, unsigned len, bool *reached_eo
       pfile_in_zip_read_info->stream.next_in += uDoEncHead;
       pfile_in_zip_read_info->encheadleft -= uDoEncHead;
       if (pfile_in_zip_read_info->encheadleft==0)
-      { if (bufcrc!=pfile_in_zip_read_info->crcenctest) return UNZ_PASSWORD;
+      { 
+		  if (bufcrc!=pfile_in_zip_read_info->crcenctest)
+			  return UNZ_PASSWORD;
       }
     }
 
@@ -3673,7 +3698,8 @@ int unzReadCurrentFile  (unzFile file, voidp buf, unsigned len, bool *reached_eo
       else
       { uDoCopy = pfile_in_zip_read_info->stream.avail_in ;
       }
-      for (i=0;i<uDoCopy;i++) *(pfile_in_zip_read_info->stream.next_out+i) = *(pfile_in_zip_read_info->stream.next_in+i);
+      for (i=0;i<uDoCopy;i++) 
+		  *(pfile_in_zip_read_info->stream.next_out+i) = *(pfile_in_zip_read_info->stream.next_in+i);
       pfile_in_zip_read_info->crc32 = ucrc32(pfile_in_zip_read_info->crc32,pfile_in_zip_read_info->stream.next_out,uDoCopy);
       pfile_in_zip_read_info->rest_read_uncompressed-=uDoCopy;
       pfile_in_zip_read_info->stream.avail_in -= uDoCopy;
@@ -3682,7 +3708,11 @@ int unzReadCurrentFile  (unzFile file, voidp buf, unsigned len, bool *reached_eo
       pfile_in_zip_read_info->stream.next_in += uDoCopy;
       pfile_in_zip_read_info->stream.total_out += uDoCopy;
       iRead += uDoCopy;
-      if (pfile_in_zip_read_info->rest_read_uncompressed==0) {if (reached_eof!=0) *reached_eof=true;}
+      if (pfile_in_zip_read_info->rest_read_uncompressed==0) 
+	  {
+		  if (reached_eof!=0) 
+			  *reached_eof=true;
+	  }
     }
     else
     { uLong uTotalOutBefore,uTotalOutAfter;
@@ -3700,14 +3730,26 @@ int unzReadCurrentFile  (unzFile file, voidp buf, unsigned len, bool *reached_eo
       pfile_in_zip_read_info->rest_read_uncompressed -= uOutThis;
       iRead += (uInt)(uTotalOutAfter - uTotalOutBefore);
       if (err==Z_STREAM_END || pfile_in_zip_read_info->rest_read_uncompressed==0)
-      { if (reached_eof!=0) *reached_eof=true;
-        return iRead;
+      { 
+		  if ( reached_eof!=0 )
+			  *reached_eof=true;
+
+		  s_TotalBytesRead = iRead;
+		  return iRead;
       }
-      if (err!=Z_OK) break;
+      if ( err!=Z_OK ) 
+		  break;
     }
   }
 
-  if (err==Z_OK) return iRead;
+  // set total bytes read
+  s_TotalBytesRead = iRead;
+
+  if (err==Z_OK)
+  {
+	  return iRead;
+  }
+
   return err;
 }
 
@@ -3856,13 +3898,13 @@ int unzGetGlobalComment (unzFile file, char *szComment, uLong uSizeBuf)
   return (int)uReadThis;
 }
 
-
+//} // nameless name space
 
 
 
 int unzOpenCurrentFile (unzFile file, const char *password);
 int unzReadCurrentFile (unzFile file, void *buf, unsigned len);
-int unzCloseCurrentFile (unzFile file);
+//int unzCloseCurrentFile (unzFile file);
 
 
 
@@ -3877,6 +3919,7 @@ class TUnzip
   char *unzbuf;            // lazily created and destroyed, used by Unzip
   TCHAR rootdir[MAX_PATH]; // includes a trailing slash
 
+  void    Reset();
   ZRESULT Open(void *z,unsigned int len,DWORD flags);
   ZRESULT Get(int index,ZIPENTRY *ze);
   ZRESULT Find(const TCHAR *name,bool ic,int *index,ZIPENTRY *ze);
@@ -3885,6 +3928,14 @@ class TUnzip
   ZRESULT Close();
 };
 
+void TUnzip::Reset()
+{
+	if( currentfile != -1 )
+	{
+		unzCloseCurrentFile(uf);
+		currentfile = -1;
+	}
+}
 
 ZRESULT TUnzip::Open(void *z,unsigned int len,DWORD flags)
 { if (uf!=0 || currentfile!=-1) return ZR_NOTINITED;
@@ -4288,13 +4339,33 @@ ZRESULT FindZipItem(HZIP hz, const TCHAR *name, bool ic, int *index, ZIPENTRY *z
   return lasterrorU;
 }
 
+void    ResetZipItem( HZIP hz )
+{
+	TUnzipHandleData *han = (TUnzipHandleData*)hz;
+	TUnzip *unz = han->unz;
+	unz->Reset();
+}
+
 ZRESULT UnzipItemInternal(HZIP hz, int index, void *dst, unsigned int len, DWORD flags)
-{ if (hz==0) {lasterrorU=ZR_ARGS;return ZR_ARGS;}
-  TUnzipHandleData *han = (TUnzipHandleData*)hz;
-  if (han->flag!=1) {lasterrorU=ZR_ZMODE;return ZR_ZMODE;}
-  TUnzip *unz = han->unz;
-  lasterrorU = unz->Unzip(index,dst,len,flags);
-  return lasterrorU;
+{ 
+	s_TotalBytesRead = 0;
+
+	if (hz==0) 
+	{
+		lasterrorU=ZR_ARGS;
+		return ZR_ARGS;
+	}
+
+	TUnzipHandleData *han = (TUnzipHandleData*)hz;
+	if (han->flag!=1) 
+	{
+		lasterrorU=ZR_ZMODE;
+		return ZR_ZMODE;
+	}
+
+	TUnzip *unz = han->unz;
+	lasterrorU = unz->Unzip(index,dst,len,flags);
+	return lasterrorU;
 }
 ZRESULT UnzipItemHandle(HZIP hz, int index, HANDLE h) {return UnzipItemInternal(hz,index,(void*)h,0,ZIP_HANDLE);}
 ZRESULT UnzipItem(HZIP hz, int index, const TCHAR *fn) {return UnzipItemInternal(hz,index,(void*)fn,0,ZIP_FILENAME);}

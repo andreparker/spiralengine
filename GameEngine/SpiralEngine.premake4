@@ -21,16 +21,44 @@ project( "SpiralEngine" )
 		"../ThirdParty/libpng/**.h",
 		"../ThirdParty/libpng/**.c",
 		
-		"../ThirdParty/tinyxml/**.cpp",
-		"../ThirdParty/tinyxml/**.h",
+		--"../ThirdParty/tinyxml/**.cpp",
+		--"../ThirdParty/tinyxml/**.h",
 		
-		"../ThirdParty/Lua/**.h",
-		"../ThirdParty/Lua/**.c",
+		--"../ThirdParty/Lua/**.h",
+		--"../ThirdParty/Lua/**.c",
 		
 		"../ThirdParty/Math/**.hpp",
 		
 		"../ThirdParty/Zlib/**.h",
-		"../ThirdParty/Zlib/**.c"
+		"../ThirdParty/Zlib/**.c",
+	}
+	
+	files
+	{
+		"../ThirdParty/OggVorbis/lib/analysis.c",
+		"../ThirdParty/OggVorbis/lib/bitrate.c",
+		"../ThirdParty/OggVorbis/lib/block.c",
+		"../ThirdParty/OggVorbis/lib/codebook.c",
+		"../ThirdParty/OggVorbis/lib/envelope.c",
+		"../ThirdParty/OggVorbis/lib/floor0.c",
+		"../ThirdParty/OggVorbis/lib/floor1.c",
+		"../ThirdParty/OggVorbis/lib/framing.c",
+		"../ThirdParty/OggVorbis/lib/info.c",
+		"../ThirdParty/OggVorbis/lib/lookup.c",
+		"../ThirdParty/OggVorbis/lib/lpc.c",
+		"../ThirdParty/OggVorbis/lib/lsp.c",
+		"../ThirdParty/OggVorbis/lib/mapping0.c",
+		"../ThirdParty/OggVorbis/lib/mdct.c",
+		"../ThirdParty/OggVorbis/lib/psy.c",
+		"../ThirdParty/OggVorbis/lib/registry.c",
+		"../ThirdParty/OggVorbis/lib/res0.c",
+		"../ThirdParty/OggVorbis/lib/sharedbook.c",
+		"../ThirdParty/OggVorbis/lib/smallft.c",
+		"../ThirdParty/OggVorbis/lib/synthesis.c",
+		"../ThirdParty/OggVorbis/lib/vorbisenc.c",
+		"../ThirdParty/OggVorbis/lib/vorbisfile.c",
+		"../ThirdParty/OggVorbis/lib/window.c",
+		"../ThirdParty/OggVorbis/lib/bitwise.c"	
 	}
 	
 	-- freeType specifics
@@ -70,7 +98,8 @@ project( "SpiralEngine" )
 	includedirs 
 	{
 		"../ThirdParty/zlib",
-		"../ThirdParty/FreeType/include"
+		"../ThirdParty/FreeType/include",
+		"../ThirdParty/OggVorbis/include"
 	}
 	
 	-- exclude these files
@@ -89,7 +118,12 @@ project( "SpiralEngine" )
 			"NOMINMAX" -- prevent windows.h from defining them
 		}
 		-- link with opengl
-		links( "Opengl32" )
+		-- link with AL
+		links
+		{
+			"Opengl32",
+			"OpenAL32"
+		}
 	end
 	
 	-- add disabling of depricated warnings

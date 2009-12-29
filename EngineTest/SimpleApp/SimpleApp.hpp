@@ -8,6 +8,20 @@
 
 namespace SimpleApp
 {
+	class TestGameObject : public Spiral::GameObject
+	{
+		DECL_GAME_OBJECT( SimpleApp::TestGameObject, Spiral::GameObject )
+	public:
+		TestGameObject(){}
+	};
+
+	class TestVisualObject : public Spiral::VisualGameObject
+	{
+		DECL_VISUAL_OBJECT( SimpleApp::TestVisualObject, Spiral::VisualGameObject )
+	public:
+		TestVisualObject(){}
+	};
+
 	class App : public Spiral::Application
 	{
 	public:
@@ -29,8 +43,11 @@ namespace SimpleApp
 		boost::shared_ptr< Spiral::Font > m_arialN;
 		boost::shared_ptr< Spiral::GUI::GuiFrame > m_window;
 		Spiral::Camera* m_camera;
-
 		boost::uint32_t m_sliderEditId;
+		boost::shared_ptr< Spiral::Audio::AudioStreamObject > m_testSong;
+		boost::shared_ptr< Spiral::IFile > m_OggStreamFile;
+
+		boost::shared_ptr<TestGameObject> m_gTest;
 	};
 }
 #endif

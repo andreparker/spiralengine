@@ -24,6 +24,9 @@ namespace Editor
 		boost::weak_ptr< Spiral::Engine > m_engine;
 		boost::scoped_ptr< Spiral::Camera > m_camera;
 		boost::shared_ptr< GuiSpriteEditor > m_spriteEditor;
+		boost::shared_ptr< Spiral::GUI::GuiWindow > m_editorBg;
+		boost::shared_ptr< Spiral::Texture > m_bgTexture;
+		Spiral::Rect<Spiral::SpReal> m_bgTextCoords,m_bgRect;
 
 	private:
 
