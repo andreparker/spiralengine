@@ -13,6 +13,7 @@ namespace GUI
 		mouse_down = 1,
 		mouse_up,
 		mouse_hover,
+		mouse_move,
 		focus_gained,
 		focus_lost,
 		button_Press,

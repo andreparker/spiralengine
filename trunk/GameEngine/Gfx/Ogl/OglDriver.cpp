@@ -31,7 +31,8 @@ using namespace boost::tuples;
 OglDriver::OglDriver():
 m_stateList(),
 m_view(),
-m_world( Math::SpMatrix4x4r::Identity() )
+m_world( Math::SpMatrix4x4r::Identity() ),
+m_scrWidth(0),m_scrHeight(0)
 {
 
 }
@@ -82,6 +83,10 @@ void OglDriver::ClearBuffer(const BufferInfo_t& buffer)
 
 void OglDriver::SetViewPort( boost::int32_t x0, boost::int32_t y0, boost::int32_t x1, boost::int32_t y1 )
 {
+	// store for later use
+	m_scrWidth = x1;
+	m_scrHeight = y1;
+
 	glViewport( (GLint)x0, (GLint)y0, (GLint)x1, (GLint)y1 );
 }
 
@@ -413,8 +418,8 @@ void OglDriver::Draw( const Math::SpVector2r& position, const Rect< SpReal >& re
 	{
 		glTranslatef( position[0], position[1], 0.0f );
 		glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
-		glPopMatrix();
-	}
+		
+	}glPopMatrix();
 
 	glDisableClientState( GL_VERTEX_ARRAY );
 	glDisableClientState( GL_TEXTURE_COORD_ARRAY );
@@ -430,4 +435,9 @@ void OglDriver::GetViewPort( Rect<boost::int32_t>& viewPort )
 	viewPort.right = values[2];
 	viewPort.bottom = values[3];
 	viewPort.top = values[1];
+}
+
+void OglDriver::SetClipRect( boost::int32_t x0, boost::int32_t y0, boost::int32_t x1, boost::int32_t y1 )
+{
+	glScissor( (GLint)x0, (GLint)((m_scrHeight-y0)-y1), (GLsizei)x1, (GLsizei)y1 );
 }

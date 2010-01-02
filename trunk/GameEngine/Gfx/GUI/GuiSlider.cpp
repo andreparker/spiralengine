@@ -12,7 +12,7 @@ using namespace Spiral::GUI;
 GuiSlider::GuiSlider( const Math::SpVector2r& position, const Rect<SpReal>& rect, const Rect<SpReal>& bgTexCoords,
 					 const Rect<SpReal>& sliderTexCoords, boost::uint32_t sliderSize, const boost::shared_ptr<Texture>& bgTexture, 
 					 const boost::shared_ptr<Texture>& sliderTexture, const GuiSliderDir& dir, bool bBgAlpha, bool bSliderAlpha ):
-GuiWindow( position, rect, bgTexCoords, bgTexture, bBgAlpha ),m_slider(),m_sliderSize(sliderSize),m_sliderDir(dir),m_minRange(1),
+GuiWindow( position, rect, bgTexCoords, bgTexture, bBgAlpha ),m_slider(),m_sliderSize(sliderSize),m_sliderDir(dir),m_minRange(0),
 m_maxRange(10),m_mouseDown(false)
 {
 	boost::uint32_t width = sliderSize,height = sliderSize;
@@ -33,10 +33,11 @@ m_maxRange(10),m_mouseDown(false)
 
 	m_slider->ConnectHandler( mouse_down, boost::bind( &GuiSlider::OnMouseDownSlider, this, _1, _2, _3 ) );
 	m_slider->ConnectHandler( mouse_up, boost::bind( &GuiSlider::OnMouseUpSlider, this, _1, _2, _3 ) );
-	m_slider->ConnectHandler( mouse_hover, boost::bind( &GuiSlider::OnMouseHoverSlider, this, _1, _2, _3 ) );
+	m_slider->ConnectHandler( mouse_move, boost::bind( &GuiSlider::OnMouseMove, this, _1, _2, _3 ) );
+	m_slider->ConnectHandler( focus_lost, boost::bind( &GuiSlider::OnFocusLost, this, _1, _2, _3 ) );
 
 	ConnectHandler( mouse_down, boost::bind( &GuiSlider::OnMouseDown, this, _1, _2, _3 ) );
-	ConnectHandler( mouse_hover, boost::bind( &GuiSlider::OnMouseHover, this, _1, _2, _3 ) );
+	//ConnectHandler( mouse_hover, boost::bind( &GuiSlider::OnMouseHover, this, _1, _2, _3 ) );
 
 }
 
@@ -44,7 +45,6 @@ GuiSlider::~GuiSlider()
 {
 	m_slider->DisConnectHandler( mouse_down );
 	m_slider->DisConnectHandler( mouse_up );
-	m_slider->DisConnectHandler( mouse_hover );
 }
 
 void GuiSlider::SetRange( boost::int32_t min_, boost::int32_t max_ )
@@ -114,21 +114,6 @@ void GuiSlider::OnMouseUpSlider( boost::int32_t eventId, GuiWindow* window, cons
 	m_mouseDown = false;
 }
 
-void GuiSlider::OnMouseHoverSlider( boost::int32_t eventId, GuiWindow* window, const boost::any& data )
-{
-	const mouse_position pos = boost::any_cast< const mouse_position >( data );
-
-	if( m_mouseDown )
-	{
-		SpReal delta = GetDelta( pos );
-		SaveLastPosition( pos );
-		MoveSlider( delta );
-		SliderBoundsCheck();
-
-		// report change
-		CallHandler( data_changed, this, boost::any() );
-	}
-}
 
 void GuiSlider::SaveLastPosition( const mouse_position& pos_ )
 {
@@ -164,7 +149,7 @@ void GuiSlider::MoveSlider( SpReal delta )
 		position[0] += delta;
 	}else
 	{
-		position[2] += delta;
+		position[1] += delta;
 	}
 
 	m_slider->SetLocalPosition( position );
@@ -209,7 +194,37 @@ void GuiSlider::SliderBoundsCheck()
 
 void GuiSlider::ResetWindow()
 {
-	m_mouseDown = false;
+	//m_mouseDown = false;
 }
 
 
+
+void GuiSlider::OnMouseMove( boost::int32_t eventId, GuiWindow* window, const boost::any& data )
+{
+	const mouse_position pos = boost::any_cast< const mouse_position >( data );
+
+	if( m_mouseDown )
+	{
+		SpReal delta = GetDelta( pos );
+		SaveLastPosition( pos );
+		MoveSlider( delta );
+		SliderBoundsCheck();
+
+		if( static_cast<boost::int32_t>(delta) != 0 )
+		{
+			// report change
+			CallHandler( data_changed, this, boost::any() );
+		}
+		
+	}
+}
+
+void GuiSlider::OnFocusLost( boost::int32_t eventId, GuiWindow* window, const boost::any& data )
+{
+	m_mouseDown = false;
+}
+
+void GuiSlider::SetSliderRect( const Rect<SpReal>& rect )
+{
+	m_slider->SetRect( rect );
+}

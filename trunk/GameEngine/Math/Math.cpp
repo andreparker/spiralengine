@@ -30,3 +30,31 @@ bool Math::UnProject( const Math::SpVector3r& winPos, const Math::SpMatrix4x4r& 
 
 	return unProjected;
 }
+
+bool Math::Project( const SpVector3r& ProjPos,const SpMatrix4x4r& modelViewProj, const Rect<SpReal>& viewPort, SpVector3r& winPos )
+{
+	Math::SpVector4r in_vec = Math::make_vector( ProjPos[0], ProjPos[1], ProjPos[2], 1.0f );
+	Math::SpVector4r clip_vec = modelViewProj * in_vec;
+	bool result = false;
+
+	if( clip_vec[3] != 0.0f )
+	{
+		// divide by perspective w -1/1
+		// add 1 divide by to to translate to 0/1
+		// inverse on y to get 1/0
+		clip_vec[0] = ((clip_vec[0] / clip_vec[3]) + 1 )/ 2.0f;
+		clip_vec[1] = 1.0f - ( ( (clip_vec[1] / clip_vec[3]) + 1 )/ 2.0f );
+		//clip_vec[2] = ((clip_vec[2] / clip_vec[3]) + 1 )/ 2.0f;
+
+		// scale to screen coordinates
+		clip_vec[0] = clip_vec[0] * viewPort.right + viewPort.left;
+		clip_vec[1] = clip_vec[1] * viewPort.bottom + viewPort.top;
+
+		winPos[0] = clip_vec[0];
+		winPos[1] = clip_vec[1];
+
+		result = true;
+	}
+
+	return result;
+}

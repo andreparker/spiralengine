@@ -47,6 +47,7 @@
 #include "Gfx/gui/GuiCheckBox.hpp"
 #include "Gfx/gui/GuiSlider.hpp"
 #include "Gfx/gui/GuiFrame.hpp"
+#include "Gfx/gui/GuiScrollWindow.hpp"
 
 #include "Audio/AudioInfo.hpp"
 #include "Audio/AudioDriver.hpp"

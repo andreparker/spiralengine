@@ -10,15 +10,17 @@
 	typedef derived_ super;\
 	public:\
 	static const char* kClassName;\
-	static Spiral::VisualGameObject* Create_instance();
+	static Spiral::VisualGameObject* Create_instance();\
+	DECL_VARIABLE_EDIT( visualobject_ )
 
 #define IMPL_VISUAL_OBJECT( visualobject_, gameobject_ )\
-	static Spiral::AutoVisualDef visDefine( #visualobject_, #gameobject_, boost::bind( &visualobject_::Create_instance ));\
+	static Spiral::AutoVisualDef visDefine##__LINE__( #visualobject_, #gameobject_, boost::bind( &visualobject_::Create_instance ), boost::bind( visualobject_::fill_in_variable_info, _1 ));\
 	const char* visualobject_::kClassName = #visualobject_;\
 	Spiral::VisualGameObject* visualobject_::Create_instance()\
 	{\
 		return new visualobject_;\
-	}
+	}\
+	IMPL_VARIABLE_EDIT( visualobject_ )
 
 namespace Spiral
 {

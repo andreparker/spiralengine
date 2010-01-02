@@ -38,6 +38,7 @@ namespace Spiral
 		void ClearBuffer(const BufferInfo_t& buffer);
 		void SetViewPort( boost::int32_t x0, boost::int32_t y0, boost::int32_t x1, boost::int32_t y1 );
 		void GetViewPort( Rect<boost::int32_t>& viewPort );
+		void SetClipRect( boost::int32_t x0, boost::int32_t y0, boost::int32_t x1, boost::int32_t y1  );
 		void SetState( const RenderState& state );
 		void Draw( boost::shared_ptr<Geometry>& geometry );
 		bool CreateGeometry( const GeometryType& type, boost::shared_ptr<Geometry>& geometry );
@@ -58,6 +59,7 @@ namespace Spiral
 		std::list< RenderState* > m_stateList;
 
 		Math::SpMatrix4x4r m_view,m_world;
+		boost::int32_t m_scrWidth,m_scrHeight;
 
 	};
 }

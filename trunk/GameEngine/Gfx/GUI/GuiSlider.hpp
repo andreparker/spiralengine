@@ -48,14 +48,27 @@ namespace GUI
 
 		~GuiSlider();
 		void SetRange( boost::int32_t min_, boost::int32_t max_ );
+		void SetSliderRect( const Rect<SpReal>& rect );
 		boost::int32_t GetSliderPos()const;
+
+		boost::int32_t GetMin()const
+		{
+			return m_minRange;
+		}
+
+		boost::int32_t GetMax()const
+		{
+			return m_maxRange;
+		}
 	private:
 
 		void OnMouseDown( boost::int32_t eventId, GuiWindow* window, const boost::any& data );
 		void OnMouseHover( boost::int32_t eventId, GuiWindow* window, const boost::any& data );
 		void OnMouseDownSlider( boost::int32_t eventId, GuiWindow* window, const boost::any& data );
 		void OnMouseUpSlider( boost::int32_t eventId, GuiWindow* window, const boost::any& data );
-		void OnMouseHoverSlider( boost::int32_t eventId, GuiWindow* window, const boost::any& data );
+		void OnMouseMove(  boost::int32_t eventId, GuiWindow* window, const boost::any& data );
+		void OnFocusLost(  boost::int32_t eventId, GuiWindow* window, const boost::any& data );
+
 
 		void SaveLastPosition( const mouse_position& pos_ );
 		SpReal GetDelta( const mouse_position& pos_ )const;

@@ -47,6 +47,8 @@ namespace Spiral
 
 	};
 
+	std::string StripColorCodes( const std::string& logStr );
+
 	///< flags
 	enum{
 

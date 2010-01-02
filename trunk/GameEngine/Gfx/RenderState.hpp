@@ -17,7 +17,8 @@ namespace Spiral
 			RS_CULL_FACE = 0x0B44,
 			RS_DEPTH_TEST = 0x0B71,
 			RS_TEXTURE = 0x0DE1,
-			RS_BLEND = 0x0BE2
+			RS_BLEND = 0x0BE2,
+			RS_CLIP_RECT = 0x0C11
 		};
 
 		typedef enum
@@ -30,6 +31,7 @@ namespace Spiral
 		static RenderState Depth_Test( boost::int32_t value );
 		static RenderState Texture( boost::int32_t value );
 		static RenderState Blend( boost::int32_t value );
+		static RenderState ClipRect( boost::int32_t value );
 
 		void SetValue( boost::int32_t val );
 		boost::int32_t GetValue()const;
@@ -67,7 +69,12 @@ namespace Spiral
 		return RenderState( RS_DEPTH_TEST, value );
 	}
 
+	inline RenderState RenderState::ClipRect( boost::int32_t value )
+	{
+		return RenderState( RS_CLIP_RECT, value );
+	}
 
+//=======================================================================================
 	inline void RenderState::SetValue( boost::int32_t val )
 	{
 		value = val;

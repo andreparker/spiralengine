@@ -40,6 +40,7 @@ namespace Spiral
 		virtual void DoClearBuffer(const BufferInfo_t& buffer);
 		virtual void DoSetViewPort( boost::int32_t x0, boost::int32_t y0, boost::int32_t x1, boost::int32_t y1 );
 		virtual void DoGetViewPort( Rect<boost::int32_t>& viewPort );
+		virtual void DoSetClipRect( boost::int32_t x0, boost::int32_t y0, boost::int32_t x1, boost::int32_t y1  );
 		virtual void DoSetState( const RenderState& state );
 		virtual void DoDraw( boost::shared_ptr<Geometry>& geometry );
 		virtual bool DoCreateGeometry( const GeometryType& type, boost::shared_ptr<Geometry>& geometry );

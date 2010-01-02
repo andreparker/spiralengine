@@ -15,15 +15,17 @@
 	typedef derived_ super;\
 	public:\
 	static const char* kClassName;\
-	static Spiral::GameObject* Create_instance();
+	static Spiral::GameObject* Create_instance();\
+	DECL_VARIABLE_EDIT( gameobject_ )
 
 #define IMPL_GAME_OBJECT( gameobject_ )\
-	static Spiral::AutoAddGameDef Objdefine( #gameobject_, boost::bind( &gameobject_::Create_instance ));\
+	static Spiral::AutoAddGameDef Objdefine_##__LINE__( #gameobject_, boost::bind( &gameobject_::Create_instance ), boost::bind( gameobject_::fill_in_variable_info, _1 ));\
 	const char* gameobject_::kClassName = #gameobject_;\
 	Spiral::GameObject* gameobject_::Create_instance()\
 	{\
 		return new gameobject_;\
-	}
+	}\
+	IMPL_VARIABLE_EDIT( gameobject_ )
 
 namespace Spiral
 {
@@ -34,6 +36,11 @@ namespace Spiral
 		const std::string& GetName()const
 		{
 			return m_objectName;
+		}
+
+		void SetName( const std::string& name )
+		{
+			m_objectName = name;
 		}
 
 		const boost::shared_ptr<GameObject> FindChild( const std::string& name )const;

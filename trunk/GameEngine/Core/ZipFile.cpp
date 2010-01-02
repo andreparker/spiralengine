@@ -67,5 +67,6 @@ void IZipFile::DoSeek
 */
 void IZipFile::DoClose()
 {
-	// nothing todo
+	// reset zip
+	ResetZipItem( m_zipHandle );
 }

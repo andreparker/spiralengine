@@ -155,6 +155,31 @@ namespace GUI
 			return m_parent;
 		}
 
+		void SetRect( const Rect< SpReal >& rt )
+		{
+			m_rect = rt;
+		}
+
+		void SetClipChildren( bool clip = true )
+		{
+			m_clipChildren = clip;
+		}
+
+		bool ClipChildren()const
+		{
+			return m_clipChildren;
+		}
+
+		const Math::SpVector2r& GetWorldPosition()const
+		{
+			return m_worldPosition;
+		}
+
+		void SetAlphaBlend( bool blend = true )
+		{
+			m_alpha = blend;
+		}
+
 		MAKE_ALIGNED_NEW
 	protected:
 
@@ -162,11 +187,6 @@ namespace GUI
 		void SetParent( GuiWindow* parent )
 		{
 			m_parent = parent;
-		}
-
-		const Math::SpVector2r& GetWorldPosition()const
-		{
-			return m_worldPosition;
 		}
 
 		/*!
@@ -216,10 +236,7 @@ namespace GUI
 			m_textCoords = rt;
 		}
 
-		void SetRect( const Rect< SpReal >& rt )
-		{
-			m_rect = rt;
-		}
+		
 
 		void UpdatePositions()
 		{
@@ -247,6 +264,7 @@ namespace GUI
 		virtual void MouseDown( const mouse_position& pos );
 		virtual void MouseUp( const mouse_position& pos );
 		virtual void MouseHover( const mouse_position& pos );
+		virtual void MouseMove( const mouse_position& pos );
 		virtual void CharInput( boost::uint32_t char_ );
 
 		bool ContainsPoint( SpReal x, SpReal y )const
@@ -291,9 +309,12 @@ namespace GUI
 		bool m_dirty;		///< used to update world positioning
 		bool m_show;		///< shows the window
 		bool m_allowFocus;  ///< enable/disables focus on the window
+		bool m_clipChildren; ///< clips children to the window
 		GuiWindow* m_parent;
+
 	private:
-		static GuiWindow* lastWindow;
+		static GuiWindow* lastHoverWindow;
+		static GuiWindow* lastFocusWindow;
 	};
 }
 }
