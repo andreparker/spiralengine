@@ -84,6 +84,7 @@ namespace Math
 	}
 
 	bool UnProject( const SpVector3r& winPos, const SpMatrix4x4r& modelViewProj, const Rect<SpReal>& viewPort, SpVector3r& unProjPos );
+	bool Project( const SpVector3r& ProjPos,const SpMatrix4x4r& modelViewProj, const Rect<SpReal>& viewPort, SpVector3r& winPos );
 }
 }
 

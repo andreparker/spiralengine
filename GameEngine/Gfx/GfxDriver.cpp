@@ -197,3 +197,8 @@ void GfxDriver::GetViewPort( Rect<boost::int32_t>& viewPort )
 {
 	DoGetViewPort( viewPort );
 }
+
+void GfxDriver::SetClipRect( boost::int32_t x0, boost::int32_t y0, boost::int32_t x1, boost::int32_t y1 )
+{
+	DoSetClipRect( x0, y0, x1, y1 );
+}

@@ -3,7 +3,10 @@
 
 using namespace Spiral;
 
-IMPL_VISUAL_OBJECT( Spiral::VisualGameObject, Spiral::GameObject );
+IMPL_VISUAL_OBJECT( Spiral::VisualGameObject, Spiral::GameObject )
+{
+
+}
 
 VisualGameObject::VisualGameObject()
 {

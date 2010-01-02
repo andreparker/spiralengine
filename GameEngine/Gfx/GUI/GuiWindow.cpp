@@ -31,6 +31,7 @@ m_alpha(bAlpha),
 m_dirty(false),
 m_show(false),
 m_allowFocus(true),
+m_clipChildren(false),
 m_parent(NULL)
 {
 }
@@ -48,6 +49,7 @@ m_alpha(bAlpha),
 m_dirty(false),
 m_show(false),
 m_allowFocus(true),
+m_clipChildren(false),
 m_parent(NULL)
 {
 }
@@ -86,6 +88,7 @@ bool GuiWindow::SetFocus( SpReal x, SpReal y )
 			if( (*itr)->SetFocus( x, y ) )
 			{
 				hasFocus = true;
+				break;
 			}
 		}
 
@@ -98,21 +101,36 @@ bool GuiWindow::SetFocus( SpReal x, SpReal y )
 			// children refuse focus ( point does not lie within there bounds )
 			m_hasFocus = true;
 
+			if( lastFocusWindow && lastFocusWindow != this )
+			{
+				lastFocusWindow->CallHandler( focus_lost, lastFocusWindow, boost::any() );
+				lastFocusWindow->m_hasFocus = false;
+			}
+
+			lastFocusWindow = this;
+
 			// return that this window has recieved focus
 			return m_hasFocus;
 		}
 
 	}else
 	{
+		// Replace this with some thing faster, maybe storing pointer to last focus window
+		// like hover does
+// 		for( WindowItr itr = m_children.begin(); itr != m_children.end(); ++itr )
+// 		{
+// 			(*itr)->SetFocus( x, y );
+// 		}
+
 		ResetWindow();
 	}
 
-	if( !inBounds && m_hasFocus == true ||
-		inBounds && hasFocus )
-	{		
-		CallHandler( focus_lost, this, boost::any() );
-		m_hasFocus = false;
-	}
+// 	if( !inBounds && m_hasFocus == true ||
+// 		inBounds && hasFocus )
+// 	{		
+// 		CallHandler( focus_lost, this, boost::any() );
+// 		m_hasFocus = false;
+// 	}
 	
 	// return that a child window has recieved focus
 	return hasFocus;
@@ -140,7 +158,7 @@ void GuiWindow::DisConnectHandler( boost::int32_t eventId )
 
 void GuiWindow::MouseDown( const mouse_position& pos )
 {
-	if( m_show && ContainsPoint( pos.x, pos.y ) )
+	if( m_show /*&& ContainsPoint( pos.x, pos.y )*/ )
 	{
 		ProcessMouseEvent( GUI::mouse_down, pos );
 	}
@@ -148,7 +166,7 @@ void GuiWindow::MouseDown( const mouse_position& pos )
 
 void GuiWindow::MouseUp( const mouse_position& pos )
 {
-	if( m_show && ContainsPoint( pos.x, pos.y ) )
+	if( m_show /*&& ContainsPoint( pos.x, pos.y )*/ )
 	{
 		ProcessMouseEvent( GUI::mouse_up, pos );
 	}
@@ -199,7 +217,8 @@ void GuiWindow::ResetWindow()
 {
 }
 
-GuiWindow* GuiWindow::lastWindow = NULL;
+GuiWindow* GuiWindow::lastHoverWindow = NULL;
+GuiWindow* GuiWindow::lastFocusWindow = NULL;
 void GuiWindow::MouseHover( const mouse_position& pos )
 {
 	
@@ -208,17 +227,25 @@ void GuiWindow::MouseHover( const mouse_position& pos )
 		GuiWindow* topMostWindow = FindTopMostChild( pos.x, pos.y );
 		topMostWindow->CallHandler( GUI::mouse_hover, this, boost::any( pos ) );
 		
-		if( lastWindow != NULL && lastWindow != topMostWindow )
+		if( lastHoverWindow != NULL && lastHoverWindow != topMostWindow )
 		{
-			lastWindow->ResetWindow();
-			lastWindow = NULL;
+			lastHoverWindow->ResetWindow();
+			lastHoverWindow = NULL;
 		}
 
-		lastWindow = topMostWindow;
+		lastHoverWindow = topMostWindow;
  	}
 	else
 	{
 		ResetWindow();	
+	}
+}
+
+void GuiWindow::MouseMove( const mouse_position& pos )
+{
+	if( m_show )
+	{
+		ProcessEvent( GUI::mouse_move, boost::any( pos ) );
 	}
 }
 
@@ -259,3 +286,4 @@ GuiWindow* GuiWindow::GetChild( boost::uint32_t window_id ) const
 
 	return NULL;
 }
+

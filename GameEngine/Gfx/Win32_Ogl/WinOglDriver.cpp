@@ -281,3 +281,8 @@ void WinOglDriver::DoGetViewPort( Rect<boost::int32_t>& viewPort )
 {
 	m_glDriver->GetViewPort( viewPort );
 }
+
+void WinOglDriver::DoSetClipRect( boost::int32_t x0, boost::int32_t y0, boost::int32_t x1, boost::int32_t y1 )
+{
+	m_glDriver->SetClipRect( x0, y0, x1, y1 );
+}

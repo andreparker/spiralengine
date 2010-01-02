@@ -2,7 +2,10 @@
 #include <algorithm>
 #include <boost/bind.hpp>
 
-IMPL_GAME_OBJECT( Spiral::GameObject );
+IMPL_GAME_OBJECT( Spiral::GameObject )
+{
+
+}
 
 using namespace Spiral;
 

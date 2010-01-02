@@ -142,6 +142,17 @@ namespace Spiral
 		void GetViewPort( Rect<boost::int32_t>& viewPort );
 
 		/*!
+		   @function  SetClipRect
+		   @brief     sets a cliping rect for drawing, clips anything outside the rect
+		   @return    void
+		   @param     boost::int32_t x0
+		   @param     boost::int32_t y0
+		   @param     boost::int32_t x1
+		   @param     boost::int32_t y1
+		*/
+		void SetClipRect( boost::int32_t x0, boost::int32_t y0, boost::int32_t x1, boost::int32_t y1  );
+
+		/*!
 		   @function  SetState
 		   @brief     Sets a render state
 		   @return    void
@@ -269,6 +280,7 @@ namespace Spiral
 
 	   virtual void DoSetViewPort( boost::int32_t x0, boost::int32_t y0, boost::int32_t x1, boost::int32_t y1 ) = 0;
 	   virtual void DoGetViewPort( Rect<boost::int32_t>& viewPort ) = 0;
+	   virtual void DoSetClipRect( boost::int32_t x0, boost::int32_t y0, boost::int32_t x1, boost::int32_t y1  ) = 0;
 	   virtual void DoClearBuffer( const BufferInfo_t& buffer ) = 0;
 
 	   virtual void DoSet( const ClearInfoType_t& type, boost::int32_t value ) = 0;

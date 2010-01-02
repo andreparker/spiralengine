@@ -65,7 +65,31 @@ void GuiManager::TraverseRender( const boost::shared_ptr< GfxDriver >& gfxDrvier
 
 		for( const_gui_window_itr itr = window->m_children.begin(); itr != window->m_children.end(); ++itr )
 		{
+			if( window->ClipChildren() )
+			{
+				Rect<SpReal> rct = window->GetRect();
+				Math::SpVector2r pos,widthHeight;
+				
+				pos = window->GetWorldPosition();
+				
+				widthHeight[0] = rct.right + pos[0];
+				widthHeight[1] = rct.bottom + pos[1];
+
+				m_pImplEngine->WorldToScreen( pos, pos );
+				m_pImplEngine->WorldToScreen( widthHeight, widthHeight );
+				widthHeight -= pos;
+				gfxDrvier->SetClipRect( static_cast<boost::int32_t>(pos[0] + 0.99f), 
+					                    static_cast<boost::int32_t>(pos[1] + 0.99f),
+										static_cast<boost::int32_t>(widthHeight[0] + 0.99f),
+										static_cast<boost::int32_t>(widthHeight[1] + 0.99f) );
+				gfxDrvier->SetState( RenderState::ClipRect( RenderState::RS_TRUE ) );
+
+			}
 			TraverseRender( gfxDrvier, *itr );
+			if( window->ClipChildren() )
+			{
+				gfxDrvier->SetState( RenderState::ClipRect( RenderState::RS_FALSE ) );
+			}
 		}
 	}
 }
@@ -100,6 +124,7 @@ void GuiManager::HandleMouseInput( const Event& inputEvent, const mouse_position
 		if( inputEvent.IsCat( Catagory_Mouse_Move::value ) )
 	{
 		std::for_each( m_windowList.begin(), m_windowList.end(), boost::bind( &GuiWindow::MouseHover, _1, boost::cref(position) ) );
+		std::for_each( m_windowList.begin(), m_windowList.end(), boost::bind( &GuiWindow::MouseMove, _1, boost::cref(position) ) );
 	}
 }
 
@@ -118,7 +143,8 @@ void GuiManager::Present( const boost::shared_ptr< GfxDriver >& gfxDrvier )
 void GuiManager::Clear()
 {
 	m_windowList.clear();
-	GuiWindow::lastWindow = NULL;
+	GuiWindow::lastHoverWindow = NULL;
+	GuiWindow::lastFocusWindow = NULL;
 }
 
 boost::shared_ptr< GuiButton > GuiManager::Make_DefButton( SpReal posX, SpReal posY, SpReal width, SpReal height )
@@ -155,11 +181,24 @@ boost::shared_ptr< GuiText > GuiManager::Make_DefTextBox( SpReal posX, SpReal po
 
 boost::shared_ptr< GuiSlider > GuiManager::Make_DefSlider( SpReal posX, SpReal posY, SpReal width, SpReal height, boost::uint32_t sliderSize, const GuiSliderDir& dir )
 {
-	shared_ptr< Texture > slider_bgTexture = m_pImplEngine->LoadTexture( "Data/GUI/def_slider_back.png", "slider_bk_texture" );
+	shared_ptr< Texture > slider_bgTexture;
 	shared_ptr< Texture > slider_texture = m_pImplEngine->LoadTexture( "Data/GUI/def_slider.png", "slider_texture" );
 
+	Rect<SpReal> txcoords0,txcoords1;
+	
+	txcoords0 = Rect<SpReal>( 0.0f,1.0f,1.0f,0.0f );
+	txcoords1 = Rect<SpReal>( 0.0f,1.0f,1.0f,0.0f );
+
+	if( GuiSliderDir::Vertical == dir.GetDir() )
+	{
+		slider_bgTexture = m_pImplEngine->LoadTexture( "Data/GUI/def_slider_back_v.png", "slider_bk_vert" );
+	}else
+	{
+		slider_bgTexture = m_pImplEngine->LoadTexture( "Data/GUI/def_slider_back.png", "slider_bk_horz" );
+	}
+
 	shared_ptr< GuiSlider > guiSlider( new GuiSlider( Math::make_vector( posX, posY ), Rect<SpReal>( 0.0f, width, height, 0.0f ), 
-		Rect<SpReal>( 0.0f,1.0f,1.0f,0.0f ), Rect<SpReal>(0.0f,1.0f,1.0f,0.0f),sliderSize, slider_bgTexture,
+		txcoords0, txcoords1,sliderSize, slider_bgTexture,
 		slider_texture, dir, true, true ) );
 
 	return guiSlider;

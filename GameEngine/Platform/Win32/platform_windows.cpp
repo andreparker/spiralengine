@@ -216,9 +216,9 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 
 			LOG_D( "^y========================================\n" );
 			LOG_D( "^yListing Game Objects...\n" );
-			GameObjectCreator::instance().LogClassNames();
+			GameObjectCreator::instance().LogClassVarInfo();
 			LOG_D( "^yListing Visual Objects...\n" );
-			VisualObjectCreator::instance().LogVisualObjects();
+			VisualObjectCreator::instance().LogClassVarInfo();
 			LOG_D( "^y========================================\n" );
 		}
 

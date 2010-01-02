@@ -34,6 +34,7 @@ namespace Spiral
 	class CoreObject;
 	class EventPublisher;
 	class EventSubscriber;
+	class ProcessManager;
 	class CVar;
 
 namespace Audio
@@ -276,6 +277,10 @@ namespace GUI
 			return m_audioDriver;
 		}
 
+		const boost::shared_ptr< ProcessManager >& GetProcessManager()const
+		{
+			return m_processManager;
+		}
 		/*!
 		   @function  ScreenToWorld
 		   @brief     translates a screen position to world cordinates
@@ -284,6 +289,7 @@ namespace GUI
 		   @param     Math::SpVector2r & world
 		*/
 		void ScreenToWorld( const Math::SpVector2r& scr_pos, Math::SpVector2r& world );
+		void WorldToScreen( const Math::SpVector2r& world_pos, Math::SpVector2r& scr_pos );
 
 		/*!
 		   @function  LoadConfig
@@ -427,6 +433,7 @@ namespace GUI
 		boost::any                                m_attributes[ kAttributeCount ];
 		bool                                      m_threadsEnabled;
 		bool                                      m_modulesCreated;
+		boost::shared_ptr< ProcessManager >       m_processManager;
 
 		Engine();
 	};

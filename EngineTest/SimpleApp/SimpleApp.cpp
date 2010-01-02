@@ -8,8 +8,17 @@ using namespace SimpleApp;
 using namespace Spiral;
 using namespace boost;
 
-IMPL_GAME_OBJECT( SimpleApp::TestGameObject );
-IMPL_VISUAL_OBJECT( SimpleApp::TestVisualObject, SimpleApp::TestGameObject );
+IMPL_GAME_OBJECT( SimpleApp::TestGameObject )
+{
+	DEF_VARIABLE( SimpleApp::TestGameObject, "test var", m_test_var );
+	DEF_VARIABLE( SimpleApp::TestGameObject, "test var2", m_test_var2 );
+}
+
+IMPL_VISUAL_OBJECT( SimpleApp::TestVisualObject, SimpleApp::TestGameObject )
+{
+	DEF_VARIABLE( SimpleApp::TestVisualObject, "test var1", m_test_var1 );
+
+}
 
 bool App::DoInit( boost::int32_t /*argc*/, std::list< boost::shared_array< char > >& /*argList*/, boost::shared_ptr< Engine >& engine )
 {
@@ -29,7 +38,7 @@ bool App::DoInit( boost::int32_t /*argc*/, std::list< boost::shared_array< char 
 	//m_arialN = engine->LoadFont( "c:/windows/fonts/arialn.ttf", "arial_n", 12, 14 );
 	m_arialN = engine->LoadFont( "c:/windows/fonts/arialn.ttf", "arial_n", 16, 10 );
 
-	SpString text = L"Testing Font rendering code using true type font.\nThis font is arial narrow.\nTesting newline code";
+	SpString text = L"Testing Font rendering code using true type font.\nThis font is arial narrow.\nTesting newline code\nTesting Font rendering code using true type font.\nTesting Font rendering code using true type font.\nTesting Font rendering code using true type font.\nTesting Font rendering code using true type font.\nTesting Font rendering code using true type font.\nTesting Font rendering code using true type font.\n";
 
 
 	shared_ptr< GUI::GuiManager > guiManager = engine->GetGuiManager();
@@ -37,6 +46,11 @@ bool App::DoInit( boost::int32_t /*argc*/, std::list< boost::shared_array< char 
 	shared_ptr< GUI::GuiText > guiButtonText1 = guiManager->Make_DefTextBox( 8.0f, 10.0f, Rgba(1.0f,1.0f,1.0f), m_arialN, 10, L"Button 1" );
 	shared_ptr< GUI::GuiText > guiButtonText2 = guiManager->Make_DefTextBox( 8.0f, 10.0f, Rgba(1.0f,1.0f,1.0f), m_arialN, 10, L"Button 2" );
 	
+	shared_ptr<GUI::GuiScrollWindow> scrollwindow( new GUI::GuiScrollWindow( Math::make_vector( 32.0f, 100.0f ), 
+		                                           Rect<SpReal>(0.0f,150.0f,64.0f,0.0f),8,guiText,guiManager ) );
+
+	scrollwindow->Show();
+
 	guiButtonText1->AllowFocus(false);
 	guiButtonText2->AllowFocus(false);
 	guiButtonText1->Show();
@@ -93,8 +107,9 @@ bool App::DoInit( boost::int32_t /*argc*/, std::list< boost::shared_array< char 
 	m_window->AddChild( button1 );
 	m_window->AddChild( editbox );
 	m_window->AddChild( editbox1 );
-	m_window->AddChild( guiText );
+	m_window->AddChild( scrollwindow );
 
+	
 	
 	engine->GetGuiManager()->AddElement( m_window );
 
@@ -103,7 +118,7 @@ bool App::DoInit( boost::int32_t /*argc*/, std::list< boost::shared_array< char 
 
 	gfxDriver->SetState( RenderState::Depth_Test( RenderState::RS_FALSE ) );
 	gfxDriver->SetState( RenderState::Texture( RenderState::RS_TRUE ) );
-	gfxDriver->SetState( RenderState::Cull_Face( RenderState::RS_FALSE ) );
+	gfxDriver->SetState( RenderState::Cull_Face( RenderState::RS_TRUE ) );
 
 	m_gTest = engine->CreateGameObject<TestGameObject>();
 
@@ -131,20 +146,22 @@ bool App::DoInit( boost::int32_t /*argc*/, std::list< boost::shared_array< char 
 //===============================================================================
 //    Specify your own Ogg for this to work
 //===============================================================================
-// 	boost::shared_ptr< Audio::AudioDriver > audioDriver = engine->GetAudioDriver();
-// 
-// 	Audio::AudioInfo info;
-// 	info.numBitsPerSample = 16;
-// 	info.numChannels = 2;
-// 	info.rate = 44100;
-// 
-// 	audioDriver->CreateAudioStreamObject( m_testSong, info, 2 );
-// 	FileManager::instance().getFile( "Data/Audio/Collar.ogg", m_OggStreamFile );
-// 
-// 	m_testSong->SetStreamFile( m_OggStreamFile );
-// 	m_testSong->Play( false );
+/*	
+	boost::shared_ptr< Audio::AudioDriver > audioDriver = engine->GetAudioDriver();
 
-	return true;
+	Audio::AudioInfo info;
+	info.numBitsPerSample = 16;
+	info.numChannels = 2;
+	info.rate = 44100;
+
+	audioDriver->CreateAudioStreamObject( m_testSong, info, 2 );
+	FileManager::instance().getFile( "Data/Audio/Collar.ogg", m_OggStreamFile );
+
+	m_testSong->SetStreamFile( m_OggStreamFile );
+	m_testSong->Play( true );
+//*/
+	return true; 
+
 }
 
 void App::SliderChanged( boost::int32_t /*eventId*/, Spiral::GUI::GuiWindow* window, const boost::any& /*data*/ )
@@ -183,9 +200,11 @@ bool App::DoUnInit()
 	m_keyDownSubscriber.reset();
 	m_arialN.reset();
 	m_window.reset();
-	//m_testSong->Stop();
-	//m_OggStreamFile->Close();
-
+/*
+	m_testSong->Stop();
+	m_testSong.reset();
+	m_OggStreamFile->Close();
+//*/
 	return true;
 }
 

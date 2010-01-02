@@ -5,6 +5,7 @@
 #include <cstdarg>
 #include <algorithm>
 #include <boost/foreach.hpp>
+#include <boost/tokenizer.hpp>
 
 using namespace Spiral;
 using namespace boost;
@@ -79,3 +80,23 @@ bool LogModule::CanLog( const LogFlags& flags )const
 }
 
 std::string LogScopeObject::m_space = "";
+
+std::string StripColorCodes( const std::string& logStr )
+{
+	if( logStr.find('^') != logStr.npos )
+	{
+		const boost::char_separator<char> delims( "^" );
+		boost::tokenizer< boost::char_separator<char> > tokens( logStr, delims );
+		boost::tokenizer< boost::char_separator<char> >::iterator itr = tokens.begin();
+
+		std::string final;
+		for(; itr != tokens.end();++itr )
+		{
+			final += std::string( ((*itr).c_str() + 1), (*itr).length()-1 );
+		}
+
+		return final;
+	}
+	
+	return logStr;
+}

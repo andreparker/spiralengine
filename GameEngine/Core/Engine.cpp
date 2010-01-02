@@ -7,6 +7,7 @@
 #include "Camera.hpp"
 #include "Events.hpp"
 #include "GameObject.hpp"
+#include "ProcessManager.hpp"
 
 #include "../Audio/AudioDriver.hpp"
 
@@ -137,6 +138,9 @@ void Engine::UnInitialize()
 	LOG_I( module + "^w Clearing gui manager....\n" );
 	m_guiManager->Clear();
 
+	LOG_I( module + "^w Clearing process manager....\n" );
+	m_processManager->Clear();
+
 	LOG_I( module + "^w Uninitializing GfxDriver....\n" );
 	m_gfxDriver->UnInitialize();
 
@@ -158,26 +162,29 @@ void Engine::Tick( SpReal ticks )
 		BufferInfo_t info( m_buffer.to_ulong() );
 		m_gfxDriver->ClearBuffer( info );
 	}
-	
+
+	if( m_threadsEnabled == false )
+	{
+		m_eventPublisher->ProcessEventQueue();
+		m_audioDriver->UpdateStreamAudioList();
+	}
+
+
+	m_processManager->Tick( ticks );
 	m_stateMachine->Tick( ticks, this );
 	m_gameObjectList->Tick( ticks );
 	m_visualObjectList->Tick( ticks );
 
 	UpdateQueue::instance().Tick( ticks );
 
-	if( m_threadsEnabled == false )
-	{
-		m_audioDriver->UpdateStreamAudioList();
-		m_eventPublisher->ProcessEventQueue();
-	}
 	
 	BuildSpriteDrawList();
 	
 	// wait for threads to finish
-	if( m_threadsEnabled == true )
-	{
-		m_threadManager.join_all();
-	}
+// 	if( m_threadsEnabled == true )
+// 	{
+// 		m_threadManager.join_all();
+// 	}
 	
 	DrawSpriteList();
 
@@ -263,10 +270,6 @@ boost::shared_ptr< Texture > Engine::LoadTexture( const std::string& fileName, c
 				{
 					// catalog texture
 					CacheTexture( texture, TextureName );
-					//m_catolog->m_textureCatalog[ TextureName ] = texture;
-					//m_catolog->m_textureSize += texture->Size();
-					//LOG_I( module + "^w Texture loaded and cached in catalog.\n" );
-					//LOG_I( module + "^w Current Texture Loaded: ^g%1% ^w bytes. \n", m_catolog->m_textureSize );
 				}
 			}else
 			{
@@ -571,6 +574,7 @@ void Engine::CreateModules()
 	m_spriteDrawList  = make_shared< SpriteDrawList >();
 	m_fontFactory     = make_shared< FreeTypeFactory >();
 	m_guiManager      = make_shared< GUI::GuiManager >( this );
+	m_processManager  = make_shared< ProcessManager >();
 	m_inputSubscriber = make_shared< EventSubscriber >( Event( Event::EVENT_ANY, Catagory_Input::value ) );
 	m_catolog.reset( new ResourceCatalog );
 	m_modulesCreated = true;
@@ -686,6 +690,30 @@ void Engine::ScreenToWorld( const Math::SpVector2r& scr_pos, Math::SpVector2r& w
 	}
 }
 
+void Engine::WorldToScreen( const Math::SpVector2r& world_pos, Math::SpVector2r& scr_pos )
+{
+	if( m_camera )
+	{
+		Math::SpMatrix4x4r proj;
+		Math::SpMatrix4x4r view;
+
+		m_camera->GetProjection(proj);
+		m_camera->GetView(view);
+
+		Math::SpVector3r pos = Math::make_vector( world_pos[0], world_pos[1], -1.0f );
+
+		Rect<boost::int32_t> viewPort;
+		GetGfxDriver()->GetViewPort( viewPort );
+		Math::Project( pos, (view * proj), Rect<SpReal>( viewPort ), pos );
+
+		scr_pos[0] = pos[0];
+		scr_pos[1] = pos[1];
+	}else
+	{
+		THROW_GENERAL_EXCEPTION( module + "Engine::WorldToScreen - Error: no camera set!" );
+	}
+}
+
 bool Engine::LoadConfig( const std::string& fileName )
 {
 	bool cfgLoaded = false;
@@ -750,3 +778,4 @@ void Engine::StoreObjects( const boost::shared_ptr<GameObject>& obj, const boost
 
 	m_gameObjectList->Add( obj );
 }
+

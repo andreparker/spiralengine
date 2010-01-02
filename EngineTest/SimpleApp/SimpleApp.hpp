@@ -13,6 +13,10 @@ namespace SimpleApp
 		DECL_GAME_OBJECT( SimpleApp::TestGameObject, Spiral::GameObject )
 	public:
 		TestGameObject(){}
+
+	private:
+		int m_test_var;
+		int m_test_var2[100];
 	};
 
 	class TestVisualObject : public Spiral::VisualGameObject
@@ -20,6 +24,8 @@ namespace SimpleApp
 		DECL_VISUAL_OBJECT( SimpleApp::TestVisualObject, Spiral::VisualGameObject )
 	public:
 		TestVisualObject(){}
+	private:
+		int m_test_var1;
 	};
 
 	class App : public Spiral::Application

@@ -90,12 +90,12 @@ namespace Spiral
 		void ProcessEvents( Engine* engine );
 	private:
 		typedef std::list< boost::shared_ptr< GameState > >::const_iterator const_state_itr;
-		std::list< boost::shared_ptr< GameState > > m_gameStateList;
-		std::map< boost::int32_t, boost::shared_ptr< VisualGameState > > m_visualGameStateList;
-		std::list< boost::function< void( GameStateMachine* ) > > m_stateFuncInitList;
-		boost::shared_ptr< GameState > m_currentGameState;
-		boost::shared_ptr< VisualGameState > m_currentVisualState;
-		std::queue< StateEvent > m_eventQueue;
+		std::list< boost::shared_ptr< GameState > >                         m_gameStateList;
+		std::map< boost::int32_t, boost::shared_ptr< VisualGameState > >    m_visualGameStateList;
+		std::list< boost::function< void( GameStateMachine* ) > >           m_stateFuncInitList;
+		boost::shared_ptr< GameState >                                      m_currentGameState;
+		boost::shared_ptr< VisualGameState >                                m_currentVisualState;
+		std::queue< StateEvent >                                            m_eventQueue;
 
 	};
 }

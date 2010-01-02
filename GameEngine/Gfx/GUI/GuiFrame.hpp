@@ -20,7 +20,7 @@ namespace GUI
 
 		void OnMouseDownBar( boost::int32_t eventId, GuiWindow* window, const boost::any& data  );
 		void OnMouseUpBar( boost::int32_t eventId, GuiWindow* window, const boost::any& data  );
-		void OnHoverBar( boost::int32_t eventId, GuiWindow* window, const boost::any& data  );
+		void OnMouseMove(  boost::int32_t eventId, GuiWindow* window, const boost::any& data );
 
 		void SaveLastPosition( const mouse_position& pos );
 		virtual void ResetWindow();
