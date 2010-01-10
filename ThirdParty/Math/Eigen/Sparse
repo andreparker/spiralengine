@@ -12,64 +12,74 @@
 #include <algorithm>
 
 #ifdef EIGEN_GOOGLEHASH_SUPPORT
-  #include <google/dense_hash_map>
+#include <google/dense_hash_map>
 #endif
 
 #ifdef EIGEN_CHOLMOD_SUPPORT
-  extern "C" {
-    #include "cholmod.h"
-  }
+extern "C"
+{
+#include "cholmod.h"
+}
 #endif
 
 #ifdef EIGEN_TAUCS_SUPPORT
-  // taucs.h declares a lot of mess
-  #define isnan
-  #define finite
-  #define isinf
-  extern "C" {
-    #include "taucs.h"
-  }
-  #undef isnan
-  #undef finite
-  #undef isinf
+// taucs.h declares a lot of mess
+#define isnan
+#define finite
+#define isinf
+extern "C"
+{
+#include "taucs.h"
+}
+#undef isnan
+#undef finite
+#undef isinf
 
-  #ifdef min
-    #undef min
-  #endif
-  #ifdef max
-    #undef max
-  #endif
-  #ifdef complex
-    #undef complex
-  #endif
+#ifdef min
+#undef min
+#endif
+#ifdef max
+#undef max
+#endif
+#ifdef complex
+#undef complex
+#endif
 #endif
 
 #ifdef EIGEN_SUPERLU_SUPPORT
-  typedef int int_t;
-  #include "superlu/slu_Cnames.h"
-  #include "superlu/supermatrix.h"
-  #include "superlu/slu_util.h"
+typedef int int_t;
+#include "superlu/slu_Cnames.h"
+#include "superlu/supermatrix.h"
+#include "superlu/slu_util.h"
 
-  namespace SuperLU_S {
-  #include "superlu/slu_sdefs.h"
-  }
-  namespace SuperLU_D {
-  #include "superlu/slu_ddefs.h"
-  }
-  namespace SuperLU_C {
-  #include "superlu/slu_cdefs.h"
-  }
-  namespace SuperLU_Z {
-  #include "superlu/slu_zdefs.h"
-  }
-  namespace Eigen { struct SluMatrix; }
+namespace SuperLU_S
+{
+#include "superlu/slu_sdefs.h"
+}
+namespace SuperLU_D
+{
+#include "superlu/slu_ddefs.h"
+}
+namespace SuperLU_C
+{
+#include "superlu/slu_cdefs.h"
+}
+namespace SuperLU_Z
+{
+#include "superlu/slu_zdefs.h"
+}
+namespace Eigen
+{
+struct SluMatrix;
+}
 #endif
 
 #ifdef EIGEN_UMFPACK_SUPPORT
-  #include "umfpack.h"
+#include "umfpack.h"
 #endif
 
-namespace Eigen {
+namespace Eigen
+{
 
 /** \defgroup Sparse_Module Sparse module
   *

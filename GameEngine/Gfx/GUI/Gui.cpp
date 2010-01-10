@@ -11,9 +11,21 @@
 #include "../../Math/Math.hpp"
 #include "GuiWindow.hpp"
 #include "GuiWindowEvents.hpp"
+#include "../../Core/File.hpp"
+#include "../../Core/FileManager.hpp"
+#include "../../Core/Log.hpp"
+#include "../../Script/ScriptManager.hpp"
+#include "../../Core/GeneralException.hpp"
+
 #include <algorithm>
 #include <boost/bind.hpp>
 #include <boost/make_shared.hpp>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/info_parser.hpp>
+#include <boost/foreach.hpp>
+#include <boost/assert.hpp>
+#include <boost/assign/list_of.hpp>
+
 
 #include "GuiButton.hpp"
 #include "GuiSlider.hpp"
@@ -25,11 +37,46 @@
 using namespace Spiral;
 using namespace Spiral::GUI;
 using namespace boost;
+using namespace boost::property_tree;
+
+namespace
+{
+	// key words
+	const std::string kKwElementFile = "eFile";
+	const std::string kKwElementExt  = "eClassEx";
+	const std::string kKwLayout      = "layout";
+	const std::string kKwTexture     = "texture";
+	const std::string kKwElement     = "eClass";
+	const std::string kKwPosition    = "position";
+	const std::string kKwWindowRect  = "window_rect";
+	const std::string kKwTextureRect = "texture_rect";
+	const std::string kKwWindowName  = "name";
+	const std::string kKwScriptName  = "luaFile";
+	const std::string kKwWindowAlpha = "alpha";
+	const std::string kKwClipChild   = "clipChildren";
+	const std::string kKwAllowFocus  = "allowFocus";
+	const std::string kKwShowWindow  = "show";
+
+	// button
+	const std::string kKwOnButtonPress = "OnButtonPress";
+}
+
 
 GuiManager::GuiManager( Engine* engine ):
 m_windowList(),
-m_pImplEngine( engine )
-{}
+m_pImplEngine( engine ),
+m_lastAddedWindow()
+{
+	m_elementCreate = assign::map_list_of
+	( "window", bind( &GuiManager::Create_Window_From_Tree, this, _1, _2 ) )
+	( "frame" , bind( &GuiManager::Create_Frame_From_Tree, this, _1, _2 ) )
+	( "editBox", bind( &GuiManager::Create_EditBox_From_Tree, this, _1, _2 ) )
+	( "slider", bind( &GuiManager::Create_Slider_From_Tree, this, _1, _2 ) )
+	( "button", bind( &GuiManager::Create_Button_From_Tree, this, _1, _2 ) )
+	( "textBox", bind( &GuiManager::Create_TextBox_From_Tree, this, _1, _2 ) )
+	( "scrollWindow", bind( &GuiManager::Create_Scroll_From_Tree, this, _1, _2 ) )
+	( "checkBox", bind( &GuiManager::Create_CheckBox_From_Tree, this, _1, _2 ) );
+}
 
 
 
@@ -68,7 +115,7 @@ void GuiManager::TraverseRender( const boost::shared_ptr< GfxDriver >& gfxDrvier
 			if( window->ClipChildren() )
 			{
 				Rect<SpReal> rct = window->GetRect();
-				Math::SpVector2r pos,widthHeight;
+				Math::Vector2f pos,widthHeight;
 				
 				pos = window->GetWorldPosition();
 				
@@ -219,3 +266,313 @@ boost::shared_ptr< GuiFrame > GuiManager::Make_DefFrame( SpReal posX, SpReal pos
 		Rect< SpReal >( 0.0f, 1.0f, 1.0f, 0.0f ), window_texture, true );
 	return frame;
 }
+
+namespace
+{
+	bool ToBoolean( const std::string& str )
+	{
+		BOOST_ASSERT( str == "true" || str == "false" );
+		return bool( "true" == str ? true : ( "false" == str ? false : false ) );
+	}
+
+	void ExtractBounds( const ptree& tree, SpReal* bounds )
+	{
+		ptree::const_iterator leftItr   = tree.find( "left" );
+		ptree::const_iterator rightItr  = tree.find( "right" );
+		ptree::const_iterator topItr    = tree.find( "top" );
+		ptree::const_iterator bottomItr = tree.find( "bottom" );
+
+		*bounds++ = leftItr->second.get_value( 0.0f );
+		*bounds++ = rightItr->second.get_value( 0.0f );
+		*bounds++ = topItr->second.get_value( 0.0f );
+		*bounds   = bottomItr->second.get_value( 0.0f );
+	}
+
+	shared_ptr< Texture > ExtractTexture( Engine* engine, const ptree& tree )
+	{
+		shared_ptr< Texture > newTexture;
+		ptree::const_iterator fileName = tree.find( "fileName" );
+		ptree::const_iterator tagName  = tree.find( "tagName"  );
+
+		if( fileName != tree.end() && tagName != tree.end() )
+		{
+			newTexture = engine->LoadTexture( fileName->second.data(), tagName->second.data() );
+		}else if( tagName != tree.end() )
+		{
+			newTexture = engine->GetTexture( tagName->second.data() );
+		}
+
+		return newTexture;
+	}
+
+	void ExtractScript( Engine* engine, const ptree& tree )
+	{
+		ptree::const_iterator fileName = tree.find( "fileName" );
+		ptree::const_iterator tagName  = tree.find( "tagName"  );
+
+		boost::shared_ptr< IFile > scriptFile;
+		if( FileManager::instance().getFile( fileName->second.data(), scriptFile ) )
+		{
+			engine->GetScriptManager()->LoadScript( scriptFile, tagName->second.data().c_str() );
+		}else
+		{
+			LOG_E( "^yExtractScript: ^rError opening script %1%\n", fileName->second.data() );
+		}
+	}
+
+	std::string currentlayoutFile = "";
+	void SetLayoutFile( const std::string& fileName )
+	{
+		currentlayoutFile = fileName;
+	}
+
+	void ExtractPosition( const ptree& tree, SpReal* position )
+	{
+		ptree::const_iterator xItr = tree.find( "x" );
+		if( xItr != tree.end() )
+		{
+			*position++ = xItr->second.get_value( 0.0f );
+		}
+
+		ptree::const_iterator yItr = tree.find( "y" );
+		if( yItr != tree.end() )
+		{
+			*position++ = yItr->second.get_value( 0.0f );
+		}
+
+		ptree::const_iterator zItr = tree.find( "z" );
+		if( zItr != tree.end() )
+		{
+			*position++ = zItr->second.get_value( 0.0f );
+		}
+	}
+
+	void ReadInfo( const boost::shared_ptr<IFile>& file, ptree& tree )
+	{
+		boost::shared_ptr< std::istream > pStream = file->GetStream();
+		try
+		{
+			info_parser::read_info( *pStream, tree );
+
+		}catch( std::exception& e )
+		{
+			std::string nl = "\n";
+			THROW_GENERAL_EXCEPTION( "Error in layout file - " + currentlayoutFile + nl + e.what() );
+		}
+	}
+}
+
+void GuiManager::BaseWindowAttributes( ptree::const_iterator& itr, const boost::shared_ptr< GuiWindow >& newWindow,
+									   const std::string& parentPath )const
+{
+	SpReal bounds[4];
+	if( IsElement( itr->first ) )
+	{
+		newWindow->AddChild( Create_Element( itr->second.data(), parentPath + "." + itr->first, itr->second ) );
+	}
+	else if( itr->first == kKwPosition )
+	{
+		SpReal position[2];
+		ExtractPosition( itr->second, position );
+		newWindow->SetLocalPosition( Math::make_vector( position[0], position[1] ) );
+	}else if( itr->first == kKwWindowRect )
+	{
+		ExtractBounds( itr->second, bounds );
+		newWindow->SetRect( Rect<SpReal>( bounds[0],bounds[1], bounds[3], bounds[2] ) );
+	}else if( itr->first == "texture_rect" )
+	{
+		ExtractBounds( itr->second, bounds );
+		newWindow->SetTexCoords( Rect<SpReal>( bounds[0],bounds[1], bounds[3], bounds[2] ) );
+	}else if( itr->first == kKwTexture )
+	{
+		newWindow->SetTexture( ExtractTexture( const_cast< Engine* >( m_pImplEngine ), itr->second ) );
+	}else if( itr->first == kKwWindowAlpha )
+	{
+		newWindow->SetAlphaBlend( ToBoolean( itr->second.data() ) );
+	}else if( itr->first == kKwAllowFocus )
+	{
+		newWindow->AllowFocus( ToBoolean( itr->second.data() ) );
+	}else if( itr->first == kKwShowWindow )
+	{
+		newWindow->Show( ToBoolean( itr->second.data()  ) );
+	}else if( itr->first == kKwElementFile )
+	{
+		shared_ptr< IFile > elementFile;
+		SetLayoutFile( itr->second.data() );
+		if( FileManager::instance().getFile( itr->second.data(), elementFile ) )
+		{
+			LoadSubLayout( newWindow, elementFile );
+			elementFile->Close();
+
+			// check for overrides of attributes and if a child was added
+			OverRideAttributes(parentPath, itr);
+		}
+	}else if( itr->first == kKwScriptName )
+	{
+		ExtractScript( const_cast< Engine* >( m_pImplEngine ), itr->second );
+	}
+}
+
+void GuiManager::OverRideAttributes( const std::string& parentPath, ptree::const_iterator& itr )const
+{
+	if( m_lastAddedWindow.expired() == false )
+	{
+		std::string path =  parentPath + "." + kKwElementFile;
+		shared_ptr< GuiWindow > lastChild( m_lastAddedWindow );
+		const ptree& subTree = itr->second;
+		// loop through attribute overrides
+		for( ptree::const_iterator subItr = subTree.begin(); subItr != subTree.end(); ++subItr )
+		{
+			BaseWindowAttributes( subItr, lastChild, path );
+		}
+	}
+}
+
+bool GuiManager::LoadLayoutImpl( const boost::shared_ptr< IFile >& layoutFile, const boost::function< void( const boost::shared_ptr<GuiWindow>& ) >& storeFunction ) const
+{
+	bool isLoaded = true;
+	ptree tree;
+
+	ReadInfo( layoutFile, tree );
+	ptree::iterator layoutItr = tree.find( kKwLayout );
+
+	if( layoutItr != tree.end() )
+	{
+		ptree& layoutVal = layoutItr->second;
+		for( ptree::iterator itr = layoutVal.begin(); itr != layoutVal.end(); ++itr )
+		{
+			if( IsElement( itr->first ) )
+			{
+				shared_ptr< GuiWindow > newWindow = Create_Element( itr->second.data(), 
+					                                                layoutItr->first + "." + itr->first, itr->second );
+				// save a ref to the window for attribute overriding
+				m_lastAddedWindow = newWindow;
+
+				if( newWindow )
+				{
+					storeFunction( newWindow );
+				}
+			}else if( itr->first == kKwElementFile || itr->first == kKwElementExt )
+			{
+				shared_ptr< IFile > elementFile;
+				SetLayoutFile( itr->second.data() );
+				if( FileManager::instance().getFile( itr->second.data(), elementFile ) )
+				{
+					const_cast<GuiManager*>(this)->LoadLayout( elementFile );
+					elementFile->Close();
+					OverRideAttributes( layoutItr->first + "." + itr->first, itr );
+				}
+			}else if( itr->first == kKwTexture )
+			{
+				ExtractTexture( const_cast<Engine*>( m_pImplEngine ), itr->second );
+			}else if( itr->first == kKwScriptName )
+			{
+				ExtractScript( const_cast< Engine* >( m_pImplEngine ), itr->second );
+			}
+		}
+	}
+
+	return isLoaded;
+}
+
+bool GuiManager::LoadLayout( const boost::shared_ptr<IFile>& layout )
+{
+	return LoadLayoutImpl( layout, boost::bind( &GuiManager::AddElement, this, _1 ) );
+}
+
+bool GuiManager::LoadSubLayout( const boost::shared_ptr< GuiWindow >& window, const boost::shared_ptr< IFile >& layoutFile )const
+{
+	return LoadLayoutImpl( layoutFile, boost::bind( &GuiWindow::AddChild, cref(window), _1 ) );
+}
+
+boost::shared_ptr< GuiWindow > GuiManager::Create_Element( const std::string& type, const std::string& parentPath,
+														   const boost::property_tree::ptree& tree ) const
+{
+	boost::shared_ptr< GuiWindow > newWindow;
+
+	Const_ElemItr itr = m_elementCreate.find( type );
+	if( itr != m_elementCreate.end() )
+	{
+		newWindow = (*itr).second( parentPath, tree );
+	}
+
+	return newWindow;
+}
+
+boost::shared_ptr< GuiWindow > GuiManager::Create_Window_From_Tree( const std::string& parentPath, const boost::property_tree::ptree& tree ) const
+{
+	boost::shared_ptr< GuiWindow > newWindow( new GuiWindow() );
+
+	for( ptree::const_iterator itr = tree.begin(); itr != tree.end(); ++itr )
+	{
+		BaseWindowAttributes( itr, newWindow, parentPath );
+	}
+
+	return newWindow;
+}
+
+boost::shared_ptr< GuiWindow > GuiManager::Create_Button_From_Tree( const std::string& parentPath, const boost::property_tree::ptree& tree ) const
+{
+	boost::shared_ptr< GuiButton > newWindow( new GuiButton() );
+
+	newWindow->SetGuiManager( const_cast<GuiManager*>(this) );
+	for( ptree::const_iterator itr = tree.begin(); itr != tree.end(); ++itr )
+	{
+		BaseWindowAttributes( itr, newWindow, parentPath );
+
+		if( itr->first == kKwOnButtonPress )
+		{
+			newWindow->SetButtonPressScript( itr->second.data() );
+		}
+	}
+
+	return newWindow;
+}
+
+boost::shared_ptr< GuiWindow > GuiManager::Create_Frame_From_Tree( const std::string& parentPath, const boost::property_tree::ptree& tree ) const
+{
+	boost::shared_ptr< GuiWindow > newWindow( new GuiFrame() );
+
+	for( ptree::const_iterator itr = tree.begin(); itr != tree.end(); ++itr )
+	{
+		BaseWindowAttributes( itr, newWindow, parentPath );
+	}
+
+	return newWindow;
+}
+
+boost::shared_ptr< GuiWindow > GuiManager::Create_EditBox_From_Tree( const std::string& parentPath, const boost::property_tree::ptree& tree ) const
+{
+	boost::shared_ptr< GuiWindow > newWindow;
+
+	return newWindow;
+}
+
+boost::shared_ptr< GuiWindow > GuiManager::Create_TextBox_From_Tree( const std::string& parentPath, const boost::property_tree::ptree& tree ) const
+{
+	boost::shared_ptr< GuiWindow > newWindow;
+
+	return newWindow;
+}
+
+boost::shared_ptr< GuiWindow > GuiManager::Create_Scroll_From_Tree( const std::string& parentPath, const boost::property_tree::ptree& tree ) const
+{
+	boost::shared_ptr< GuiWindow > newWindow;
+
+	return newWindow;
+}
+
+boost::shared_ptr< GuiWindow > GuiManager::Create_Slider_From_Tree( const std::string& parentPath, const boost::property_tree::ptree& tree ) const
+{
+	boost::shared_ptr< GuiWindow > newWindow;
+
+	return newWindow;
+}
+
+boost::shared_ptr< GuiWindow > GuiManager::Create_CheckBox_From_Tree( const std::string& parentPath, const boost::property_tree::ptree& tree ) const
+{
+	boost::shared_ptr< GuiWindow > newWindow;
+
+	return newWindow;
+}
+

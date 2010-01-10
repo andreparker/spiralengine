@@ -210,6 +210,8 @@ string GetALErrorString(ALenum err)
 		return string("AL_OUT_OF_MEMORY");
 		break;
 	};
+
+	return string("UnKnown Error");
 }
 
 void AudioUtil::ReportALErrors()

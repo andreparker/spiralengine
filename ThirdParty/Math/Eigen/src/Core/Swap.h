@@ -34,88 +34,98 @@
 template<typename ExpressionType>
 struct ei_traits<SwapWrapper<ExpressionType> >
 {
-  typedef typename ExpressionType::Scalar Scalar;
-  enum {
-    RowsAtCompileTime = ExpressionType::RowsAtCompileTime,
-    ColsAtCompileTime = ExpressionType::ColsAtCompileTime,
-    MaxRowsAtCompileTime = ExpressionType::MaxRowsAtCompileTime,
-    MaxColsAtCompileTime = ExpressionType::MaxColsAtCompileTime,
-    Flags = ExpressionType::Flags,
-    CoeffReadCost = ExpressionType::CoeffReadCost
-  };
+    typedef typename ExpressionType::Scalar Scalar;
+    enum
+    {
+        RowsAtCompileTime = ExpressionType::RowsAtCompileTime,
+        ColsAtCompileTime = ExpressionType::ColsAtCompileTime,
+        MaxRowsAtCompileTime = ExpressionType::MaxRowsAtCompileTime,
+        MaxColsAtCompileTime = ExpressionType::MaxColsAtCompileTime,
+        Flags = ExpressionType::Flags,
+        CoeffReadCost = ExpressionType::CoeffReadCost
+    };
 };
 
 template<typename ExpressionType> class SwapWrapper
-  : public MatrixBase<SwapWrapper<ExpressionType> >
+            : public MatrixBase<SwapWrapper<ExpressionType> >
 {
-  public:
+public:
 
-    EIGEN_GENERIC_PUBLIC_INTERFACE(SwapWrapper)
+    EIGEN_GENERIC_PUBLIC_INTERFACE( SwapWrapper )
     typedef typename ei_packet_traits<Scalar>::type Packet;
 
-    inline SwapWrapper(ExpressionType& xpr) : m_expression(xpr) {}
+    inline SwapWrapper( ExpressionType& xpr ) : m_expression( xpr ) {}
 
-    inline int rows() const { return m_expression.rows(); }
-    inline int cols() const { return m_expression.cols(); }
-    inline int stride() const { return m_expression.stride(); }
-
-    inline Scalar& coeffRef(int row, int col)
+    inline int rows() const
     {
-      return m_expression.const_cast_derived().coeffRef(row, col);
+        return m_expression.rows();
+    }
+    inline int cols() const
+    {
+        return m_expression.cols();
+    }
+    inline int stride() const
+    {
+        return m_expression.stride();
     }
 
-    inline Scalar& coeffRef(int index)
+    inline Scalar& coeffRef( int row, int col )
     {
-      return m_expression.const_cast_derived().coeffRef(index);
+        return m_expression.const_cast_derived().coeffRef( row, col );
+    }
+
+    inline Scalar& coeffRef( int index )
+    {
+        return m_expression.const_cast_derived().coeffRef( index );
     }
 
     template<typename OtherDerived>
-    void copyCoeff(int row, int col, const MatrixBase<OtherDerived>& other)
+    void copyCoeff( int row, int col, const MatrixBase<OtherDerived>& other )
     {
-      OtherDerived& _other = other.const_cast_derived();
-      ei_internal_assert(row >= 0 && row < rows()
-                         && col >= 0 && col < cols());
-      Scalar tmp = m_expression.coeff(row, col);
-      m_expression.coeffRef(row, col) = _other.coeff(row, col);
-      _other.coeffRef(row, col) = tmp;
+        OtherDerived& _other = other.const_cast_derived();
+        ei_internal_assert( row >= 0 && row < rows()
+                            && col >= 0 && col < cols() );
+        Scalar tmp = m_expression.coeff( row, col );
+        m_expression.coeffRef( row, col ) = _other.coeff( row, col );
+        _other.coeffRef( row, col ) = tmp;
     }
 
     template<typename OtherDerived>
-    void copyCoeff(int index, const MatrixBase<OtherDerived>& other)
+    void copyCoeff( int index, const MatrixBase<OtherDerived>& other )
     {
-      OtherDerived& _other = other.const_cast_derived();
-      ei_internal_assert(index >= 0 && index < m_expression.size());
-      Scalar tmp = m_expression.coeff(index);
-      m_expression.coeffRef(index) = _other.coeff(index);
-      _other.coeffRef(index) = tmp;
+        OtherDerived& _other = other.const_cast_derived();
+        ei_internal_assert( index >= 0 && index < m_expression.size() );
+        Scalar tmp = m_expression.coeff( index );
+        m_expression.coeffRef( index ) = _other.coeff( index );
+        _other.coeffRef( index ) = tmp;
     }
 
     template<typename OtherDerived, int StoreMode, int LoadMode>
-    void copyPacket(int row, int col, const MatrixBase<OtherDerived>& other)
+    void copyPacket( int row, int col, const MatrixBase<OtherDerived>& other )
     {
-      OtherDerived& _other = other.const_cast_derived();
-      ei_internal_assert(row >= 0 && row < rows()
-                        && col >= 0 && col < cols());
-      Packet tmp = m_expression.template packet<StoreMode>(row, col);
-      m_expression.template writePacket<StoreMode>(row, col,
-        _other.template packet<LoadMode>(row, col)
-      );
-      _other.template writePacket<LoadMode>(row, col, tmp);
+        OtherDerived& _other = other.const_cast_derived();
+        ei_internal_assert( row >= 0 && row < rows()
+                            && col >= 0 && col < cols() );
+        Packet tmp = m_expression.template packet<StoreMode>( row, col );
+        m_expression.template writePacket<StoreMode>( row, col,
+                _other.template packet<LoadMode>( row, col )
+                                                    );
+        _other.template writePacket<LoadMode>( row, col, tmp );
     }
 
     template<typename OtherDerived, int StoreMode, int LoadMode>
-    void copyPacket(int index, const MatrixBase<OtherDerived>& other)
+    void copyPacket( int index, const MatrixBase<OtherDerived>& other )
     {
-      OtherDerived& _other = other.const_cast_derived();
-      ei_internal_assert(index >= 0 && index < m_expression.size());
-      Packet tmp = m_expression.template packet<StoreMode>(index);
-      m_expression.template writePacket<StoreMode>(index,
-        _other.template packet<LoadMode>(index)
-      );
-      _other.template writePacket<LoadMode>(index, tmp);
+        OtherDerived& _other = other.const_cast_derived();
+        ei_internal_assert( index >= 0 && index < m_expression.size() );
+        Packet tmp = m_expression.template packet<StoreMode>( index );
+        m_expression.template writePacket<StoreMode>( index,
+                _other.template packet<LoadMode>( index )
+                                                    );
+        _other.template writePacket<LoadMode>( index, tmp );
     }
 
-  protected:
+protected:
     ExpressionType& m_expression;
 };
 
@@ -128,9 +138,9 @@ template<typename ExpressionType> class SwapWrapper
   */
 template<typename Derived>
 template<typename OtherDerived>
-void MatrixBase<Derived>::swap(const MatrixBase<OtherDerived>& other)
+void MatrixBase<Derived>::swap( const MatrixBase<OtherDerived>& other )
 {
-  (SwapWrapper<Derived>(derived())).lazyAssign(other);
+    ( SwapWrapper<Derived>( derived() ) ).lazyAssign( other );
 }
 
 #endif // EIGEN_SWAP_H

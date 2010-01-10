@@ -24,14 +24,14 @@ namespace GUI
 		   @function  GuiEditBox
 		   @brief     creates a edit text box
 		   @return    
-		   @param     const Math::SpVector2r & position
+		   @param     const Math::Vector2f & position
 		   @param     const boost::shared_ptr<GfxDriver> & gfxDriver
 		   @param     const Rgba & backColor	- backColor of the background of the text window
 		   @param     const boost::shared_ptr<Font> & font	- font to render with
 		   @param     boost::uint32_t maxCharLen	- max chars allowed in the box
 		   @param     const std::string & defText	- defualt text in the box
 		*/
-		GuiEditBox( const Math::SpVector2r& position, const boost::shared_ptr<GfxDriver>& gfxDriver,const Rgba& backColor,
+		GuiEditBox( const Math::Vector2f& position, const boost::shared_ptr<GfxDriver>& gfxDriver,const Rgba& backColor,
 					const Rgba& forColor, const boost::shared_ptr<Font>& font, boost::uint32_t maxCharLen, const SpString& defText );
 
 		/*!

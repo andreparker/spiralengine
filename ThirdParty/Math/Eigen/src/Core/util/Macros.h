@@ -42,15 +42,15 @@
 // if the compiler is not GNUC, just cross fingers that the architecture isn't too exotic, because we don't want
 // to keep track of all the different preprocessor symbols for all compilers.
 #if !defined(__GNUC__) || defined(__i386__) || defined(__x86_64__) || defined(__ppc__) || defined(__ia64__)
-  #define EIGEN_ARCH_WANTS_ALIGNMENT 1
+#define EIGEN_ARCH_WANTS_ALIGNMENT 1
 #else
-  #ifdef EIGEN_VECTORIZE
-    #error Vectorization enabled, but the architecture is not listed among those for which we require 16 byte alignment. If you added vectorization for another architecture, you also need to edit this list.
-  #endif
-  #define EIGEN_ARCH_WANTS_ALIGNMENT 0
-  #ifndef EIGEN_DISABLE_UNALIGNED_ARRAY_ASSERT
-    #define EIGEN_DISABLE_UNALIGNED_ARRAY_ASSERT
-  #endif
+#ifdef EIGEN_VECTORIZE
+#error Vectorization enabled, but the architecture is not listed among those for which we require 16 byte alignment. If you added vectorization for another architecture, you also need to edit this list.
+#endif
+#define EIGEN_ARCH_WANTS_ALIGNMENT 0
+#ifndef EIGEN_DISABLE_UNALIGNED_ARRAY_ASSERT
+#define EIGEN_DISABLE_UNALIGNED_ARRAY_ASSERT
+#endif
 #endif
 
 

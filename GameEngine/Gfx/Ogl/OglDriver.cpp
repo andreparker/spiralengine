@@ -31,7 +31,7 @@ using namespace boost::tuples;
 OglDriver::OglDriver():
 m_stateList(),
 m_view(),
-m_world( Math::SpMatrix4x4r::Identity() ),
+m_world( Math::Matrix4x4f::Identity() ),
 m_scrWidth(0),m_scrHeight(0)
 {
 
@@ -280,7 +280,7 @@ void OglDriver::InitializeSpriteVertexBuffer( boost::shared_ptr< VertexBuffer >&
 
 inline void DrawSprite( const Sprite* sprite, const shared_ptr< VertexBuffer > vertexBuffer )
 {
-	const Math::SpVector2r& position = sprite->GetPosition();
+	const Math::Vector2f& position = sprite->GetPosition();
 	glPushMatrix();
 	{
 		glTranslatef( position[0]+sprite->GetRotOffsetX(), position[1]+sprite->GetRotOffsetY(), 0.0f );
@@ -323,13 +323,13 @@ void OglDriver::Draw( const std::list< Sprite* >& spriteList )
 	}
 }
 
-void OglDriver::SetWorld( const Math::SpMatrix4x4r& world )
+void OglDriver::SetWorld( const Math::Matrix4x4f& world )
 {
 	m_world = world;
 	ReCalcModelView();
 }
 
-void OglDriver::SetView( const Math::SpMatrix4x4r& view )
+void OglDriver::SetView( const Math::Matrix4x4f& view )
 {
 	m_view = view;
 	ReCalcModelView();
@@ -337,28 +337,28 @@ void OglDriver::SetView( const Math::SpMatrix4x4r& view )
 
 void OglDriver::ReCalcModelView()
 {
-	Math::SpMatrix4x4r modelView = m_world * m_view;
+	Math::Matrix4x4f modelView = m_world * m_view;
 	glMatrixMode( GL_MODELVIEW );
 	glLoadMatrixf( modelView.data() );
 }
 
-void OglDriver::SetProjection( const Math::SpMatrix4x4r& proj )
+void OglDriver::SetProjection( const Math::Matrix4x4f& proj )
 {
 	glMatrixMode( GL_PROJECTION );
 	glLoadMatrixf( proj.data() );
 	glMatrixMode( GL_MODELVIEW );
 }
 
-void OglDriver::GetView( Math::SpMatrix4x4r& view )
+void OglDriver::GetView( Math::Matrix4x4f& view )
 {
 	view = m_view;
 }
 
-void OglDriver::GetProjection( Math::SpMatrix4x4r& proj )
+void OglDriver::GetProjection( Math::Matrix4x4f& proj )
 {
 	SpReal projection[16];
 	glGetFloatv( GL_PROJECTION_MATRIX, projection );
-	proj = Math::SpMatrix4x4r(projection);
+	proj = Math::Matrix4x4f(projection);
 }
 
 
@@ -373,7 +373,7 @@ void OglDriver::Set( const BlendMode_t& mode )
 	}
 }
 
-void OglDriver::Draw( const Math::SpVector2r& position, const Rect< SpReal >& rect, const Rect< SpReal >& textureCoords )
+void OglDriver::Draw( const Math::Vector2f& position, const Rect< SpReal >& rect, const Rect< SpReal >& textureCoords )
 {
 	const int32_t count = 5;
 	SpReal elements[ count * 4 ];

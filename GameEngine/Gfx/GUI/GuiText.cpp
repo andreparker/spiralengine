@@ -14,7 +14,7 @@ using namespace Spiral;
 using namespace Spiral::GUI;
 using namespace boost;
 
-GuiText::GuiText( const Math::SpVector2r& position, const boost::shared_ptr<GfxDriver>& gfxDriver, const Rgba& textColor,
+GuiText::GuiText( const Math::Vector2f& position, const boost::shared_ptr<GfxDriver>& gfxDriver, const Rgba& textColor,
 				 boost::uint32_t maxCharLen, const boost::shared_ptr<Font>& font, const SpString& text, bool multiline ):
 GuiWindow( position, Rect<SpReal>(), shared_ptr<Texture>(), true ), m_text( text ), m_charPos( 0 ),
 m_font( font ),m_editSurface(),m_maxCharLen( maxCharLen ),m_fontColor( textColor ),m_multiline(multiline)

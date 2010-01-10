@@ -1,7 +1,6 @@
 #include "Engine.hpp"
 #include "CoreObject.hpp"
 #include "GameObjectHandler.hpp"
-#include "CVar.hpp"
 #include "FileManager.hpp"
 #include "ResourceCatalog.hpp"
 #include "Camera.hpp"
@@ -23,12 +22,13 @@
 #include "../Gfx/VisualGameObject.hpp"
 
 #include "GameObjectCreator.hpp"
-#include "../Gfx/VisualObjectCreator.hpp"
 
+#include "../Gfx/VisualObjectCreator.hpp"
 #include "../Gfx/Font/FreeType/FreeTypeFactory.hpp"
 #include "../Gfx/Font/FreeType/FreeTypeFont.hpp"
-
 #include "../Gfx/gui/Gui.hpp"
+
+#include "../Script/ScriptManager.hpp"
 
 #include "GameStateMachine.hpp"
 #include "GameState.hpp"
@@ -42,8 +42,12 @@
 #include "UpdateQueue.hpp"
 
 #include <algorithm>
+#include <boost/assert.hpp>
 #include <boost/make_shared.hpp>
+#include <boost/scoped_array.hpp>
 #include <boost/bind.hpp>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/info_parser.hpp>
 
 using namespace Spiral;
 using namespace boost;
@@ -58,7 +62,6 @@ m_visualObjectList(),
 m_eventPublisher(),
 m_gfxDriver(),
 m_audioDriver(),
-m_variables(),
 m_catolog(),
 m_camera(NULL),
 m_spriteLayer( NULL ),
@@ -72,7 +75,10 @@ m_fontFactory(),
 m_guiManager(),
 m_inputSubscriber(),
 m_threadsEnabled(false),
-m_modulesCreated(false)
+m_modulesCreated(false),
+m_processManager(),
+m_engineVariables(),
+m_scriptManager()
 {
 }
 
@@ -110,9 +116,13 @@ bool Engine::Initialize( shared_ptr< GfxDriver >& gfxDriver,boost::shared_ptr< A
 				LOG_I( module + " ^wInitializing FontFactory....\n" );
 				m_fontFactory->Initialize();
 				
-				LOG_I( module + " ^wInitializing CVars....\n" );
-				m_variables->Initialize();
 			}
+
+			m_scriptManager->Initialize();
+
+			RegisterScriptModules();
+
+			CreateDefTexture();
 		}
 	}
 
@@ -141,11 +151,20 @@ void Engine::UnInitialize()
 	LOG_I( module + "^w Clearing process manager....\n" );
 	m_processManager->Clear();
 
+	LOG_I( module + "^w Uninitializing script manager...\n" );
+	m_scriptManager->UnInitialize();
+
 	LOG_I( module + "^w Uninitializing GfxDriver....\n" );
 	m_gfxDriver->UnInitialize();
 
 	LOG_I( module + "^w Uninitializing AudioDriver....\n" );
 	m_audioDriver->UnInitialize();
+}
+
+void Engine::RegisterScriptModules()
+{
+	// register loging to script
+	LOG_REGISTER_SCRIPT_MGR( GetScriptManager() );
 }
 
 void Engine::ClearObjectList()
@@ -239,13 +258,40 @@ void Engine::RemoveEventSubscriber( boost::shared_ptr<EventSubscriber>& subscrib
 	m_eventPublisher->RemoveSubscriber( subscriber );
 }
 
+boost::shared_ptr< Texture > Engine::GetTexture( const std::string& textureName ) const
+{
+	boost::shared_ptr< Texture > texture;
+
+	ResourceCatalog::TextureCatalogItr itr = m_catolog->m_textureCatalog.find( "Error_texture" );
+
+	// this should not happen
+	BOOST_ASSERT( itr != m_catolog->m_textureCatalog.end() );
+	texture = (*itr).second;
+
+	itr = m_catolog->m_textureCatalog.find( textureName );
+	if( itr != m_catolog->m_textureCatalog.end() )
+	{
+		texture = (*itr).second;
+	}
+
+	return texture;
+}
+
 boost::shared_ptr< Texture > Engine::LoadTexture( const std::string& fileName, const std::string& TextureName )
 {
 	LOG_I( module + "^w Loading texture - ^g%1% ^wnameTag - ^g%2% ^w....\n", fileName.c_str(), TextureName.c_str() );
 	boost::shared_ptr< Texture > texture;
 
 	// check catalog for texture
-	ResourceCatalog::TextureCatalogItr itr = m_catolog->m_textureCatalog.find( TextureName );
+	ResourceCatalog::TextureCatalogItr itr;
+
+	itr = m_catolog->m_textureCatalog.find( "Error_texture" );
+
+	BOOST_ASSERT( itr != m_catolog->m_textureCatalog.end() );
+	texture = (*itr).second;
+	
+	itr = m_catolog->m_textureCatalog.find( TextureName );
+
 	if( itr != m_catolog->m_textureCatalog.end() )
 	{
 		//found
@@ -274,6 +320,7 @@ boost::shared_ptr< Texture > Engine::LoadTexture( const std::string& fileName, c
 			}else
 			{
 				LOG_E( module + "^r Error loading texture %1%! \n", fileName.c_str() );
+				
 			}
 		}
 		
@@ -300,14 +347,14 @@ void Engine::ApplyCamera()
 	{
 		if( m_camera->IsProjectionDirty() )
 		{
-			Math::SpMatrix4x4r projection;
+			Math::Matrix4x4f projection;
 			m_camera->GetProjection( projection );
 			m_gfxDriver->SetProjection( projection );
 		}
 
 		if( m_camera->IsViewDirty() )
 		{
-			Math::SpMatrix4x4r view;
+			Math::Matrix4x4f view;
 			m_camera->GetInverseView( view );
 			m_gfxDriver->SetView( view );
 		}
@@ -320,7 +367,7 @@ void Engine::ForceApplyCamera()
 {
 	if( NULL != m_camera )
 	{
-		Math::SpMatrix4x4r matrix;
+		Math::Matrix4x4f matrix;
 		m_camera->GetProjection( matrix );
 		m_gfxDriver->SetProjection( matrix );
 		m_camera->GetInverseView( matrix );
@@ -570,11 +617,11 @@ void Engine::CreateModules()
 	m_gameObjectList  = make_shared< GameObjectHandler >();
 	m_visualObjectList= make_shared< VisualObjectHandler >( this );
 	m_eventPublisher  = make_shared< EventPublisher >();
-	m_variables       = make_shared< CVar >();
 	m_spriteDrawList  = make_shared< SpriteDrawList >();
 	m_fontFactory     = make_shared< FreeTypeFactory >();
 	m_guiManager      = make_shared< GUI::GuiManager >( this );
 	m_processManager  = make_shared< ProcessManager >();
+	m_scriptManager   = make_shared< ScriptManager >();
 	m_inputSubscriber = make_shared< EventSubscriber >( Event( Event::EVENT_ANY, Catagory_Input::value ) );
 	m_catolog.reset( new ResourceCatalog );
 	m_modulesCreated = true;
@@ -583,9 +630,9 @@ void Engine::CreateModules()
 void Engine::SetGfxValues()
 {
 	FUNCTION_LOG
-	int32_t vidWidth = m_variables->GetVarValue( "vid_width", EmptyType<int32_t>() );
-	int32_t vidHeight = m_variables->GetVarValue( "vid_height", EmptyType<int32_t>() );
-	int32_t vidFullscreen = m_variables->GetVarValue( "vid_fullscreen", EmptyType<int32_t>() );
+	int32_t vidWidth = m_engineVariables.get<int32_t>("vid_width");
+	int32_t vidHeight = m_engineVariables.get<int32_t>("vid_height");
+	int32_t vidFullscreen = m_engineVariables.get<int32_t>("vid_fullscreen");
 
 	GfxVidInfo_t vidInfo;
 	vidInfo.bitDepth = 32;
@@ -666,17 +713,17 @@ void Engine::UpdateThreadAttributes()
 	}
 }
 
-void Engine::ScreenToWorld( const Math::SpVector2r& scr_pos, Math::SpVector2r& world )
+void Engine::ScreenToWorld( const Math::Vector2f& scr_pos, Math::Vector2f& world )
 {
 	if( m_camera )
 	{
-		Math::SpMatrix4x4r proj;
-		Math::SpMatrix4x4r view;
+		Math::Matrix4x4f proj;
+		Math::Matrix4x4f view;
 
 		m_camera->GetProjection(proj);
 		m_camera->GetView(view);
 
-		Math::SpVector3r pos = Math::make_vector( scr_pos[0], scr_pos[1], -1.0f );
+		Math::Vector3f pos = Math::make_vector( scr_pos[0], scr_pos[1], -1.0f );
 
 		Rect<boost::int32_t> viewPort;
 		GetGfxDriver()->GetViewPort( viewPort );
@@ -690,17 +737,17 @@ void Engine::ScreenToWorld( const Math::SpVector2r& scr_pos, Math::SpVector2r& w
 	}
 }
 
-void Engine::WorldToScreen( const Math::SpVector2r& world_pos, Math::SpVector2r& scr_pos )
+void Engine::WorldToScreen( const Math::Vector2f& world_pos, Math::Vector2f& scr_pos )
 {
 	if( m_camera )
 	{
-		Math::SpMatrix4x4r proj;
-		Math::SpMatrix4x4r view;
+		Math::Matrix4x4f proj;
+		Math::Matrix4x4f view;
 
 		m_camera->GetProjection(proj);
 		m_camera->GetView(view);
 
-		Math::SpVector3r pos = Math::make_vector( world_pos[0], world_pos[1], -1.0f );
+		Math::Vector3f pos = Math::make_vector( world_pos[0], world_pos[1], -1.0f );
 
 		Rect<boost::int32_t> viewPort;
 		GetGfxDriver()->GetViewPort( viewPort );
@@ -721,7 +768,8 @@ bool Engine::LoadConfig( const std::string& fileName )
 	if( FileManager::instance().getFile( fileName, configFile ) )
 	{
 		File_Auto_Close< IFile > ac( configFile );
-		m_variables->ProcessFile( configFile );
+		boost::shared_ptr< std::istream > pStream = configFile->GetStream();
+		boost::property_tree::info_parser::read_info( *pStream, m_engineVariables );
 		SetGfxValues();
 		cfgLoaded = true;
 	}
@@ -777,5 +825,77 @@ void Engine::StoreObjects( const boost::shared_ptr<GameObject>& obj, const boost
 	}
 
 	m_gameObjectList->Add( obj );
+}
+
+
+void Engine::CreateDefTexture()
+{
+	const boost::uint32_t textureSize = 32;
+	const boost::uint32_t bytes_per_line = textureSize * 3;
+
+	boost::scoped_array<boost::int8_t> textureDataPtr( new boost::int8_t[ textureSize * textureSize * 3 ] );
+	boost::int8_t* textureData = textureDataPtr.get();
+
+	bool toggle = true;
+
+	for( int y = 0; y < textureSize; ++y )
+	{
+		boost::uint8_t* currentLine = reinterpret_cast<boost::uint8_t*>(&textureData[ ( y * bytes_per_line ) ]);
+		if( !(y & 0x7) )
+		{
+			toggle = !toggle;
+		}
+
+		for( int x = 0; x < textureSize; ++x )
+		{
+			if( !(x & 0x7) )
+			{
+				toggle = !toggle;
+			}
+
+			if( toggle )
+			{
+				currentLine[0] = 0xFF;
+				currentLine[1] = 0x0;
+				currentLine[2] = 0xFF;
+			}else
+			{
+				currentLine[0] = 0x0;
+				currentLine[1] = 0x0;
+				currentLine[2] = 0x0;
+			}
+			
+			currentLine += 3;
+		}
+	}
+
+	TextureInfo_t info;
+	info.bitDepth = 24;
+	info.width    = textureSize;
+	info.height   = textureSize;
+	info.bManaged = false;
+
+	boost::shared_ptr<Texture> newTexture;
+	if( m_gfxDriver->CreateTexture( info, newTexture, textureData ) )
+	{
+		// catalog texture
+		CacheTexture( newTexture, "Error_texture" );
+	}
+
+}
+
+SpReal Engine::GetVariable_Real( const std::string& varName ) const
+{
+	return m_engineVariables.get<SpReal>( varName , -1.0f );
+}
+
+const std::string Engine::GetVariable_String( const std::string& varName ) const
+{
+	return m_engineVariables.get<std::string>( varName, "" );
+}
+
+boost::int32_t Engine::GetVariable_Int32( const std::string& varName ) const
+{
+	return m_engineVariables.get<boost::int32_t>( varName , -1 );
 }
 

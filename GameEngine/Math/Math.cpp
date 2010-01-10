@@ -3,13 +3,13 @@
 
 using namespace Spiral;
 
-bool Math::UnProject( const Math::SpVector3r& winPos, const Math::SpMatrix4x4r& modelViewProj, const Rect<SpReal>& viewPort, Math::SpVector3r& unProjPos )
+bool Math::UnProject( const Math::Vector3f& winPos, const Math::Matrix4x4f& modelViewProj, const Rect<SpReal>& viewPort, Math::Vector3f& unProjPos )
 {
 	bool unProjected = false;
-	Math::SpMatrix4x4r inverseMVP;
+	Math::Matrix4x4f inverseMVP;
 	
 	modelViewProj.computeInverse( &inverseMVP );
-	Math::SpVector4r in_vec = Math::make_vector( winPos[0], winPos[1], winPos[2], 1.0f );
+	Math::Vector4f in_vec = Math::make_vector( winPos[0], winPos[1], winPos[2], 1.0f );
 
 	in_vec[0] = ( in_vec[0] - viewPort.left ) / viewPort.right;
 	in_vec[1] = ( in_vec[1] - viewPort.top  ) / viewPort.bottom;
@@ -18,7 +18,7 @@ bool Math::UnProject( const Math::SpVector3r& winPos, const Math::SpMatrix4x4r& 
 	in_vec[1] = -(in_vec[1] * 2.0f - 1.0f);
 	in_vec[2] = in_vec[2] * 2.0f - 1.0f;
 
-	Math::SpVector4r out_vec = inverseMVP * in_vec;
+	Math::Vector4f out_vec = inverseMVP * in_vec;
 
 	if( out_vec[3] != 0.0f )
 	{
@@ -31,10 +31,10 @@ bool Math::UnProject( const Math::SpVector3r& winPos, const Math::SpMatrix4x4r& 
 	return unProjected;
 }
 
-bool Math::Project( const SpVector3r& ProjPos,const SpMatrix4x4r& modelViewProj, const Rect<SpReal>& viewPort, SpVector3r& winPos )
+bool Math::Project( const Vector3f& ProjPos,const Matrix4x4f& modelViewProj, const Rect<SpReal>& viewPort, Vector3f& winPos )
 {
-	Math::SpVector4r in_vec = Math::make_vector( ProjPos[0], ProjPos[1], ProjPos[2], 1.0f );
-	Math::SpVector4r clip_vec = modelViewProj * in_vec;
+	Math::Vector4f in_vec = Math::make_vector( ProjPos[0], ProjPos[1], ProjPos[2], 1.0f );
+	Math::Vector4f clip_vec = modelViewProj * in_vec;
 	bool result = false;
 
 	if( clip_vec[3] != 0.0f )

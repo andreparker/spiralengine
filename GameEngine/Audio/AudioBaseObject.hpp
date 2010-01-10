@@ -30,12 +30,12 @@ namespace Audio
 			DoPause();
 		}
 
-		void SetPosition( const Math::SpVector3r& position )
+		void SetPosition( const Math::Vector3f& position )
 		{
 			DoSetPosition( position );
 		}
 
-		const Math::SpVector3r GetPosition()const
+		const Math::Vector3f GetPosition()const
 		{
 			return DoGetPosition();
 		}
@@ -55,8 +55,8 @@ namespace Audio
 		virtual void DoPause() = 0;
 		virtual void DoSetVolume( SpReal vol ) = 0;
 
-		virtual void DoSetPosition( const Math::SpVector3r& position ) = 0;
-		virtual const Math::SpVector3r DoGetPosition()const = 0;
+		virtual void DoSetPosition( const Math::Vector3f& position ) = 0;
+		virtual const Math::Vector3f DoGetPosition()const = 0;
 
 
 	};

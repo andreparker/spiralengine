@@ -10,36 +10,36 @@ namespace Spiral
 	class Camera
 	{
 	public:
-		Camera( const Math::SpMatrix4x4r& proj, const Math::SpMatrix4x4r& view );
-		Camera( const Math::SpMatrix4x4r& proj, const Math::SpVector3r& position );
-		Camera( const Math::SpVector3r& position );
-		Camera( const Math::SpMatrix4x4r& proj );
+		Camera( const Math::Matrix4x4f& proj, const Math::Matrix4x4f& view );
+		Camera( const Math::Matrix4x4f& proj, const Math::Vector3f& position );
+		Camera( const Math::Vector3f& position );
+		Camera( const Math::Matrix4x4f& proj );
 		Camera();
 
 		void SetProjection( const Projection& projection );
 
-		void SetProjection( const Math::SpMatrix4x4r& proj )
+		void SetProjection( const Math::Matrix4x4f& proj )
 		{
 			m_projection = proj;
 		}
 
-		void SetView( const Math::SpMatrix4x4r& view )
+		void SetView( const Math::Matrix4x4f& view )
 		{
 			m_view = view;
 		}
 
-		void GetProjection( Math::SpMatrix4x4r& proj )
+		void GetProjection( Math::Matrix4x4f& proj )
 		{
 			proj = m_projection;
 		}
 
-		void GetView( Math::SpMatrix4x4r& view )
+		void GetView( Math::Matrix4x4f& view )
 		{
 			view = m_view;
 		}
-		void GetInverseView( Math::SpMatrix4x4r& view );
+		void GetInverseView( Math::Matrix4x4f& view );
 
-		void RotateAxis( const Math::SpVector3r& axis, SpReal angle );
+		void RotateAxis( const Math::Vector3f& axis, SpReal angle );
 		void RotateAroundX( SpReal angle );
 		void RotateAroundY( SpReal angle );
 		void RotateAroundZ( SpReal angle );
@@ -61,7 +61,7 @@ namespace Spiral
 
 		MAKE_ALIGNED_NEW
 	private:
-		Math::SpMatrix4x4r m_view,m_projection;
+		Math::Matrix4x4f m_view,m_projection;
 		bool m_bProjDirty,m_bViewDirty;
 
 	};

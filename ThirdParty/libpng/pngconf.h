@@ -234,9 +234,9 @@
 
 #if defined(_WIN32_WCE)
 #  include <windows.h>
-   /* Console I/O functions are not supported on WindowsCE */
+/* Console I/O functions are not supported on WindowsCE */
 #  define PNG_NO_CONSOLE_IO
-   /* abort() may not be supported on some/all Windows CE platforms */
+/* abort() may not be supported on some/all Windows CE platforms */
 #  define PNG_ABORT() exit(-1)
 #  ifdef PNG_DEBUG
 #    undef PNG_DEBUG
@@ -332,16 +332,16 @@
 #        undef _BSD_SOURCE
 #      endif
 #      ifdef _SETJMP_H
-       /* If you encounter a compiler error here, see the explanation
-        * near the end of INSTALL.
-        */
-           __pngconf.h__ in libpng already includes setjmp.h;
-           __dont__ include it again.;
+/* If you encounter a compiler error here, see the explanation
+ * near the end of INSTALL.
+ */
+__pngconf.h__ in libpng already includes setjmp.h;
+__dont__ include it again.;
 #      endif
 #    endif /* __linux__ */
 #  endif /* PNG_SKIP_SETJMP_CHECK */
 
-   /* include setjmp.h for error handling */
+/* include setjmp.h for error handling */
 #  include <setjmp.h>
 
 #  ifdef __linux__
@@ -380,10 +380,10 @@
 
 #if defined(PNG_FLOATING_POINT_SUPPORTED)
 #  if defined(MACOS)
-     /* We need to check that <math.h> hasn't already been included earlier
-      * as it seems it doesn't agree with <fp.h>, yet we should really use
-      * <fp.h> if possible.
-      */
+/* We need to check that <math.h> hasn't already been included earlier
+ * as it seems it doesn't agree with <fp.h>, yet we should really use
+ * <fp.h> if possible.
+ */
 #    if !defined(__MATH_H__) && !defined(__MATH_H) && !defined(__cmath__)
 #      include <fp.h>
 #    endif
@@ -391,9 +391,9 @@
 #    include <math.h>
 #  endif
 #  if defined(_AMIGA) && defined(__SASC) && defined(_M68881)
-     /* Amiga SAS/C: We must include builtin FPU functions when compiling using
-      * MATH=68881
-      */
+/* Amiga SAS/C: We must include builtin FPU functions when compiling using
+ * MATH=68881
+ */
 #    include <m68881.h>
 #  endif
 #endif
@@ -622,7 +622,7 @@
  !defined(PNG_PROGRESSIVE_READ_SUPPORTED) /* if you don't do progressive   */
 #  define PNG_PROGRESSIVE_READ_SUPPORTED  /* reading.  This is not talking */
 #endif                            /* about interlacing capability!  You'll */
-           /* still have interlacing unless you change the following line: */
+/* still have interlacing unless you change the following line: */
 
 #define PNG_READ_INTERLACING_SUPPORTED /* required in PNG-compliant decoders */
 
@@ -685,8 +685,8 @@
 #if !defined(PNG_NO_WRITE_INTERLACING_SUPPORTED) && \
     !defined(PNG_WRITE_INTERLACING_SUPPORTED)
 #define PNG_WRITE_INTERLACING_SUPPORTED  /* not required for PNG-compliant
-                                            encoders, but can cause trouble
-                                            if left undefined */
+encoders, but can cause trouble
+if left undefined */
 #endif
 
 #if !defined(PNG_NO_WRITE_WEIGHTED_FILTER) && \
@@ -762,7 +762,7 @@
 #  endif
 
 #  if defined(__GNUC__) && defined(__x86_64__) && (__GNUC__ < 4)
-     /* work around 64-bit gcc compiler bugs in gcc-3.x */
+/* work around 64-bit gcc compiler bugs in gcc-3.x */
 #    if !defined(PNG_MMX_CODE_SUPPORTED) && !defined(PNG_NO_MMX_CODE)
 #      define PNG_NO_MMX_CODE
 #    endif
@@ -1126,7 +1126,7 @@
 /* need the time information for reading tIME chunks */
 #if defined(PNG_tIME_SUPPORTED)
 #  if !defined(_WIN32_WCE)
-     /* "time.h" functions are not supported on WindowsCE */
+/* "time.h" functions are not supported on WindowsCE */
 #    include <time.h>
 #  endif
 #endif
@@ -1149,10 +1149,10 @@ typedef unsigned char png_byte;
 /* This is usually size_t.  It is typedef'ed just in case you need it to
    change (I'm not sure if you will or not, so I thought I'd be safe) */
 #ifdef PNG_SIZE_T
-   typedef PNG_SIZE_T png_size_t;
+typedef PNG_SIZE_T png_size_t;
 #  define png_sizeof(x) png_convert_size(sizeof(x))
 #else
-   typedef size_t png_size_t;
+typedef size_t png_size_t;
 #  define png_sizeof(x) sizeof(x)
 #endif
 
@@ -1173,7 +1173,7 @@ typedef unsigned char png_byte;
 #  else
 #    define LDATA 0
 #  endif
-   /* GRR:  why is Cygwin in here?  Cygwin is not Borland C... */
+/* GRR:  why is Cygwin in here?  Cygwin is not Borland C... */
 #  if !defined(__WIN32__) && !defined(__FLAT__) && !defined(__CYGWIN__)
 #    define PNG_MAX_MALLOC_64K
 #    if (LDATA != 1)
@@ -1182,11 +1182,11 @@ typedef unsigned char png_byte;
 #      endif
 #      define USE_FAR_KEYWORD
 #    endif   /* LDATA != 1 */
-     /* Possibly useful for moving data out of default segment.
-      * Uncomment it if you want. Could also define FARDATA as
-      * const if your compiler supports it. (SJT)
+/* Possibly useful for moving data out of default segment.
+ * Uncomment it if you want. Could also define FARDATA as
+ * const if your compiler supports it. (SJT)
 #    define FARDATA FAR
-      */
+ */
 #  endif  /* __WIN32__, __FLAT__, __CYGWIN__ */
 #endif   /* __BORLANDC__ */
 
@@ -1374,7 +1374,7 @@ typedef z_stream FAR *  png_zstreamp;
 #     define PNG_EXPORT_TYPE1(type,symbol)  PNG_IMPEXP type PNGAPI symbol
 #     define PNG_EXPORT_TYPE2(type,symbol)  type PNG_IMPEXP PNGAPI symbol
 
-      /* Borland/Microsoft */
+/* Borland/Microsoft */
 #     if defined(_MSC_VER) || defined(__BORLANDC__)
 #        if (_MSC_VER >= 800) || (__BORLANDC__ >= 0x500)
 #           define PNG_EXPORT PNG_EXPORT_TYPE1
@@ -1384,9 +1384,9 @@ typedef z_stream FAR *  png_zstreamp;
 #              define PNG_IMPEXP __export
 #           else
 #              define PNG_IMPEXP /*__import */ /* doesn't exist AFAIK in
-                                                 VC++ */
+VC++ */
 #           endif                             /* Exists in Borland C++ for
-                                                 C++ classes (== huge) */
+C++ classes (== huge) */
 #        endif
 #     endif
 
@@ -1477,11 +1477,11 @@ typedef z_stream FAR *  png_zstreamp;
 #      define png_snprintf6 snprintf
 #    endif
 #  else
-     /* You don't have or don't want to use snprintf().  Caution: Using
-      * sprintf instead of snprintf exposes your application to accidental
-      * or malevolent buffer overflows.  If you don't have snprintf()
-      * as a general rule you should provide one (you can get one from
-      * Portable OpenSSH). */
+/* You don't have or don't want to use snprintf().  Caution: Using
+ * sprintf instead of snprintf exposes your application to accidental
+ * or malevolent buffer overflows.  If you don't have snprintf()
+ * as a general rule you should provide one (you can get one from
+ * Portable OpenSSH). */
 #    define png_snprintf(s1,n,fmt,x1) sprintf(s1,fmt,x1)
 #    define png_snprintf2(s1,n,fmt,x1,x2) sprintf(s1,fmt,x1,x2)
 #    define png_snprintf6(s1,n,fmt,x1,x2,x3,x4,x5,x6) \

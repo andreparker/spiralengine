@@ -27,58 +27,75 @@
 
 template<typename MatrixType>
 struct ei_traits<SparseTranspose<MatrixType> > : ei_traits<Transpose<MatrixType> >
-{};
+    {};
 
 template<typename MatrixType> class SparseTranspose
-  : public SparseMatrixBase<SparseTranspose<MatrixType> >
+            : public SparseMatrixBase<SparseTranspose<MatrixType> >
 {
-  public:
+public:
 
-    EIGEN_GENERIC_PUBLIC_INTERFACE(SparseTranspose)
+    EIGEN_GENERIC_PUBLIC_INTERFACE( SparseTranspose )
 
     class InnerIterator;
     class ReverseInnerIterator;
 
-    inline SparseTranspose(const MatrixType& matrix) : m_matrix(matrix) {}
+    inline SparseTranspose( const MatrixType& matrix ) : m_matrix( matrix ) {}
 
     //EIGEN_INHERIT_ASSIGNMENT_OPERATORS(SparseTranspose)
 
-    inline int rows() const { return m_matrix.cols(); }
-    inline int cols() const { return m_matrix.rows(); }
-    inline int nonZeros() const { return m_matrix.nonZeros(); }
+    inline int rows() const
+    {
+        return m_matrix.cols();
+    }
+    inline int cols() const
+    {
+        return m_matrix.rows();
+    }
+    inline int nonZeros() const
+    {
+        return m_matrix.nonZeros();
+    }
 
     // FIXME should be keep them ?
-    inline Scalar& coeffRef(int row, int col)
-    { return m_matrix.const_cast_derived().coeffRef(col, row); }
+    inline Scalar& coeffRef( int row, int col )
+    {
+        return m_matrix.const_cast_derived().coeffRef( col, row );
+    }
 
-    inline const Scalar coeff(int row, int col) const
-    { return m_matrix.coeff(col, row); }
+    inline const Scalar coeff( int row, int col ) const
+    {
+        return m_matrix.coeff( col, row );
+    }
 
-    inline const Scalar coeff(int index) const
-    { return m_matrix.coeff(index); }
+    inline const Scalar coeff( int index ) const
+    {
+        return m_matrix.coeff( index );
+    }
 
-    inline Scalar& coeffRef(int index)
-    { return m_matrix.const_cast_derived().coeffRef(index); }
+    inline Scalar& coeffRef( int index )
+    {
+        return m_matrix.const_cast_derived().coeffRef( index );
+    }
 
-  protected:
+protected:
     const typename MatrixType::Nested m_matrix;
 };
 
 template<typename MatrixType> class SparseTranspose<MatrixType>::InnerIterator : public MatrixType::InnerIterator
 {
-  public:
+public:
 
-    EIGEN_STRONG_INLINE InnerIterator(const SparseTranspose& trans, int outer)
-      : MatrixType::InnerIterator(trans.m_matrix, outer)
+    EIGEN_STRONG_INLINE InnerIterator( const SparseTranspose& trans, int outer )
+            : MatrixType::InnerIterator( trans.m_matrix, outer )
     {}
 };
 
 template<typename MatrixType> class SparseTranspose<MatrixType>::ReverseInnerIterator : public MatrixType::ReverseInnerIterator
 {
-  public:
+public:
 
-    EIGEN_STRONG_INLINE ReverseInnerIterator(const SparseTranspose& xpr, int outer)
-      : MatrixType::ReverseInnerIterator(xpr.m_matrix, outer)
+    EIGEN_STRONG_INLINE ReverseInnerIterator( const SparseTranspose& xpr, int outer )
+            : MatrixType::ReverseInnerIterator( xpr.m_matrix, outer )
     {}
 };
 

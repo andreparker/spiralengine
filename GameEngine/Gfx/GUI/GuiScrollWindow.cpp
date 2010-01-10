@@ -9,7 +9,7 @@
 using namespace Spiral;
 using namespace Spiral::GUI;
 
-GuiScrollWindow::GuiScrollWindow( const Math::SpVector2r& position, const Rect<SpReal>& rect,boost::uint32_t scrollBarThickness, 
+GuiScrollWindow::GuiScrollWindow( const Math::Vector2f& position, const Rect<SpReal>& rect,boost::uint32_t scrollBarThickness, 
 								 const boost::shared_ptr<GuiWindow>& scrollContents, const boost::shared_ptr<GuiManager>& guiManager ):
 GuiWindow( position, rect, Rect<SpReal>(), boost::shared_ptr<Texture>(), false ),m_scrollContents(),m_scrollBarThickness(scrollBarThickness)
 {
@@ -100,7 +100,7 @@ void GuiScrollWindow::OnScrollH( boost::int32_t eventId, GuiWindow* window, cons
 	Rect<SpReal> area_rct = m_scrollArea->GetRect();
 
 	SpReal width = (rct.right - area_rct.right ) * pc;
-	Math::SpVector2r pos = m_scrollContents->GetLocalPosition();
+	Math::Vector2f pos = m_scrollContents->GetLocalPosition();
 
 	pos[0] = -width;
 	m_scrollContents->SetLocalPosition( pos );
@@ -113,7 +113,7 @@ void GuiScrollWindow::OnScrollV( boost::int32_t eventId, GuiWindow* window, cons
 	Rect<SpReal> area_rct = m_scrollArea->GetRect();
 
 	SpReal height = (rct.bottom - area_rct.bottom) * pc;
-	Math::SpVector2r pos = m_scrollContents->GetLocalPosition();
+	Math::Vector2f pos = m_scrollContents->GetLocalPosition();
 
 	pos[1] = -height;
 	m_scrollContents->SetLocalPosition( pos );

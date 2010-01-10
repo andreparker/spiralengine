@@ -18,65 +18,68 @@
 # If you have problems, try without defining CC and CFLAGS before reporting
 # an error.
 
-LIBS=libz.a
-LDFLAGS="-L. ${LIBS}"
-VER=`sed -n -e '/VERSION "/s/.*"\(.*\)".*/\1/p' < zlib.h`
-VER2=`sed -n -e '/VERSION "/s/.*"\([0-9]*\\.[0-9]*\)\\..*/\1/p' < zlib.h`
-VER1=`sed -n -e '/VERSION "/s/.*"\([0-9]*\)\\..*/\1/p' < zlib.h`
-AR=${AR-"ar rc"}
-RANLIB=${RANLIB-"ranlib"}
-prefix=${prefix-/usr/local}
-exec_prefix=${exec_prefix-'${prefix}'}
-libdir=${libdir-'${exec_prefix}/lib'}
-includedir=${includedir-'${prefix}/include'}
-mandir=${mandir-'${prefix}/share/man'}
-shared_ext='.so'
-shared=0
-gcc=0
-old_cc="$CC"
-old_cflags="$CFLAGS"
+LIBS = libz.a
+       LDFLAGS = "-L. ${LIBS}"
+                 VER = `sed - n - e '/VERSION "/s/.*"\(.*\)".*/\1/p' < zlib.h`
+                       VER2 = `sed - n - e '/VERSION "/s/.*"\([0-9]*\\.[0-9]*\)\\..*/\1/p' < zlib.h`
+                              VER1 = `sed - n - e '/VERSION "/s/.*"\([0-9]*\)\\..*/\1/p' < zlib.h`
+                                     AR = $ {AR - "ar rc"}
+                                          RANLIB = $ {RANLIB - "ranlib"}
+                                                   prefix = $ {prefix - / usr / local}
+                                                            exec_prefix = $ {exec_prefix - '${prefix}'}
+                                                                          libdir = $ {libdir - '${exec_prefix}/lib'}
+                                                                                   includedir = $ {includedir - '${prefix}/include'}
+                                                                                                mandir = $ {mandir - '${prefix}/share/man'}
+                                                                                                         shared_ext = '.so'
+                                                                                                                      shared = 0
+                                                                                                                               gcc = 0
+                                                                                                                                     old_cc = "$CC"
+                                                                                                                                              old_cflags = "$CFLAGS"
 
-while test $# -ge 1
-do
-case "$1" in
-    -h* | --h*)
-      echo 'usage:'
-      echo '  configure [--shared] [--prefix=PREFIX]  [--exec_prefix=EXPREFIX]'
-      echo '     [--libdir=LIBDIR] [--includedir=INCLUDEDIR]'
+                                                                                                                                                           while test $# -ge 1
+                                                                                                                                                           do
+                                                                                                                                                           case "$1" in
+                                                                                                                                                                   - h* | --h* )
+        echo 'usage:'
+        echo '  configure [--shared] [--prefix=PREFIX]  [--exec_prefix=EXPREFIX]'
+        echo '     [--libdir=LIBDIR] [--includedir=INCLUDEDIR]'
         exit 0;;
-    -p*=* | --p*=*) prefix=`echo $1 | sed 's/[-a-z_]*=//'`; shift;;
-    -e*=* | --e*=*) exec_prefix=`echo $1 | sed 's/[-a-z_]*=//'`; shift;;
-    -l*=* | --libdir=*) libdir=`echo $1 | sed 's/[-a-z_]*=//'`; shift;;
-    -i*=* | --includedir=*) includedir=`echo $1 | sed 's/[-a-z_]*=//'`;shift;;
-    -p* | --p*) prefix="$2"; shift; shift;;
-    -e* | --e*) exec_prefix="$2"; shift; shift;;
-    -l* | --l*) libdir="$2"; shift; shift;;
-    -i* | --i*) includedir="$2"; shift; shift;;
-    -s* | --s*) shared=1; shift;;
-    *) echo "unknown option: $1"; echo "$0 --help for help"; exit 1;;
-    esac
-done
+        -p *= * | --p *= * ) prefix = `echo $1 | sed 's/[-a-z_]*=//'`; shift;;
+                                      -e *= * | --e *= * ) exec_prefix = `echo $1 | sed 's/[-a-z_]*=//'`; shift;;
+                                                                         -l *= * | --libdir = * ) libdir = `echo $1 | sed 's/[-a-z_]*=//'`; shift;;
+                                                                                                           -i *= * | --includedir = * ) includedir = `echo $1 | sed 's/[-a-z_]*=//'`;shift;;
+                                                                                                                                    -p* | --p* ) prefix = "$2"; shift; shift;;
+                                                                                                                                                          -e* | --e* ) exec_prefix = "$2"; shift; shift;;
+                                                                                                                                                                                     -l* | --l* ) libdir = "$2"; shift; shift;;
+                                                                                                                                                                                                           -i* | --i* ) includedir = "$2"; shift; shift;;
+                                                                                                                                                                                                                                     -s* | --s* ) shared = 1; shift;;
+                                                                                                                                                                                                                                                           * ) echo "unknown option: $1"; echo "$0 --help for help"; exit 1;;
+                                                                                                                                                                                                                                                           esac
+                                                                                                                                                                                                                                                           done
 
-test=ztest$$
-cat > $test.c <<EOF
-extern int getchar();
-int hello() {return getchar();}
+                                                                                                                                                                                                                                                           test = ztest$$
+                                                                                                                                                                                                                                                                  cat > $test.c << EOF
+                                                                                                                                                                                                                                                                  extern int getchar();
+                                                                                                                                                                                                                                                                      int hello()
+        {
+            return getchar();
+            }
 EOF
 
 test -z "$CC" && echo Checking for gcc...
-cc=${CC-gcc}
-cflags=${CFLAGS-"-O3"}
+cc = $ {CC - gcc}
+     cflags = $ {CFLAGS - "-O3"}
 # to force the asm version use: CFLAGS="-O3 -DASMV" ./configure
-case "$cc" in
-  *gcc*) gcc=1;;
-esac
+              case "$cc" in
+                  *gcc* ) gcc = 1;;
+                                esac
 
-if test "$gcc" -eq 1 && ($cc -c $cflags $test.c) 2>/dev/null; then
-  CC="$cc"
-  SFLAGS=${CFLAGS-"-fPIC -O3"}
-  CFLAGS="$cflags"
-  case `(uname -s || echo unknown) 2>/dev/null` in
-  Linux | linux | GNU | GNU/*) LDSHARED=${LDSHARED-"$cc -shared -Wl,-soname,libz.so.1"};;
+                                if test "$gcc" -eq 1 && ( $cc - c $cflags $test.c ) 2 > / dev / null; then
+                                    CC = "$cc"
+                                         SFLAGS = $ {CFLAGS - "-fPIC -O3"}
+                                                  CFLAGS = "$cflags"
+                                                       case `( uname -s || echo unknown ) 2>/dev/null` in
+                                                               Linux | linux | GNU | GNU/*) LDSHARED=${LDSHARED-"$cc -shared -Wl,-soname,libz.so.1"};;
   CYGWIN* | Cygwin* | cygwin* | OS/2* )
              EXE='.exe';;
   QNX*)  # This is for QNX6. I suppose that the QNX rule below is for QNX2,QNX4

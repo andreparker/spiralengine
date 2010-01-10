@@ -1,4 +1,6 @@
 
+dofile( "../utility.premake4" )
+
 project( "SpiralEngine" )
 	
 	language( "C++" )
@@ -7,105 +9,76 @@ project( "SpiralEngine" )
 	-- use compiler name for folder /build/compiler
 	location( "../Build/" .. _ACTION )
 	
+	if os.get() == "windows"
+	then
+		files
+		{
+			"Platform/Win32/**.cpp",
+			"Platform/Win32/**.hpp",
+		}
+	end
+	
 	files
-	{
-		"**.cpp",
-		"**.hpp",
+	{	
+		"Common/**.cpp",
+		"Common/**.hpp",
+		
+		"Gfx/*.cpp",
+		"Gfx/*.hpp",
+		
+		"Gfx/Font/**.hpp",
+		"Gfx/Font/**.cpp",
+		
+		"Gfx/Utility/**.hpp",
+		"Gfx/Utility/**.cpp",
+		
+		"Gfx/GUI/**.hpp",
+		"Gfx/GUI/**.cpp",
+		
+		"Script/**.cpp",
+		"Script/**.hpp",
+		
+		"Audio/AudioBaseObject.hpp",
+		"Audio/AudioDriver.hpp",
+		"Audio/AudioInfo.hpp",
+		"Audio/AudioObject.hpp",
+		"Audio/AudioStreamObject.hpp",
+		"Audio/Utility/OggVorbisUtil.hpp",
+		"Audio/Utility/OggVorbisUtil.cpp",
+		
+		"Core/**.cpp",
+		"Core/**.hpp",
+		
+		"Editor/**.cpp",
+		"Editor/**.hpp",
+		
+		"Resource/**.cpp",
+		"Resource/**.hpp",
+		
+		"Math/**.cpp",
+		"Math/**.hpp"
+	}
 
-		"../ThirdParty/GLee/**.h",
-		"../ThirdParty/GLee/**.c",
-		
-		"../ThirdParty/Zip/**.hpp",
-		"../ThirdParty/Zip/**.cpp",
-		
-		"../ThirdParty/libpng/**.h",
-		"../ThirdParty/libpng/**.c",
-		
-		--"../ThirdParty/tinyxml/**.cpp",
-		--"../ThirdParty/tinyxml/**.h",
-		
-		--"../ThirdParty/Lua/**.h",
-		--"../ThirdParty/Lua/**.c",
-		
-		"../ThirdParty/Math/**.hpp",
-		
-		"../ThirdParty/Zlib/**.h",
-		"../ThirdParty/Zlib/**.c",
-	}
-	
-	files
-	{
-		"../ThirdParty/OggVorbis/lib/analysis.c",
-		"../ThirdParty/OggVorbis/lib/bitrate.c",
-		"../ThirdParty/OggVorbis/lib/block.c",
-		"../ThirdParty/OggVorbis/lib/codebook.c",
-		"../ThirdParty/OggVorbis/lib/envelope.c",
-		"../ThirdParty/OggVorbis/lib/floor0.c",
-		"../ThirdParty/OggVorbis/lib/floor1.c",
-		"../ThirdParty/OggVorbis/lib/framing.c",
-		"../ThirdParty/OggVorbis/lib/info.c",
-		"../ThirdParty/OggVorbis/lib/lookup.c",
-		"../ThirdParty/OggVorbis/lib/lpc.c",
-		"../ThirdParty/OggVorbis/lib/lsp.c",
-		"../ThirdParty/OggVorbis/lib/mapping0.c",
-		"../ThirdParty/OggVorbis/lib/mdct.c",
-		"../ThirdParty/OggVorbis/lib/psy.c",
-		"../ThirdParty/OggVorbis/lib/registry.c",
-		"../ThirdParty/OggVorbis/lib/res0.c",
-		"../ThirdParty/OggVorbis/lib/sharedbook.c",
-		"../ThirdParty/OggVorbis/lib/smallft.c",
-		"../ThirdParty/OggVorbis/lib/synthesis.c",
-		"../ThirdParty/OggVorbis/lib/vorbisenc.c",
-		"../ThirdParty/OggVorbis/lib/vorbisfile.c",
-		"../ThirdParty/OggVorbis/lib/window.c",
-		"../ThirdParty/OggVorbis/lib/bitwise.c"	
-	}
-	
-	-- freeType specifics
-	defines
-	{
-		"FT2_BUILD_LIBRARY"
-	}
-	
-	files
-	{
-		"../ThirdParty/FreeType/src/base/ftsystem.c",
-		"../ThirdParty/FreeType/src/base/ftinit.c",
-		"../ThirdParty/FreeType/src/base/ftdebug.c", 
-		"../ThirdParty/FreeType/src/base/ftbase.c",
-		"../ThirdParty/FreeType/src/base/ftbbox.c",
-		"../ThirdParty/FreeType/src/base/ftglyph.c", 
-		"../ThirdParty/FreeType/src/base/ftbitmap.c",
-		"../ThirdParty/FreeType/src/sfnt/sfnt.c",
-		"../ThirdParty/FreeType/src/psnames/psnames.c",
-		"../ThirdParty/FreeType/src/psaux/psaux.c",
-		"../ThirdParty/FreeType/src/pshinter/pshinter.c",
-		
-		-- drivers
-		"../ThirdParty/FreeType/src/truetype/truetype.c",
-		"../ThirdParty/FreeType/src/type1/type1.c",
-		"../ThirdParty/FreeType/src/type42/type42.c",
-		
-		-- renderers
-		"../ThirdParty/FreeType/src/raster/raster.c",
-		"../ThirdParty/FreeType/src/smooth/smooth.c",
-		
-		"../ThirdParty/FreeType/src/autofit/autofit.c", 
-		"../ThirdParty/FreeType/src/cache/ftcache.c",
-	}
 	
 	-- include dirs
 	includedirs 
 	{
 		"../ThirdParty/zlib",
 		"../ThirdParty/FreeType/include",
-		"../ThirdParty/OggVorbis/include"
+		"../ThirdParty/OggVorbis/include",
+		"../ThirdParty/luabind",
+		"../ThirdParty/Lua"
 	}
 	
 	-- exclude these files
 	excludes
 	{
-		"../ThirdParty/Math/Eigen/**.cpp"
+		"Gfx/Win32_Ogl/**.cpp",
+		"Gfx/Win32_Ogl/**.hpp",
+		"Gfx/Ogl/**.cpp",
+		"Gfx/Ogl/**.hpp",
+		"Gfx/Iphone_Ogl/**.cpp",
+		"Gfx/Iphone_Ogl/**.hpp"
 	}
 	
 	-- add window defines 
@@ -117,12 +90,17 @@ project( "SpiralEngine" )
 			"_WINDOWS",
 			"NOMINMAX" -- prevent windows.h from defining them
 		}
-		-- link with opengl
-		-- link with AL
+
+		buildoptions( "/EHa" )
 		links
-		{
-			"Opengl32",
-			"OpenAL32"
+		{	
+			-- projects
+			"Common",
+			"FreeType",
+			"LuaBind",
+			"OggVorbis",
+			"OAL_AudioDriver",
+			"Win32_Ogl_Driver"
 		}
 	end
 	
@@ -135,60 +113,5 @@ project( "SpiralEngine" )
 		}
 	end
 	
-	--------------------------------
-	-- Debug config
-	--------------------------------
-	configuration( "Debug" .. _ACTION )
-	
-		targetdir( "../Build/bin/Debug" .. _ACTION )
-		-- set the binary output name
-		targetname( "Spiral_debug" .. _ACTION )
-		-- set the directory were built objs go
-		objdir( "../Obj/" .. _ACTION .. "/debug" )
-		
-		defines
-		{
-			"_DEBUG"
-		}
-		
-		flags
-		{
-			"No64BitChecks",
-			"NoManifest",
-			"NoPCH",
-			"NoRTTI",
-			"StaticRuntime",
-			"Symbols"
-		}
-	configuration ({})
-	
-	--------------------------------
-	-- Release config
-	--------------------------------
-	configuration( "Release" .. _ACTION )
-	
-		targetdir( "../Build/bin/Release" .. _ACTION )
-		-- set the binary output name
-		targetname( "Spiral_Release" .. _ACTION )
-		-- set the directory were built objs go
-		objdir( "../Obj/" .. _ACTION .. "/release" )
-		
-		
-		defines
-		{
-			"NDEBUG"
-		}
-		
-		flags
-		{
-			"No64BitChecks",
-			"NoManifest",
-			"NoPCH",
-			"NoRTTI",
-			"StaticRuntime",
-			"OptimizeSpeed",
-			"NoEditAndContinue"
-		}
-	configuration ({})
-	
+	CUtil.projConfig( "Spiral" )
 	

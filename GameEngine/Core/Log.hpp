@@ -12,9 +12,12 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/cstdint.hpp>
 #include <boost/format.hpp>
+#include <boost/shared_ptr.hpp>
 
 namespace Spiral
 {
+	class ScriptManager;
+
 	typedef std::bitset<16> LogFlags;
 
 	class LogModule
@@ -41,6 +44,7 @@ namespace Spiral
 			void log( const LogFlags& flags, const std::string& msg, ... )const;
 			void logNoArg( const LogFlags& flags, const std::string& msg )const;
 			void format( std::string& buffer, const std::string& msg, ... )const;
+			void Register( const boost::shared_ptr<ScriptManager>& scriptMgr );
 
 		private:
 			std::list< boost::shared_ptr< LogModule > > m_loggers;
@@ -58,6 +62,12 @@ namespace Spiral
 		logFlag_system_init , ///< logs out engine specific initializtion
 		logFlag_file ///< handles file logging
 	};
+
+	template< int bits >
+	void ScriptLog( const char* msg )
+	{
+		LogRouter::instance().logNoArg( LogFlags(bits), msg );
+	}
 
 	template< int bits >
 	void log( const std::string& msg )
@@ -104,7 +114,8 @@ namespace Spiral
 }
 
 
-#define LOG_ADD_LOGGER( _logger ) LogRouter::instance().addLogger( _logger )
+#define LOG_ADD_LOGGER( logger_ ) LogRouter::instance().addLogger( logger_ )
+#define LOG_REGISTER_SCRIPT_MGR( scriptMgr_ ) LogRouter::instance().Register( scriptMgr_ )
 
 #define LOG_I Spiral::log< Spiral::Int2Bit<Spiral::logFlag_system_init>::value >
 #define LOG_E Spiral::log< Spiral::Int2Bit<Spiral::logFlag_error>::value >

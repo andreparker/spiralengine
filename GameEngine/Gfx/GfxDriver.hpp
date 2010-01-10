@@ -32,41 +32,41 @@ namespace Spiral
 		   @function  SetWorld
 		   @brief     sets the world transform
 		   @return    void
-		   @param     const Math::SpMatrix4x4r world
+		   @param     const Math::Matrix4x4f world
 		*/
-		void SetWorld( const Math::SpMatrix4x4r& world );
+		void SetWorld( const Math::Matrix4x4f& world );
 
 		/*!
 		   @function  SetView
 		   @brief     sets the view transform
 		   @return    void
-		   @param     const Math::SpMatrix4x4r view
+		   @param     const Math::Matrix4x4f view
 		*/
-		void SetView( const Math::SpMatrix4x4r& view );
+		void SetView( const Math::Matrix4x4f& view );
 
 		/*!
 		   @function  SetProjection
 		   @brief     sets the world projection
 		   @return    void
-		   @param     const Math::SpMatrix4x4r proj
+		   @param     const Math::Matrix4x4f proj
 		*/
-		void SetProjection( const Math::SpMatrix4x4r& proj );
+		void SetProjection( const Math::Matrix4x4f& proj );
 
 		/*!
 		   @function  GetView
 		   @brief     gets the view matrix
 		   @return    void
-		   @param     Math::SpMatrix4x4r & view
+		   @param     Math::Matrix4x4f & view
 		*/
-		void GetView( Math::SpMatrix4x4r& view );
+		void GetView( Math::Matrix4x4f& view );
 
 		/*!
 		   @function  GetProjection
 		   @brief     returns the projection matrix
 		   @return    void
-		   @param     Math::SpMatrix4x4r & proj
+		   @param     Math::Matrix4x4f & proj
 		*/
-		void GetProjection( Math::SpMatrix4x4r& proj );
+		void GetProjection( Math::Matrix4x4f& proj );
 
 		/*!
 		   @function  CreateSprite
@@ -183,9 +183,9 @@ namespace Spiral
 		   @return    void
 		   @param     const Rect< SpReal > & rect
 		   @param     const Rect< SpReal > & textureCoords
-		   @param     const Math::SpVector2r& position
+		   @param     const Math::Vector2f& position
 		*/
-		void Draw( const Math::SpVector2r& position, const Rect< SpReal >& rect, const Rect< SpReal >& textureCoords );
+		void Draw( const Math::Vector2f& position, const Rect< SpReal >& rect, const Rect< SpReal >& textureCoords );
 
 		/*!
 		   @function  CreateGeometry
@@ -270,13 +270,13 @@ namespace Spiral
 	   virtual void DoDraw( boost::shared_ptr<Geometry>& geometry ) = 0;
 	   virtual void DoDraw( boost::shared_ptr<Sprite>& sprite ) = 0;
 	   virtual void DoDraw( const std::list< Sprite* >& spriteList ) = 0;
-	   virtual void DoDraw( const Math::SpVector2r& position, const Rect< SpReal >& rect, const Rect< SpReal >& textureCoords ) = 0;
+	   virtual void DoDraw( const Math::Vector2f& position, const Rect< SpReal >& rect, const Rect< SpReal >& textureCoords ) = 0;
 	   virtual void DoSetState( const RenderState& state ) = 0;
-	   virtual void DoSetWorld( const Math::SpMatrix4x4r& world ) = 0;
-	   virtual void DoSetView( const Math::SpMatrix4x4r& view ) = 0;
-	   virtual void DoSetProjection( const Math::SpMatrix4x4r& proj ) = 0;
-	   virtual void DoGetView( Math::SpMatrix4x4r& view ) = 0;
-	   virtual void DoGetProjection( Math::SpMatrix4x4r& proj ) = 0;
+	   virtual void DoSetWorld( const Math::Matrix4x4f& world ) = 0;
+	   virtual void DoSetView( const Math::Matrix4x4f& view ) = 0;
+	   virtual void DoSetProjection( const Math::Matrix4x4f& proj ) = 0;
+	   virtual void DoGetView( Math::Matrix4x4f& view ) = 0;
+	   virtual void DoGetProjection( Math::Matrix4x4f& proj ) = 0;
 
 	   virtual void DoSetViewPort( boost::int32_t x0, boost::int32_t y0, boost::int32_t x1, boost::int32_t y1 ) = 0;
 	   virtual void DoGetViewPort( Rect<boost::int32_t>& viewPort ) = 0;

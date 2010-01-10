@@ -41,20 +41,21 @@
 
 #ifndef EIGEN_NO_STATIC_ASSERT
 
-  #ifdef __GXX_EXPERIMENTAL_CXX0X__
+#ifdef __GXX_EXPERIMENTAL_CXX0X__
 
-    // if native static_assert is enabled, let's use it
-    #define EIGEN_STATIC_ASSERT(X,MSG) static_assert(X,#MSG);
+// if native static_assert is enabled, let's use it
+#define EIGEN_STATIC_ASSERT(X,MSG) static_assert(X,#MSG);
 
-  #else // CXX0X
+#else // CXX0X
 
-    template<bool condition>
-    struct ei_static_assert {};
+template<bool condition>
+struct ei_static_assert {};
 
-    template<>
-    struct ei_static_assert<true>
+template<>
+struct ei_static_assert<true>
+{
+    enum
     {
-      enum {
         YOU_TRIED_CALLING_A_VECTOR_METHOD_ON_A_MATRIX,
         YOU_MIXED_VECTORS_OF_DIFFERENT_SIZES,
         YOU_MIXED_MATRICES_OF_DIFFERENT_SIZES,
@@ -76,29 +77,29 @@
         INVALID_MATRIX_TEMPLATE_PARAMETERS,
         BOTH_MATRICES_MUST_HAVE_THE_SAME_STORAGE_ORDER,
         THIS_METHOD_IS_ONLY_FOR_DIAGONAL_MATRIX
-      };
     };
+};
 
-    // Specialized implementation for MSVC to avoid "conditional
-    // expression is constant" warnings.  This implementation doesn't
-    // appear to work under GCC, hence the multiple implementations.
-    #ifdef _MSC_VER
+// Specialized implementation for MSVC to avoid "conditional
+// expression is constant" warnings.  This implementation doesn't
+// appear to work under GCC, hence the multiple implementations.
+#ifdef _MSC_VER
 
-      #define EIGEN_STATIC_ASSERT(CONDITION,MSG) \
+#define EIGEN_STATIC_ASSERT(CONDITION,MSG) \
         {Eigen::ei_static_assert<CONDITION ? true : false>::MSG;}
 
-    #else
+#else
 
-      #define EIGEN_STATIC_ASSERT(CONDITION,MSG) \
+#define EIGEN_STATIC_ASSERT(CONDITION,MSG) \
         if (Eigen::ei_static_assert<CONDITION ? true : false>::MSG) {}
 
-    #endif
+#endif
 
-  #endif // not CXX0X
+#endif // not CXX0X
 
 #else // EIGEN_NO_STATIC_ASSERT
 
-  #define EIGEN_STATIC_ASSERT(CONDITION,MSG) ei_assert((CONDITION) && #MSG);
+#define EIGEN_STATIC_ASSERT(CONDITION,MSG) ei_assert((CONDITION) && #MSG);
 
 #endif // EIGEN_NO_STATIC_ASSERT
 

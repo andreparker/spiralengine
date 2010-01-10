@@ -1,0 +1,54 @@
+
+layout
+{
+
+	eClass window  ;element class of standerd type window
+	{
+
+		;============================================
+		; attributes - can be in any order
+		;============================================
+		name         "Test window"                   ; window name
+		alpha        true                            ; true / false alpha blend
+		clipChildren false
+		allowFocus   true
+		show         true
+	
+		position
+		{
+			x 0.0
+			y 0.0
+		}
+	
+		window_rect
+		{
+			left   0.0
+			right  128.0
+			top    0.0
+			bottom 64.0
+		}
+	
+		texture_rect
+		{
+			left   0.0
+			right  1.0
+			top    0.0
+			bottom 1.0
+		}
+	
+		texture
+		{
+			tagName  "Window_texture"
+		}
+	
+		eFile "Data/Gui/layouts/child1.layout"
+		{
+			position
+			{
+				x 50.0
+				y 40.0
+			}
+		}
+	}
+	
+}

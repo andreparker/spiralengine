@@ -29,8 +29,9 @@ namespace GUI
 		friend class GuiManager;
 
 		typedef boost::function< void( boost::int32_t, GuiWindow*, const boost::any& ) > WindowEventHandler;
-		GuiWindow( const Math::SpVector2r& position, const Rect< SpReal >& rect, const Rect< SpReal >& textCoords,const boost::shared_ptr< Texture >& texture, bool bAlpha );
-		GuiWindow( const Math::SpVector2r& position, const Rect< SpReal >& rect, const boost::shared_ptr< Texture >& texture, bool bAlpha );
+		GuiWindow( const Math::Vector2f& position, const Rect< SpReal >& rect, const Rect< SpReal >& textCoords,const boost::shared_ptr< Texture >& texture, bool bAlpha );
+		GuiWindow( const Math::Vector2f& position, const Rect< SpReal >& rect, const boost::shared_ptr< Texture >& texture, bool bAlpha );
+		GuiWindow();
 		virtual ~GuiWindow(){}
 
 		bool hasAlpha()const
@@ -53,17 +54,17 @@ namespace GUI
 			return m_texture;
 		}
 
-		const Math::SpVector2r& GetLocalPosition()const
+		const Math::Vector2f& GetLocalPosition()const
 		{
 			return m_localPosition;
 		}
 
-		Math::SpVector2r WorldToLocal( SpReal x, SpReal y )
+		Math::Vector2f WorldToLocal( SpReal x, SpReal y )
 		{
 			return Math::make_vector< SpReal >( x - m_worldPosition[0], y - m_worldPosition[1] );
 		}
 
-		void SetLocalPosition( const Math::SpVector2r& position )
+		void SetLocalPosition( const Math::Vector2f& position )
 		{
 			m_localPosition = position;
 
@@ -120,13 +121,13 @@ namespace GUI
 		   @function  Create
 		   @brief     creates a window
 		   @return    boost::shared_ptr< GuiWindow >
-		   @param     const Math::SpVector2r & position
+		   @param     const Math::Vector2f & position
 		   @param     const Rect< SpReal > & rect
 		   @param     const boost::shared_ptr< Texture > & texture
 		   @param     bool bAlpha
 		*/
-		static boost::shared_ptr< GuiWindow > Create( const Math::SpVector2r& position, const Rect< SpReal >& rect, const boost::shared_ptr< Texture >& texture, bool bAlpha );
-		static boost::shared_ptr< GuiWindow > Create( const Math::SpVector2r& position, const Rect< SpReal >& rect, const Rect< SpReal >& textCoords, boost::shared_ptr< Texture >& texture, bool bAlpha );
+		static boost::shared_ptr< GuiWindow > Create( const Math::Vector2f& position, const Rect< SpReal >& rect, const boost::shared_ptr< Texture >& texture, bool bAlpha );
+		static boost::shared_ptr< GuiWindow > Create( const Math::Vector2f& position, const Rect< SpReal >& rect, const Rect< SpReal >& textCoords, boost::shared_ptr< Texture >& texture, bool bAlpha );
 
 
 		/*!
@@ -155,7 +156,9 @@ namespace GUI
 			return m_parent;
 		}
 
-		void SetRect( const Rect< SpReal >& rt )
+		bool IsAncestor( const GuiWindow* window );
+
+		virtual void SetRect( const Rect< SpReal >& rt )
 		{
 			m_rect = rt;
 		}
@@ -170,7 +173,7 @@ namespace GUI
 			return m_clipChildren;
 		}
 
-		const Math::SpVector2r& GetWorldPosition()const
+		const Math::Vector2f& GetWorldPosition()const
 		{
 			return m_worldPosition;
 		}
@@ -178,6 +181,16 @@ namespace GUI
 		void SetAlphaBlend( bool blend = true )
 		{
 			m_alpha = blend;
+		}
+
+		void SetTexCoords( const Rect< SpReal >& rt )
+		{
+			m_textCoords = rt;
+		}
+
+		void SetTexture( const boost::shared_ptr< Texture >& texture )
+		{
+			m_texture = texture;
 		}
 
 		MAKE_ALIGNED_NEW
@@ -226,26 +239,14 @@ namespace GUI
 		*/
 		void CallHandler( boost::int32_t eventId, GuiWindow* window, const boost::any& data );
 
-		void SetTexture( const boost::shared_ptr< Texture >& texture )
-		{
-			m_texture = texture;
-		}
-
-		void SetTexCoords( const Rect< SpReal >& rt )
-		{
-			m_textCoords = rt;
-		}
-
-		
-
 		void UpdatePositions()
 		{
-			UpdatePositions( Math::SpVector2r(0.0f,0.0f) );
+			UpdatePositions( Math::Vector2f(0.0f,0.0f) );
 		}
 
 	private:
 
-		void UpdatePositions( const Math::SpVector2r& worldPosition );
+		void UpdatePositions( const Math::Vector2f& worldPosition );
 
 		bool IsDirty()const
 		{
@@ -282,8 +283,6 @@ namespace GUI
 		*/
 		virtual void ResetWindow();
 	private:
-		static boost::int32_t window_ID;
-
 		typedef std::list< boost::shared_ptr< GuiWindow > >::iterator WindowItr;
 		typedef std::list< boost::shared_ptr< GuiWindow > >::const_iterator Const_WindowItr;
 		typedef std::multimap< boost::int32_t, WindowEventHandler >::iterator handleItr;
@@ -292,9 +291,11 @@ namespace GUI
 		{
 			return m_show;
 		}
+	private:
+		static boost::int32_t window_ID;
 
-		Math::SpVector2r m_localPosition;
-		Math::SpVector2r m_worldPosition;
+		Math::Vector2f m_localPosition;
+		Math::Vector2f m_worldPosition;
 		Rect< SpReal > m_rect;
 		Rect< SpReal > m_textCoords;
 		boost::shared_ptr< Texture > m_texture;

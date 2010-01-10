@@ -5,7 +5,8 @@
 
 #include "src/Core/util/DisableMSVCWarnings.h"
 
-namespace Eigen {
+namespace Eigen
+{
 
 /** \defgroup SVD_Module SVD module
   *

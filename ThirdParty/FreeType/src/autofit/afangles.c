@@ -22,12 +22,12 @@
 
 #if 0
 
-  FT_LOCAL_DEF( FT_Int )
-  af_corner_is_flat( FT_Pos  x_in,
-                     FT_Pos  y_in,
-                     FT_Pos  x_out,
-                     FT_Pos  y_out )
-  {
+FT_LOCAL_DEF( FT_Int )
+af_corner_is_flat( FT_Pos  x_in,
+                   FT_Pos  y_in,
+                   FT_Pos  x_out,
+                   FT_Pos  y_out )
+{
     FT_Pos  ax = x_in;
     FT_Pos  ay = y_in;
 
@@ -35,120 +35,120 @@
 
 
     if ( ax < 0 )
-      ax = -ax;
+        ax = -ax;
     if ( ay < 0 )
-      ay = -ay;
+        ay = -ay;
     d_in = ax + ay;
 
     ax = x_out;
     if ( ax < 0 )
-      ax = -ax;
+        ax = -ax;
     ay = y_out;
     if ( ay < 0 )
-      ay = -ay;
+        ay = -ay;
     d_out = ax + ay;
 
     ax = x_out + x_in;
     if ( ax < 0 )
-      ax = -ax;
+        ax = -ax;
     ay = y_out + y_in;
     if ( ay < 0 )
-      ay = -ay;
+        ay = -ay;
     d_corner = ax + ay;
 
     return ( d_in + d_out - d_corner ) < ( d_corner >> 4 );
-  }
+}
 
 
-  FT_LOCAL_DEF( FT_Int )
-  af_corner_orientation( FT_Pos  x_in,
-                         FT_Pos  y_in,
-                         FT_Pos  x_out,
-                         FT_Pos  y_out )
-  {
+FT_LOCAL_DEF( FT_Int )
+af_corner_orientation( FT_Pos  x_in,
+                       FT_Pos  y_in,
+                       FT_Pos  x_out,
+                       FT_Pos  y_out )
+{
     FT_Pos  delta;
 
 
     delta = x_in * y_out - y_in * x_out;
 
     if ( delta == 0 )
-      return 0;
+        return 0;
     else
-      return 1 - 2 * ( delta < 0 );
-  }
+        return 1 - 2 * ( delta < 0 );
+}
 
 #endif
 
 
-  /*
-   *  We are not using `af_angle_atan' anymore, but we keep the source
-   *  code below just in case...
-   */
+/*
+ *  We are not using `af_angle_atan' anymore, but we keep the source
+ *  code below just in case...
+ */
 
 
 #if 0
 
 
-  /*
-   *  The trick here is to realize that we don't need a very accurate angle
-   *  approximation.  We are going to use the result of `af_angle_atan' to
-   *  only compare the sign of angle differences, or check whether its
-   *  magnitude is very small.
-   *
-   *  The approximation
-   *
-   *    dy * PI / (|dx|+|dy|)
-   *
-   *  should be enough, and much faster to compute.
-   */
-  FT_LOCAL_DEF( AF_Angle )
-  af_angle_atan( FT_Fixed  dx,
-                 FT_Fixed  dy )
-  {
+/*
+ *  The trick here is to realize that we don't need a very accurate angle
+ *  approximation.  We are going to use the result of `af_angle_atan' to
+ *  only compare the sign of angle differences, or check whether its
+ *  magnitude is very small.
+ *
+ *  The approximation
+ *
+ *    dy * PI / (|dx|+|dy|)
+ *
+ *  should be enough, and much faster to compute.
+ */
+FT_LOCAL_DEF( AF_Angle )
+af_angle_atan( FT_Fixed  dx,
+               FT_Fixed  dy )
+{
     AF_Angle  angle;
     FT_Fixed  ax = dx;
     FT_Fixed  ay = dy;
 
 
     if ( ax < 0 )
-      ax = -ax;
+        ax = -ax;
     if ( ay < 0 )
-      ay = -ay;
+        ay = -ay;
 
     ax += ay;
 
     if ( ax == 0 )
-      angle = 0;
+        angle = 0;
     else
     {
-      angle = ( AF_ANGLE_PI2 * dy ) / ( ax + ay );
-      if ( dx < 0 )
-      {
-        if ( angle >= 0 )
-          angle = AF_ANGLE_PI - angle;
-        else
-          angle = -AF_ANGLE_PI - angle;
-      }
+        angle = ( AF_ANGLE_PI2 * dy ) / ( ax + ay );
+        if ( dx < 0 )
+        {
+            if ( angle >= 0 )
+                angle = AF_ANGLE_PI - angle;
+            else
+                angle = -AF_ANGLE_PI - angle;
+        }
     }
 
     return angle;
-  }
+}
 
 
 #elif 0
 
 
-  /* the following table has been automatically generated with */
-  /* the `mather.py' Python script                             */
+/* the following table has been automatically generated with */
+/* the `mather.py' Python script                             */
 
 #define AF_ATAN_BITS  8
 
-  static const FT_Byte  af_arctan[1L << AF_ATAN_BITS] =
-  {
-     0,  0,  1,  1,  1,  2,  2,  2,
-     3,  3,  3,  3,  4,  4,  4,  5,
-     5,  5,  6,  6,  6,  7,  7,  7,
-     8,  8,  8,  9,  9,  9, 10, 10,
+static const FT_Byte  af_arctan[1L << AF_ATAN_BITS] =
+{
+    0,  0,  1,  1,  1,  2,  2,  2,
+    3,  3,  3,  3,  4,  4,  4,  5,
+    5,  5,  6,  6,  6,  7,  7,  7,
+    8,  8,  8,  9,  9,  9, 10, 10,
     10, 10, 11, 11, 11, 12, 12, 12,
     13, 13, 13, 14, 14, 14, 14, 15,
     15, 15, 16, 16, 16, 17, 17, 17,
@@ -177,116 +177,118 @@
     60, 60, 60, 61, 61, 61, 61, 61,
     61, 62, 62, 62, 62, 62, 62, 63,
     63, 63, 63, 63, 63, 64, 64, 64
-  };
+};
 
 
-  FT_LOCAL_DEF( AF_Angle )
-  af_angle_atan( FT_Fixed  dx,
-                 FT_Fixed  dy )
-  {
+FT_LOCAL_DEF( AF_Angle )
+af_angle_atan( FT_Fixed  dx,
+               FT_Fixed  dy )
+{
     AF_Angle  angle;
 
 
     /* check trivial cases */
     if ( dy == 0 )
     {
-      angle = 0;
-      if ( dx < 0 )
-        angle = AF_ANGLE_PI;
-      return angle;
+        angle = 0;
+        if ( dx < 0 )
+            angle = AF_ANGLE_PI;
+        return angle;
     }
-    else if ( dx == 0 )
-    {
-      angle = AF_ANGLE_PI2;
-      if ( dy < 0 )
-        angle = -AF_ANGLE_PI2;
-      return angle;
-    }
+    else
+        if ( dx == 0 )
+        {
+            angle = AF_ANGLE_PI2;
+            if ( dy < 0 )
+                angle = -AF_ANGLE_PI2;
+            return angle;
+        }
 
     angle = 0;
     if ( dx < 0 )
     {
-      dx = -dx;
-      dy = -dy;
-      angle = AF_ANGLE_PI;
+        dx = -dx;
+        dy = -dy;
+        angle = AF_ANGLE_PI;
     }
 
     if ( dy < 0 )
     {
-      FT_Pos  tmp;
+        FT_Pos  tmp;
 
 
-      tmp = dx;
-      dx  = -dy;
-      dy  = tmp;
-      angle -= AF_ANGLE_PI2;
+        tmp = dx;
+        dx  = -dy;
+        dy  = tmp;
+        angle -= AF_ANGLE_PI2;
     }
 
     if ( dx == 0 && dy == 0 )
-      return 0;
+        return 0;
 
     if ( dx == dy )
-      angle += AF_ANGLE_PI4;
-    else if ( dx > dy )
-      angle += af_arctan[FT_DivFix( dy, dx ) >> ( 16 - AF_ATAN_BITS )];
+        angle += AF_ANGLE_PI4;
     else
-      angle += AF_ANGLE_PI2 -
-               af_arctan[FT_DivFix( dx, dy ) >> ( 16 - AF_ATAN_BITS )];
+        if ( dx > dy )
+            angle += af_arctan[FT_DivFix( dy, dx ) >> ( 16 - AF_ATAN_BITS )];
+        else
+            angle += AF_ANGLE_PI2 -
+                     af_arctan[FT_DivFix( dx, dy ) >> ( 16 - AF_ATAN_BITS )];
 
     if ( angle > AF_ANGLE_PI )
-      angle -= AF_ANGLE_2PI;
+        angle -= AF_ANGLE_2PI;
 
     return angle;
-  }
+}
 
 
 #endif /* 0 */
 
 
-  FT_LOCAL_DEF( void )
-  af_sort_pos( FT_UInt  count,
-               FT_Pos*  table )
-  {
+FT_LOCAL_DEF( void )
+af_sort_pos( FT_UInt  count,
+             FT_Pos*  table )
+{
     FT_UInt  i, j;
     FT_Pos   swap;
 
 
     for ( i = 1; i < count; i++ )
     {
-      for ( j = i; j > 0; j-- )
-      {
-        if ( table[j] > table[j - 1] )
-          break;
+        for ( j = i; j > 0; j-- )
+        {
+            if ( table[j] > table[j - 1] )
+                break;
 
-        swap         = table[j];
-        table[j]     = table[j - 1];
-        table[j - 1] = swap;
-      }
+            swap         = table[j];
+            table[j]     = table[j - 1];
+            table[j - 1] = swap;
+        }
     }
-  }
+}
 
 
-  FT_LOCAL_DEF( void )
-  af_sort_widths( FT_UInt   count,
-                  AF_Width  table )
-  {
+FT_LOCAL_DEF( void )
+af_sort_widths( FT_UInt   count,
+                AF_Width  table )
+{
     FT_UInt      i, j;
     AF_WidthRec  swap;
 
 
     for ( i = 1; i < count; i++ )
     {
-      for ( j = i; j > 0; j-- )
-      {
-        if ( table[j].org > table[j - 1].org )
-          break;
+        for ( j = i; j > 0; j-- )
+        {
+            if ( table[j].org > table[j - 1].org )
+                break;
 
-        swap         = table[j];
-        table[j]     = table[j - 1];
-        table[j - 1] = swap;
-      }
+            swap         = table[j];
+            table[j]     = table[j - 1];
+            table[j - 1] = swap;
+        }
     }
-  }
+}
 
 
 /* END */

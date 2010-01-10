@@ -1,0 +1,29 @@
+dofile( "../utility.premake4" )
+
+project( "GLee" )
+
+	language( "C++" )
+	kind( "StaticLib" )
+	
+	-- use compiler name for folder /build/compiler
+	location( "../Build/" .. _ACTION )
+	
+	files
+	{
+		"GLee/**.h",
+		"GLee/**.c"
+	}
+	
+	-- add window defines 
+	if os.get() == "windows"
+	then
+		defines
+		{
+			"WIN32",
+			"_WINDOWS",
+			"NOMINMAX" -- prevent windows.h from defining them
+		}
+	end
+	
+	
+	CUtil.projConfig( "GLee" )

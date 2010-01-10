@@ -1,0 +1,58 @@
+
+dofile( "../utility.premake4" )
+
+project( "Win32_Ogl_Driver" )
+	
+	language( "C++" )
+	kind( "StaticLib" )
+	
+	-- use compiler name for folder /build/compiler
+	location( "../Build/" .. _ACTION )
+	
+	files
+	{
+	    "Gfx/Win32_Ogl/**.cpp",
+		"Gfx/Win32_Ogl/**.hpp",
+		"Gfx/Ogl/**.cpp",
+		"Gfx/Ogl/**.hpp"
+	}
+
+	
+	-- include dirs
+	includedirs 
+	{
+		"../ThirdParty/zlib",
+		"../ThirdParty/FreeType/include",
+		"../ThirdParty/OggVorbis/include",
+		"../ThirdParty/luabind",
+		"../ThirdParty/Lua"
+	}
+	
+	-- add window defines 
+	if os.get() == "windows"
+	then
+		defines
+		{
+			"WIN32",
+			"_WINDOWS",
+			"NOMINMAX" -- prevent windows.h from defining them
+		}
+		-- link with opengl
+		links
+		{
+			"Opengl32",
+			"GLee"
+		}
+	end
+	
+	-- add disabling of depricated warnings
+	if _ACTION == "vs2005" or _ACTION == "vs2008"
+	then
+		defines
+		{
+			"_CRT_SECURE_NO_WARNINGS"
+		}
+	end
+	
+	CUtil.projConfig( "Win32_Ogl_Driver" )
+	

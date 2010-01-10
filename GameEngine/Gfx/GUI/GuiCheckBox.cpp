@@ -9,7 +9,7 @@ using namespace boost;
 using namespace Spiral;
 using namespace Spiral::GUI;
 
-GuiCheckBox::GuiCheckBox( const Math::SpVector2r& position, const Rect< SpReal >& rect, const Rect< SpReal >& bgTextCoords,
+GuiCheckBox::GuiCheckBox( const Math::Vector2f& position, const Rect< SpReal >& rect, const Rect< SpReal >& bgTextCoords,
 						 const Rect< SpReal >& ckTextCoords, const boost::shared_ptr< Texture >& bgTexture,
 						 const boost::shared_ptr< Texture >& ckTexture , bool bBgAlpha, bool bCkAlpha ):
 GuiButton( position, rect, bgTextCoords, bgTexture, bBgAlpha ), m_isChecked( false ), m_ckWindow()

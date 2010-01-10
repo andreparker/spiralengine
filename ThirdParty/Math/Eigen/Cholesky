@@ -7,14 +7,15 @@
 
 // Note that EIGEN_HIDE_HEAVY_CODE has to be defined per module
 #if (defined EIGEN_EXTERN_INSTANTIATIONS) && (EIGEN_EXTERN_INSTANTIATIONS>=2)
-  #ifndef EIGEN_HIDE_HEAVY_CODE
-  #define EIGEN_HIDE_HEAVY_CODE
-  #endif
+#ifndef EIGEN_HIDE_HEAVY_CODE
+#define EIGEN_HIDE_HEAVY_CODE
+#endif
 #elif defined EIGEN_HIDE_HEAVY_CODE
-  #undef EIGEN_HIDE_HEAVY_CODE
+#undef EIGEN_HIDE_HEAVY_CODE
 #endif
 
-namespace Eigen {
+namespace Eigen
+{
 
 /** \defgroup Cholesky_Module Cholesky module
   *
@@ -55,8 +56,9 @@ namespace Eigen {
 
 #ifdef EIGEN_EXTERN_INSTANTIATIONS
 
-namespace Eigen {
-  EIGEN_CHOLESKY_MODULE_INSTANTIATE(extern);
+namespace Eigen
+{
+EIGEN_CHOLESKY_MODULE_INSTANTIATE( extern );
 } // namespace Eigen
 #endif
 

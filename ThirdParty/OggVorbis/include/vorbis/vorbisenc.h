@@ -25,75 +25,77 @@ extern "C"
 
 #include "codec.h"
 
-extern int vorbis_encode_init(vorbis_info *vi,
-                              long channels,
-                              long rate,
-
-                              long max_bitrate,
-                              long nominal_bitrate,
-                              long min_bitrate);
-
-extern int vorbis_encode_setup_managed(vorbis_info *vi,
+    extern int vorbis_encode_init( vorbis_info *vi,
                                        long channels,
                                        long rate,
 
                                        long max_bitrate,
                                        long nominal_bitrate,
-                                       long min_bitrate);
+                                       long min_bitrate );
 
-extern int vorbis_encode_setup_vbr(vorbis_info *vi,
-                                  long channels,
-                                  long rate,
+    extern int vorbis_encode_setup_managed( vorbis_info *vi,
+                                                long channels,
+                                                long rate,
 
-                                  float quality /* quality level from 0. (lo) to 1. (hi) */
-                                  );
+                                                long max_bitrate,
+                                                long nominal_bitrate,
+                                                long min_bitrate );
 
-extern int vorbis_encode_init_vbr(vorbis_info *vi,
-                                  long channels,
-                                  long rate,
+    extern int vorbis_encode_setup_vbr( vorbis_info *vi,
+                                            long channels,
+                                            long rate,
 
-                                  float base_quality /* quality level from 0. (lo) to 1. (hi) */
-                                  );
+                                            float quality /* quality level from 0. (lo) to 1. (hi) */
+                                          );
 
-extern int vorbis_encode_setup_init(vorbis_info *vi);
+    extern int vorbis_encode_init_vbr( vorbis_info *vi,
+                                           long channels,
+                                           long rate,
 
-extern int vorbis_encode_ctl(vorbis_info *vi,int number,void *arg);
+                                           float base_quality /* quality level from 0. (lo) to 1. (hi) */
+                                         );
 
-  /* deprecated rate management supported only for compatability */
+    extern int vorbis_encode_setup_init( vorbis_info *vi );
+
+    extern int vorbis_encode_ctl( vorbis_info *vi, int number, void *arg );
+
+    /* deprecated rate management supported only for compatability */
 #define OV_ECTL_RATEMANAGE_GET       0x10
 #define OV_ECTL_RATEMANAGE_SET       0x11
 #define OV_ECTL_RATEMANAGE_AVG       0x12
 #define OV_ECTL_RATEMANAGE_HARD      0x13
 
-struct ovectl_ratemanage_arg {
-  int    management_active;
+    struct ovectl_ratemanage_arg
+    {
+        int    management_active;
 
-  long   bitrate_hard_min;
-  long   bitrate_hard_max;
-  double bitrate_hard_window;
+        long   bitrate_hard_min;
+        long   bitrate_hard_max;
+        double bitrate_hard_window;
 
-  long   bitrate_av_lo;
-  long   bitrate_av_hi;
-  double bitrate_av_window;
-  double bitrate_av_window_center;
-};
+        long   bitrate_av_lo;
+        long   bitrate_av_hi;
+        double bitrate_av_window;
+        double bitrate_av_window_center;
+    };
 
 
-  /* new rate setup */
+    /* new rate setup */
 #define OV_ECTL_RATEMANAGE2_GET      0x14
 #define OV_ECTL_RATEMANAGE2_SET      0x15
 
-struct ovectl_ratemanage2_arg {
-  int    management_active;
+    struct ovectl_ratemanage2_arg
+    {
+        int    management_active;
 
-  long   bitrate_limit_min_kbps;
-  long   bitrate_limit_max_kbps;
-  long   bitrate_limit_reservoir_bits;
-  double bitrate_limit_reservoir_bias;
+        long   bitrate_limit_min_kbps;
+        long   bitrate_limit_max_kbps;
+        long   bitrate_limit_reservoir_bits;
+        double bitrate_limit_reservoir_bias;
 
-  long   bitrate_average_kbps;
-  double bitrate_average_damping;
-};
+        long   bitrate_average_kbps;
+        double bitrate_average_damping;
+    };
 
 
 

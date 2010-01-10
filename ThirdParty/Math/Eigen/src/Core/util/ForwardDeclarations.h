@@ -28,17 +28,17 @@
 template<typename T> struct ei_traits;
 template<typename T> struct NumTraits;
 
-template<typename _Scalar, int _Rows, int _Cols,
-         int _Options = EIGEN_DEFAULT_MATRIX_STORAGE_ORDER_OPTION | AutoAlign,
-         int _MaxRows = _Rows, int _MaxCols = _Cols> class Matrix;
+template < typename _Scalar, int _Rows, int _Cols,
+int _Options = EIGEN_DEFAULT_MATRIX_STORAGE_ORDER_OPTION | AutoAlign,
+int _MaxRows = _Rows, int _MaxCols = _Cols > class Matrix;
 
 template<typename ExpressionType, unsigned int Added, unsigned int Removed> class Flagged;
 template<typename ExpressionType> class NestByValue;
 template<typename ExpressionType> class SwapWrapper;
 template<typename MatrixType> class Minor;
-template<typename MatrixType, int BlockRows=Dynamic, int BlockCols=Dynamic, int PacketAccess=AsRequested,
-         int _DirectAccessStatus = ei_traits<MatrixType>::Flags&DirectAccessBit ? DirectAccessBit
-                                 : ei_traits<MatrixType>::Flags&SparseBit> class Block;
+template < typename MatrixType, int BlockRows = Dynamic, int BlockCols = Dynamic, int PacketAccess = AsRequested,
+int _DirectAccessStatus = ei_traits<MatrixType>::Flags & DirectAccessBit ? DirectAccessBit
+: ei_traits<MatrixType>::Flags & SparseBit > class Block;
 template<typename MatrixType> class Transpose;
 template<typename MatrixType> class Conjugate;
 template<typename NullaryOp, typename MatrixType>         class CwiseNullaryOp;
@@ -47,7 +47,7 @@ template<typename BinaryOp,  typename Lhs, typename Rhs>  class CwiseBinaryOp;
 template<typename Lhs, typename Rhs, int ProductMode> class Product;
 template<typename CoeffsVectorType> class DiagonalMatrix;
 template<typename MatrixType> class DiagonalCoeffs;
-template<typename MatrixType, int PacketAccess = AsRequested> class Map;
+template < typename MatrixType, int PacketAccess = AsRequested > class Map;
 template<typename MatrixType, unsigned int Mode> class Part;
 template<typename MatrixType, unsigned int Mode> class Extract;
 template<typename ExpressionType> class Cwise;
@@ -56,7 +56,7 @@ template<typename MatrixType> struct CommaInitializer;
 
 
 template<typename Lhs, typename Rhs> struct ei_product_mode;
-template<typename Lhs, typename Rhs, int ProductMode = ei_product_mode<Lhs,Rhs>::value> struct ProductReturnType;
+template < typename Lhs, typename Rhs, int ProductMode = ei_product_mode<Lhs, Rhs>::value > struct ProductReturnType;
 
 template<typename Scalar> struct ei_scalar_sum_op;
 template<typename Scalar> struct ei_scalar_difference_op;
@@ -91,10 +91,10 @@ struct IOFormat;
 
 template<typename Scalar>
 void ei_cache_friendly_product(
-  int _rows, int _cols, int depth,
-  bool _lhsRowMajor, const Scalar* _lhs, int _lhsStride,
-  bool _rhsRowMajor, const Scalar* _rhs, int _rhsStride,
-  bool resRowMajor, Scalar* res, int resStride);
+    int _rows, int _cols, int depth,
+    bool _lhsRowMajor, const Scalar* _lhs, int _lhsStride,
+    bool _rhsRowMajor, const Scalar* _rhs, int _rhsStride,
+    bool resRowMajor, Scalar* res, int resStride );
 
 // Array module
 template<typename ConditionMatrixType, typename ThenMatrixType, typename ElseMatrixType> class Select;
@@ -113,11 +113,11 @@ template<typename Lhs, typename Rhs> class Cross;
 template<typename Scalar> class Quaternion;
 template<typename Scalar> class Rotation2D;
 template<typename Scalar> class AngleAxis;
-template<typename Scalar,int Dim> class Transform;
+template<typename Scalar, int Dim> class Transform;
 template <typename _Scalar, int _AmbientDim> class ParametrizedLine;
 template <typename _Scalar, int _AmbientDim> class Hyperplane;
-template<typename Scalar,int Dim> class Translation;
-template<typename Scalar,int Dim> class Scaling;
+template<typename Scalar, int Dim> class Translation;
+template<typename Scalar, int Dim> class Scaling;
 
 // Sparse module:
 template<typename Lhs, typename Rhs, int ProductMode> class SparseProduct;

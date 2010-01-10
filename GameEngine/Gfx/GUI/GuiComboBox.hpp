@@ -21,7 +21,7 @@ namespace GUI
 	class GuiComboBox : public GuiWindow
 	{
 	public:
-		GuiComboBox( const Math::SpVector2r& position, const Rect<SpReal>& texCoords,
+		GuiComboBox( const Math::Vector2f& position, const Rect<SpReal>& texCoords,
 			const boost::shared_ptr<Texture>& texture, const boost::shared_ptr<GuiButton>& button,
 			const boost::shared_ptr<Font>& font, bool alpha );
 

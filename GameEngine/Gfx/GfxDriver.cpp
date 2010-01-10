@@ -153,27 +153,27 @@ void GfxDriver::Draw( boost::shared_ptr<Sprite>& sprite )
 	DoDraw( sprite );
 }
 
-void GfxDriver::SetWorld( const Math::SpMatrix4x4r& world )
+void GfxDriver::SetWorld( const Math::Matrix4x4f& world )
 {
 	DoSetWorld( world );
 }
 
-void GfxDriver::SetView( const Math::SpMatrix4x4r& view )
+void GfxDriver::SetView( const Math::Matrix4x4f& view )
 {
 	DoSetView( view );
 }
 
-void GfxDriver::SetProjection( const Math::SpMatrix4x4r& proj )
+void GfxDriver::SetProjection( const Math::Matrix4x4f& proj )
 {
 	DoSetProjection( proj );
 }
 
-void GfxDriver::GetView( Math::SpMatrix4x4r& view )
+void GfxDriver::GetView( Math::Matrix4x4f& view )
 {
 	DoGetView( view );
 }
 
-void GfxDriver::GetProjection( Math::SpMatrix4x4r& proj )
+void GfxDriver::GetProjection( Math::Matrix4x4f& proj )
 {
 	DoGetProjection( proj );
 }
@@ -188,7 +188,7 @@ void GfxDriver::Set( const BlendMode_t& mode )
 	DoSet( mode );
 }
 
-void GfxDriver::Draw( const Math::SpVector2r& position, const Rect< SpReal >& rect, const Rect< SpReal >& textureCoords )
+void GfxDriver::Draw( const Math::Vector2f& position, const Rect< SpReal >& rect, const Rect< SpReal >& textureCoords )
 {
 	DoDraw( position, rect, textureCoords );
 }

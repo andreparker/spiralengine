@@ -9,7 +9,7 @@ namespace Spiral
 {
 	struct Projection
 	{
-		Math::SpMatrix4x4r proj;
+		Math::Matrix4x4f proj;
 		/*!
 		   @function  CreateOrtho2D
 		   @brief     creates a 2d view

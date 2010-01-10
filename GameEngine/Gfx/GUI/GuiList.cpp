@@ -21,7 +21,7 @@ bool GuiList::AddItem( const SpString& item )
 	return itemAdded;
 }
 
-GuiList::GuiList( const Math::SpVector2r& position, const SpString itemList[], boost::uint32_t itemCount,
+GuiList::GuiList( const Math::Vector2f& position, const SpString itemList[], boost::uint32_t itemCount,
 				 boost::uint32_t maxListSize, boost::uint32_t maxItemNameLength, const boost::shared_ptr< Font >& font ):
 GuiWindow( position, Rect< SpReal >(), Rect< SpReal >( 0.0f, 1.0f, 1.0f, 0.0f ), shared_ptr<Texture>(), false ),
 m_items(),

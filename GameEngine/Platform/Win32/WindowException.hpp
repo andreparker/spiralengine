@@ -13,5 +13,7 @@ public:
 	virtual const char* what()const throw();
 };
 
+void RegisterExceptionHandler();
+
 #define THROW_WINDOW_EXCEPTION( str ) THROW_BASIC_EXCEPTION( WindowException( str ) )
 #endif

@@ -1,0 +1,63 @@
+
+dofile( "../utility.premake4" )
+
+project( "FreeType" )
+
+	language( "C++" )
+	kind( "StaticLib" )
+	
+	-- use compiler name for folder /build/compiler
+	location( "../Build/" .. _ACTION )
+	
+	-- freeType specifics
+	defines
+	{
+		"FT2_BUILD_LIBRARY"
+	}
+	
+	files
+	{
+		"FreeType/src/base/ftsystem.c",
+		"FreeType/src/base/ftinit.c",
+		"FreeType/src/base/ftdebug.c", 
+		"FreeType/src/base/ftbase.c",
+		"FreeType/src/base/ftbbox.c",
+		"FreeType/src/base/ftglyph.c", 
+		"FreeType/src/base/ftbitmap.c",
+		"FreeType/src/sfnt/sfnt.c",
+		"FreeType/src/psnames/psnames.c",
+		"FreeType/src/psaux/psaux.c",
+		"FreeType/src/pshinter/pshinter.c",
+		
+		-- drivers
+		"FreeType/src/truetype/truetype.c",
+		"FreeType/src/type1/type1.c",
+		"FreeType/src/type42/type42.c",
+		
+		-- renderers
+		"FreeType/src/raster/raster.c",
+		"FreeType/src/smooth/smooth.c",
+		
+		"FreeType/src/autofit/autofit.c", 
+		"FreeType/src/cache/ftcache.c",
+	}
+	
+	-- add window defines 
+	if os.get() == "windows"
+	then
+		defines
+		{
+			"WIN32",
+			"_WINDOWS",
+			"NOMINMAX" -- prevent windows.h from defining them
+		}
+	end
+	
+	-- include dirs
+	includedirs 
+	{
+		"FreeType/include"
+	}
+	
+	
+	CUtil.projConfig( "FreeType" )

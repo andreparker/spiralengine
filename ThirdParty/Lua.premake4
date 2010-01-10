@@ -1,0 +1,33 @@
+
+dofile( "../utility.premake4" )
+
+project( "Lua" )
+
+	language( "C++" )
+	
+	if os.get() == "windows"
+	then
+		kind( "SharedLib" )
+		defines{
+				"LUA_BUILD_AS_DLL"
+				}
+	else
+		kind( "StaticLib" )
+	end
+	
+	-- use compiler name for folder /build/compiler
+	location( "../Build/" .. _ACTION )
+	
+	files
+	{
+		"Lua/**.c"
+	}
+	
+	-- include dirs
+	includedirs 
+	{
+		"Lua"
+	}
+	
+	
+	CUtil.projConfig( "Lua" )

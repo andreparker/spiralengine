@@ -34,31 +34,31 @@
 #include FT_INTERNAL_POSTSCRIPT_AUX_H
 
 
-  /*************************************************************************/
-  /*                                                                       */
-  /* The macro FT_COMPONENT is used in trace mode.  It is an implicit      */
-  /* parameter of the FT_TRACE() and FT_ERROR() macros, used to print/log  */
-  /* messages during execution.                                            */
-  /*                                                                       */
+/*************************************************************************/
+/*                                                                       */
+/* The macro FT_COMPONENT is used in trace mode.  It is an implicit      */
+/* parameter of the FT_TRACE() and FT_ERROR() macros, used to print/log  */
+/* messages during execution.                                            */
+/*                                                                       */
 #undef  FT_COMPONENT
 #define FT_COMPONENT  trace_t1objs
 
 
-  /*************************************************************************/
-  /*                                                                       */
-  /*                            SIZE FUNCTIONS                             */
-  /*                                                                       */
-  /*  note that we store the global hints in the size's "internal" root    */
-  /*  field                                                                */
-  /*                                                                       */
-  /*************************************************************************/
+/*************************************************************************/
+/*                                                                       */
+/*                            SIZE FUNCTIONS                             */
+/*                                                                       */
+/*  note that we store the global hints in the size's "internal" root    */
+/*  field                                                                */
+/*                                                                       */
+/*************************************************************************/
 
 
-  static PSH_Globals_Funcs
-  T1_Size_Get_Globals_Funcs( T1_Size  size )
-  {
-    T1_Face           face     = (T1_Face)size->root.face;
-    PSHinter_Service  pshinter = (PSHinter_Service)face->pshinter;
+static PSH_Globals_Funcs
+T1_Size_Get_Globals_Funcs( T1_Size  size )
+{
+    T1_Face           face     = ( T1_Face )size->root.face;
+    PSHinter_Service  pshinter = ( PSHinter_Service )face->pshinter;
     FT_Module         module;
 
 
@@ -67,136 +67,136 @@
     return ( module && pshinter && pshinter->get_globals_funcs )
            ? pshinter->get_globals_funcs( module )
            : 0 ;
-  }
+}
 
 
-  FT_LOCAL_DEF( void )
-  T1_Size_Done( T1_Size  size )
-  {
+FT_LOCAL_DEF( void )
+T1_Size_Done( T1_Size  size )
+{
     if ( size->root.internal )
     {
-      PSH_Globals_Funcs  funcs;
+        PSH_Globals_Funcs  funcs;
 
 
-      funcs = T1_Size_Get_Globals_Funcs( size );
-      if ( funcs )
-        funcs->destroy( (PSH_Globals)size->root.internal );
+        funcs = T1_Size_Get_Globals_Funcs( size );
+        if ( funcs )
+            funcs->destroy( ( PSH_Globals )size->root.internal );
 
-      size->root.internal = 0;
+        size->root.internal = 0;
     }
-  }
+}
 
 
-  FT_LOCAL_DEF( FT_Error )
-  T1_Size_Init( T1_Size  size )
-  {
+FT_LOCAL_DEF( FT_Error )
+T1_Size_Init( T1_Size  size )
+{
     FT_Error           error = T1_Err_Ok;
     PSH_Globals_Funcs  funcs = T1_Size_Get_Globals_Funcs( size );
 
 
     if ( funcs )
     {
-      PSH_Globals  globals;
-      T1_Face      face = (T1_Face)size->root.face;
+        PSH_Globals  globals;
+        T1_Face      face = ( T1_Face )size->root.face;
 
 
-      error = funcs->create( size->root.face->memory,
-                             &face->type1.private_dict, &globals );
-      if ( !error )
-        size->root.internal = (FT_Size_Internal)(void*)globals;
+        error = funcs->create( size->root.face->memory,
+                               &face->type1.private_dict, &globals );
+        if ( !error )
+            size->root.internal = ( FT_Size_Internal )( void* )globals;
     }
 
     return error;
-  }
+}
 
 
-  FT_LOCAL_DEF( FT_Error )
-  T1_Size_Request( T1_Size          size,
-                   FT_Size_Request  req )
-  {
+FT_LOCAL_DEF( FT_Error )
+T1_Size_Request( T1_Size          size,
+                 FT_Size_Request  req )
+{
     PSH_Globals_Funcs  funcs = T1_Size_Get_Globals_Funcs( size );
 
 
     FT_Request_Metrics( size->root.face, req );
 
     if ( funcs )
-      funcs->set_scale( (PSH_Globals)size->root.internal,
-                        size->root.metrics.x_scale,
-                        size->root.metrics.y_scale,
-                        0, 0 );
+        funcs->set_scale( ( PSH_Globals )size->root.internal,
+                          size->root.metrics.x_scale,
+                          size->root.metrics.y_scale,
+                          0, 0 );
 
     return T1_Err_Ok;
-  }
+}
 
 
-  /*************************************************************************/
-  /*                                                                       */
-  /*                            SLOT  FUNCTIONS                            */
-  /*                                                                       */
-  /*************************************************************************/
+/*************************************************************************/
+/*                                                                       */
+/*                            SLOT  FUNCTIONS                            */
+/*                                                                       */
+/*************************************************************************/
 
-  FT_LOCAL_DEF( void )
-  T1_GlyphSlot_Done( T1_GlyphSlot  slot )
-  {
+FT_LOCAL_DEF( void )
+T1_GlyphSlot_Done( T1_GlyphSlot  slot )
+{
     slot->root.internal->glyph_hints = 0;
-  }
+}
 
 
-  FT_LOCAL_DEF( FT_Error )
-  T1_GlyphSlot_Init( T1_GlyphSlot  slot )
-  {
+FT_LOCAL_DEF( FT_Error )
+T1_GlyphSlot_Init( T1_GlyphSlot  slot )
+{
     T1_Face           face;
     PSHinter_Service  pshinter;
 
 
-    face     = (T1_Face)slot->root.face;
-    pshinter = (PSHinter_Service)face->pshinter;
+    face     = ( T1_Face )slot->root.face;
+    pshinter = ( PSHinter_Service )face->pshinter;
 
     if ( pshinter )
     {
-      FT_Module  module;
+        FT_Module  module;
 
 
-      module = FT_Get_Module( slot->root.face->driver->root.library, "pshinter" );
-      if (module)
-      {
-        T1_Hints_Funcs  funcs;
+        module = FT_Get_Module( slot->root.face->driver->root.library, "pshinter" );
+        if ( module )
+        {
+            T1_Hints_Funcs  funcs;
 
-        funcs = pshinter->get_t1_funcs( module );
-        slot->root.internal->glyph_hints = (void*)funcs;
-      }
+            funcs = pshinter->get_t1_funcs( module );
+            slot->root.internal->glyph_hints = ( void* )funcs;
+        }
     }
     return 0;
-  }
+}
 
 
-  /*************************************************************************/
-  /*                                                                       */
-  /*                            FACE  FUNCTIONS                            */
-  /*                                                                       */
-  /*************************************************************************/
+/*************************************************************************/
+/*                                                                       */
+/*                            FACE  FUNCTIONS                            */
+/*                                                                       */
+/*************************************************************************/
 
 
-  /*************************************************************************/
-  /*                                                                       */
-  /* <Function>                                                            */
-  /*    T1_Face_Done                                                       */
-  /*                                                                       */
-  /* <Description>                                                         */
-  /*    The face object destructor.                                        */
-  /*                                                                       */
-  /* <Input>                                                               */
-  /*    face :: A typeless pointer to the face object to destroy.          */
-  /*                                                                       */
-  FT_LOCAL_DEF( void )
-  T1_Face_Done( T1_Face  face )
-  {
+/*************************************************************************/
+/*                                                                       */
+/* <Function>                                                            */
+/*    T1_Face_Done                                                       */
+/*                                                                       */
+/* <Description>                                                         */
+/*    The face object destructor.                                        */
+/*                                                                       */
+/* <Input>                                                               */
+/*    face :: A typeless pointer to the face object to destroy.          */
+/*                                                                       */
+FT_LOCAL_DEF( void )
+T1_Face_Done( T1_Face  face )
+{
     FT_Memory  memory;
     T1_Font    type1;
 
 
     if ( !face )
-      return;
+        return;
 
     memory = face->root.memory;
     type1  = &face->type1;
@@ -207,10 +207,10 @@
 
     if ( face->buildchar )
     {
-      FT_FREE( face->buildchar );
+        FT_FREE( face->buildchar );
 
-      face->buildchar     = NULL;
-      face->len_buildchar = 0;
+        face->buildchar     = NULL;
+        face->len_buildchar = 0;
     }
 
     T1_Done_Blend( face );
@@ -219,14 +219,14 @@
 
     /* release font info strings */
     {
-      PS_FontInfo  info = &type1->font_info;
+        PS_FontInfo  info = &type1->font_info;
 
 
-      FT_FREE( info->version );
-      FT_FREE( info->notice );
-      FT_FREE( info->full_name );
-      FT_FREE( info->family_name );
-      FT_FREE( info->weight );
+        FT_FREE( info->version );
+        FT_FREE( info->notice );
+        FT_FREE( info->full_name );
+        FT_FREE( info->family_name );
+        FT_FREE( info->weight );
     }
 
     /* release top dictionary */
@@ -248,7 +248,7 @@
 #ifndef T1_CONFIG_OPTION_NO_AFM
     /* release afm data if present */
     if ( face->afm_data )
-      T1_Done_Metrics( memory, (AFM_FontInfo)face->afm_data );
+        T1_Done_Metrics( memory, ( AFM_FontInfo )face->afm_data );
 #endif
 
     /* release unicode map, if any */
@@ -260,39 +260,39 @@
 
     face->root.family_name = NULL;
     face->root.style_name  = NULL;
-  }
+}
 
 
-  /*************************************************************************/
-  /*                                                                       */
-  /* <Function>                                                            */
-  /*    T1_Face_Init                                                       */
-  /*                                                                       */
-  /* <Description>                                                         */
-  /*    The face object constructor.                                       */
-  /*                                                                       */
-  /* <Input>                                                               */
-  /*    stream     ::  input stream where to load font data.               */
-  /*                                                                       */
-  /*    face_index :: The index of the font face in the resource.          */
-  /*                                                                       */
-  /*    num_params :: Number of additional generic parameters.  Ignored.   */
-  /*                                                                       */
-  /*    params     :: Additional generic parameters.  Ignored.             */
-  /*                                                                       */
-  /* <InOut>                                                               */
-  /*    face       :: The face record to build.                            */
-  /*                                                                       */
-  /* <Return>                                                              */
-  /*    FreeType error code.  0 means success.                             */
-  /*                                                                       */
-  FT_LOCAL_DEF( FT_Error )
-  T1_Face_Init( FT_Stream      stream,
-                T1_Face        face,
-                FT_Int         face_index,
-                FT_Int         num_params,
-                FT_Parameter*  params )
-  {
+/*************************************************************************/
+/*                                                                       */
+/* <Function>                                                            */
+/*    T1_Face_Init                                                       */
+/*                                                                       */
+/* <Description>                                                         */
+/*    The face object constructor.                                       */
+/*                                                                       */
+/* <Input>                                                               */
+/*    stream     ::  input stream where to load font data.               */
+/*                                                                       */
+/*    face_index :: The index of the font face in the resource.          */
+/*                                                                       */
+/*    num_params :: Number of additional generic parameters.  Ignored.   */
+/*                                                                       */
+/*    params     :: Additional generic parameters.  Ignored.             */
+/*                                                                       */
+/* <InOut>                                                               */
+/*    face       :: The face record to build.                            */
+/*                                                                       */
+/* <Return>                                                              */
+/*    FreeType error code.  0 means success.                             */
+/*                                                                       */
+FT_LOCAL_DEF( FT_Error )
+T1_Face_Init( FT_Stream      stream,
+              T1_Face        face,
+              FT_Int         face_index,
+              FT_Int         num_params,
+              FT_Parameter*  params )
+{
     FT_Error            error;
     FT_Service_PsCMaps  psnames;
     PSAux_Service       psaux;
@@ -311,26 +311,26 @@
 
     face->psaux = FT_Get_Module_Interface( FT_FACE_LIBRARY( face ),
                                            "psaux" );
-    psaux = (PSAux_Service)face->psaux;
+    psaux = ( PSAux_Service )face->psaux;
 
     face->pshinter = FT_Get_Module_Interface( FT_FACE_LIBRARY( face ),
-                                              "pshinter" );
+                     "pshinter" );
 
     /* open the tokenizer; this will also check the font format */
     error = T1_Open_Face( face );
     if ( error )
-      goto Exit;
+        goto Exit;
 
     /* if we just wanted to check the format, leave successfully now */
     if ( face_index < 0 )
-      goto Exit;
+        goto Exit;
 
     /* check the face index */
     if ( face_index > 0 )
     {
-      FT_ERROR(( "T1_Face_Init: invalid face index\n" ));
-      error = T1_Err_Invalid_Argument;
-      goto Exit;
+        FT_ERROR( ( "T1_Face_Init: invalid face index\n" ) );
+        error = T1_Err_Invalid_Argument;
+        goto Exit;
     }
 
     /* now load the font program into the face object */
@@ -339,254 +339,255 @@
 
     /* set up root face fields */
     {
-      FT_Face  root = (FT_Face)&face->root;
+        FT_Face  root = ( FT_Face ) & face->root;
 
 
-      root->num_glyphs = type1->num_glyphs;
-      root->face_index = 0;
+        root->num_glyphs = type1->num_glyphs;
+        root->face_index = 0;
 
-      root->face_flags = FT_FACE_FLAG_SCALABLE    |
-                         FT_FACE_FLAG_HORIZONTAL  |
-                         FT_FACE_FLAG_GLYPH_NAMES |
-                         FT_FACE_FLAG_HINTER;
+        root->face_flags = FT_FACE_FLAG_SCALABLE    |
+                           FT_FACE_FLAG_HORIZONTAL  |
+                           FT_FACE_FLAG_GLYPH_NAMES |
+                           FT_FACE_FLAG_HINTER;
 
-      if ( info->is_fixed_pitch )
-        root->face_flags |= FT_FACE_FLAG_FIXED_WIDTH;
+        if ( info->is_fixed_pitch )
+            root->face_flags |= FT_FACE_FLAG_FIXED_WIDTH;
 
-      if ( face->blend )
-        root->face_flags |= FT_FACE_FLAG_MULTIPLE_MASTERS;
+        if ( face->blend )
+            root->face_flags |= FT_FACE_FLAG_MULTIPLE_MASTERS;
 
-      /* XXX: TODO -- add kerning with .afm support */
-
-
-      /* The following code to extract the family and the style is very   */
-      /* simplistic and might get some things wrong.  For a full-featured */
-      /* algorithm you might have a look at the whitepaper given at       */
-      /*                                                                  */
-      /*   http://blogs.msdn.com/text/archive/2007/04/23/wpf-font-selection-model.aspx */
-
-      /* get style name -- be careful, some broken fonts only */
-      /* have a `/FontName' dictionary entry!                 */
-      root->family_name = info->family_name;
-      root->style_name  = NULL;
-
-      if ( root->family_name )
-      {
-        char*  full   = info->full_name;
-        char*  family = root->family_name;
+        /* XXX: TODO -- add kerning with .afm support */
 
 
-        if ( full )
+        /* The following code to extract the family and the style is very   */
+        /* simplistic and might get some things wrong.  For a full-featured */
+        /* algorithm you might have a look at the whitepaper given at       */
+        /*                                                                  */
+        /*   http://blogs.msdn.com/text/archive/2007/04/23/wpf-font-selection-model.aspx */
+
+        /* get style name -- be careful, some broken fonts only */
+        /* have a `/FontName' dictionary entry!                 */
+        root->family_name = info->family_name;
+        root->style_name  = NULL;
+
+        if ( root->family_name )
         {
-          FT_Bool  the_same = TRUE;
+            char*  full   = info->full_name;
+            char*  family = root->family_name;
 
 
-          while ( *full )
-          {
-            if ( *full == *family )
+            if ( full )
             {
-              family++;
-              full++;
-            }
-            else
-            {
-              if ( *full == ' ' || *full == '-' )
-                full++;
-              else if ( *family == ' ' || *family == '-' )
-                family++;
-              else
-              {
-                the_same = FALSE;
+                FT_Bool  the_same = TRUE;
 
-                if ( !*family )
-                  root->style_name = full;
-                break;
-              }
-            }
-          }
 
-          if ( the_same )
-            root->style_name = (char *)"Regular";
+                while ( *full )
+                {
+                    if ( *full == *family )
+                    {
+                        family++;
+                        full++;
+                    }
+                    else
+                    {
+                        if ( *full == ' ' || *full == '-' )
+                            full++;
+                        else
+                            if ( *family == ' ' || *family == '-' )
+                                family++;
+                            else
+                            {
+                                the_same = FALSE;
+
+                                if ( !*family )
+                                    root->style_name = full;
+                                break;
+                            }
+                    }
+                }
+
+                if ( the_same )
+                    root->style_name = ( char * )"Regular";
+            }
         }
-      }
-      else
-      {
-        /* do we have a `/FontName'? */
-        if ( type1->font_name )
-          root->family_name = type1->font_name;
-      }
+        else
+        {
+            /* do we have a `/FontName'? */
+            if ( type1->font_name )
+                root->family_name = type1->font_name;
+        }
 
-      if ( !root->style_name )
-      {
+        if ( !root->style_name )
+        {
+            if ( info->weight )
+                root->style_name = info->weight;
+            else
+                /* assume `Regular' style because we don't know better */
+                root->style_name = ( char * )"Regular";
+        }
+
+        /* compute style flags */
+        root->style_flags = 0;
+        if ( info->italic_angle )
+            root->style_flags |= FT_STYLE_FLAG_ITALIC;
         if ( info->weight )
-          root->style_name = info->weight;
-        else
-          /* assume `Regular' style because we don't know better */
-          root->style_name = (char *)"Regular";
-      }
+        {
+            if ( !ft_strcmp( info->weight, "Bold"  ) ||
+                    !ft_strcmp( info->weight, "Black" ) )
+                root->style_flags |= FT_STYLE_FLAG_BOLD;
+        }
 
-      /* compute style flags */
-      root->style_flags = 0;
-      if ( info->italic_angle )
-        root->style_flags |= FT_STYLE_FLAG_ITALIC;
-      if ( info->weight )
-      {
-        if ( !ft_strcmp( info->weight, "Bold"  ) ||
-             !ft_strcmp( info->weight, "Black" ) )
-          root->style_flags |= FT_STYLE_FLAG_BOLD;
-      }
+        /* no embedded bitmap support */
+        root->num_fixed_sizes = 0;
+        root->available_sizes = 0;
 
-      /* no embedded bitmap support */
-      root->num_fixed_sizes = 0;
-      root->available_sizes = 0;
+        root->bbox.xMin =   type1->font_bbox.xMin             >> 16;
+        root->bbox.yMin =   type1->font_bbox.yMin             >> 16;
+        root->bbox.xMax = ( type1->font_bbox.xMax + 0xFFFFU ) >> 16;
+        root->bbox.yMax = ( type1->font_bbox.yMax + 0xFFFFU ) >> 16;
 
-      root->bbox.xMin =   type1->font_bbox.xMin             >> 16;
-      root->bbox.yMin =   type1->font_bbox.yMin             >> 16;
-      root->bbox.xMax = ( type1->font_bbox.xMax + 0xFFFFU ) >> 16;
-      root->bbox.yMax = ( type1->font_bbox.yMax + 0xFFFFU ) >> 16;
+        /* Set units_per_EM if we didn't set it in parse_font_matrix. */
+        if ( !root->units_per_EM )
+            root->units_per_EM = 1000;
 
-      /* Set units_per_EM if we didn't set it in parse_font_matrix. */
-      if ( !root->units_per_EM )
-        root->units_per_EM = 1000;
+        root->ascender  = ( FT_Short )( root->bbox.yMax );
+        root->descender = ( FT_Short )( root->bbox.yMin );
 
-      root->ascender  = (FT_Short)( root->bbox.yMax );
-      root->descender = (FT_Short)( root->bbox.yMin );
+        root->height = ( FT_Short )( ( root->units_per_EM * 12 ) / 10 );
+        if ( root->height < root->ascender - root->descender )
+            root->height = ( FT_Short )( root->ascender - root->descender );
 
-      root->height = (FT_Short)( ( root->units_per_EM * 12 ) / 10 );
-      if ( root->height < root->ascender - root->descender )
-        root->height = (FT_Short)( root->ascender - root->descender );
-
-      /* now compute the maximum advance width */
-      root->max_advance_width =
-        (FT_Short)( root->bbox.xMax );
-      {
-        FT_Pos  max_advance;
+        /* now compute the maximum advance width */
+        root->max_advance_width =
+            ( FT_Short )( root->bbox.xMax );
+        {
+            FT_Pos  max_advance;
 
 
-        error = T1_Compute_Max_Advance( face, &max_advance );
+            error = T1_Compute_Max_Advance( face, &max_advance );
 
-        /* in case of error, keep the standard width */
-        if ( !error )
-          root->max_advance_width = (FT_Short)max_advance;
-        else
-          error = T1_Err_Ok;   /* clear error */
-      }
+            /* in case of error, keep the standard width */
+            if ( !error )
+                root->max_advance_width = ( FT_Short )max_advance;
+            else
+                error = T1_Err_Ok;   /* clear error */
+        }
 
-      root->max_advance_height = root->height;
+        root->max_advance_height = root->height;
 
-      root->underline_position  = (FT_Short)info->underline_position;
-      root->underline_thickness = (FT_Short)info->underline_thickness;
+        root->underline_position  = ( FT_Short )info->underline_position;
+        root->underline_thickness = ( FT_Short )info->underline_thickness;
     }
 
     {
-      FT_Face  root = &face->root;
+        FT_Face  root = &face->root;
 
 
-      if ( psnames && psaux )
-      {
-        FT_CharMapRec    charmap;
-        T1_CMap_Classes  cmap_classes = psaux->t1_cmap_classes;
-        FT_CMap_Class    clazz;
-
-
-        charmap.face = root;
-
-        /* first of all, try to synthesize a Unicode charmap */
-        charmap.platform_id = 3;
-        charmap.encoding_id = 1;
-        charmap.encoding    = FT_ENCODING_UNICODE;
-
-        FT_CMap_New( cmap_classes->unicode, NULL, &charmap, NULL );
-
-        /* now, generate an Adobe Standard encoding when appropriate */
-        charmap.platform_id = 7;
-        clazz               = NULL;
-
-        switch ( type1->encoding_type )
+        if ( psnames && psaux )
         {
-        case T1_ENCODING_TYPE_STANDARD:
-          charmap.encoding    = FT_ENCODING_ADOBE_STANDARD;
-          charmap.encoding_id = TT_ADOBE_ID_STANDARD;
-          clazz               = cmap_classes->standard;
-          break;
+            FT_CharMapRec    charmap;
+            T1_CMap_Classes  cmap_classes = psaux->t1_cmap_classes;
+            FT_CMap_Class    clazz;
 
-        case T1_ENCODING_TYPE_EXPERT:
-          charmap.encoding    = FT_ENCODING_ADOBE_EXPERT;
-          charmap.encoding_id = TT_ADOBE_ID_EXPERT;
-          clazz               = cmap_classes->expert;
-          break;
 
-        case T1_ENCODING_TYPE_ARRAY:
-          charmap.encoding    = FT_ENCODING_ADOBE_CUSTOM;
-          charmap.encoding_id = TT_ADOBE_ID_CUSTOM;
-          clazz               = cmap_classes->custom;
-          break;
+            charmap.face = root;
 
-        case T1_ENCODING_TYPE_ISOLATIN1:
-          charmap.encoding    = FT_ENCODING_ADOBE_LATIN_1;
-          charmap.encoding_id = TT_ADOBE_ID_LATIN_1;
-          clazz               = cmap_classes->unicode;
-          break;
+            /* first of all, try to synthesize a Unicode charmap */
+            charmap.platform_id = 3;
+            charmap.encoding_id = 1;
+            charmap.encoding    = FT_ENCODING_UNICODE;
 
-        default:
-          ;
-        }
+            FT_CMap_New( cmap_classes->unicode, NULL, &charmap, NULL );
 
-        if ( clazz )
-          FT_CMap_New( clazz, NULL, &charmap, NULL );
+            /* now, generate an Adobe Standard encoding when appropriate */
+            charmap.platform_id = 7;
+            clazz               = NULL;
+
+            switch ( type1->encoding_type )
+            {
+            case T1_ENCODING_TYPE_STANDARD:
+                charmap.encoding    = FT_ENCODING_ADOBE_STANDARD;
+                charmap.encoding_id = TT_ADOBE_ID_STANDARD;
+                clazz               = cmap_classes->standard;
+                break;
+
+            case T1_ENCODING_TYPE_EXPERT:
+                charmap.encoding    = FT_ENCODING_ADOBE_EXPERT;
+                charmap.encoding_id = TT_ADOBE_ID_EXPERT;
+                clazz               = cmap_classes->expert;
+                break;
+
+            case T1_ENCODING_TYPE_ARRAY:
+                charmap.encoding    = FT_ENCODING_ADOBE_CUSTOM;
+                charmap.encoding_id = TT_ADOBE_ID_CUSTOM;
+                clazz               = cmap_classes->custom;
+                break;
+
+            case T1_ENCODING_TYPE_ISOLATIN1:
+                charmap.encoding    = FT_ENCODING_ADOBE_LATIN_1;
+                charmap.encoding_id = TT_ADOBE_ID_LATIN_1;
+                clazz               = cmap_classes->unicode;
+                break;
+
+            default:
+                ;
+            }
+
+            if ( clazz )
+                FT_CMap_New( clazz, NULL, &charmap, NULL );
 
 #if 0
-        /* Select default charmap */
-        if (root->num_charmaps)
-          root->charmap = root->charmaps[0];
+            /* Select default charmap */
+            if ( root->num_charmaps )
+                root->charmap = root->charmaps[0];
 #endif
-      }
+        }
     }
 
-  Exit:
+Exit:
     return error;
-  }
+}
 
 
-  /*************************************************************************/
-  /*                                                                       */
-  /* <Function>                                                            */
-  /*    T1_Driver_Init                                                     */
-  /*                                                                       */
-  /* <Description>                                                         */
-  /*    Initializes a given Type 1 driver object.                          */
-  /*                                                                       */
-  /* <Input>                                                               */
-  /*    driver :: A handle to the target driver object.                    */
-  /*                                                                       */
-  /* <Return>                                                              */
-  /*    FreeType error code.  0 means success.                             */
-  /*                                                                       */
-  FT_LOCAL_DEF( FT_Error )
-  T1_Driver_Init( T1_Driver  driver )
-  {
+/*************************************************************************/
+/*                                                                       */
+/* <Function>                                                            */
+/*    T1_Driver_Init                                                     */
+/*                                                                       */
+/* <Description>                                                         */
+/*    Initializes a given Type 1 driver object.                          */
+/*                                                                       */
+/* <Input>                                                               */
+/*    driver :: A handle to the target driver object.                    */
+/*                                                                       */
+/* <Return>                                                              */
+/*    FreeType error code.  0 means success.                             */
+/*                                                                       */
+FT_LOCAL_DEF( FT_Error )
+T1_Driver_Init( T1_Driver  driver )
+{
     FT_UNUSED( driver );
 
     return T1_Err_Ok;
-  }
+}
 
 
-  /*************************************************************************/
-  /*                                                                       */
-  /* <Function>                                                            */
-  /*    T1_Driver_Done                                                     */
-  /*                                                                       */
-  /* <Description>                                                         */
-  /*    Finalizes a given Type 1 driver.                                   */
-  /*                                                                       */
-  /* <Input>                                                               */
-  /*    driver :: A handle to the target Type 1 driver.                    */
-  /*                                                                       */
-  FT_LOCAL_DEF( void )
-  T1_Driver_Done( T1_Driver  driver )
-  {
+/*************************************************************************/
+/*                                                                       */
+/* <Function>                                                            */
+/*    T1_Driver_Done                                                     */
+/*                                                                       */
+/* <Description>                                                         */
+/*    Finalizes a given Type 1 driver.                                   */
+/*                                                                       */
+/* <Input>                                                               */
+/*    driver :: A handle to the target Type 1 driver.                    */
+/*                                                                       */
+FT_LOCAL_DEF( void )
+T1_Driver_Done( T1_Driver  driver )
+{
     FT_UNUSED( driver );
-  }
+}
 
 
 /* END */

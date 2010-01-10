@@ -1,0 +1,66 @@
+
+dofile( "../utility.premake4" )
+
+project( "OggVorbis" )
+
+	language( "C++" )
+	
+	if os.get() == "windows"
+	then
+		kind( "SharedLib" )
+		files( "OggVorbis/lib/vorbisfile.def" )
+	else
+		kind( "StaticLib" )
+	end
+	
+	-- use compiler name for folder /build/compiler
+	location( "../Build/" .. _ACTION )
+	
+	files
+	{
+		"OggVorbis/lib/analysis.c",
+		"OggVorbis/lib/bitrate.c",
+		"OggVorbis/lib/block.c",
+		"OggVorbis/lib/codebook.c",
+		"OggVorbis/lib/envelope.c",
+		"OggVorbis/lib/floor0.c",
+		"OggVorbis/lib/floor1.c",
+		"OggVorbis/lib/framing.c",
+		"OggVorbis/lib/info.c",
+		"OggVorbis/lib/lookup.c",
+		"OggVorbis/lib/lpc.c",
+		"OggVorbis/lib/lsp.c",
+		"OggVorbis/lib/mapping0.c",
+		"OggVorbis/lib/mdct.c",
+		"OggVorbis/lib/psy.c",
+		"OggVorbis/lib/registry.c",
+		"OggVorbis/lib/res0.c",
+		"OggVorbis/lib/sharedbook.c",
+		"OggVorbis/lib/smallft.c",
+		"OggVorbis/lib/synthesis.c",
+		"OggVorbis/lib/vorbisenc.c",
+		"OggVorbis/lib/vorbisfile.c",
+		"OggVorbis/lib/window.c",
+		"OggVorbis/lib/bitwise.c"	
+	}
+	
+	-- add window defines 
+	if os.get() == "windows"
+	then
+		defines
+		{
+			"WIN32",
+			"_WINDOWS",
+			"NOMINMAX" -- prevent windows.h from defining them
+		}
+	end
+	
+	-- include dirs
+	includedirs 
+	{
+		"zlib",
+		"OggVorbis/include"
+	}
+	
+	
+	CUtil.projConfig( "OggVorbis" )

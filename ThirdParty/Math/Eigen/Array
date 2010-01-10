@@ -5,7 +5,8 @@
 
 #include "src/Core/util/DisableMSVCWarnings.h"
 
-namespace Eigen {
+namespace Eigen
+{
 
 /** \defgroup Array_Module Array module
   * This module provides several handy features to manipulate matrices as simple array of values.

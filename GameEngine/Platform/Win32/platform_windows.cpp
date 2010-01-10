@@ -20,7 +20,6 @@
 #include "../../Audio/oal/OAL_AudioDriver.hpp"
 
 #include "../../Core/Engine.hpp"
-#include "../../Core/CVar.hpp"
 #include "../../Core/MemoryManager.hpp"
 #include "../../Core/MemoryPolicyMalloc.hpp"
 #include "../../Core/FileManager.hpp"
@@ -109,12 +108,12 @@ int ParseCommandLine( list< shared_array< char > >& arglist )
 void InitializeWindow( shared_ptr< Engine >& engine, shared_ptr< AppWindow >& appWindow )
 {
 	RECT rt;
-	shared_ptr< CVar > variables = engine->GetVariables();
+	//shared_ptr< CVar > variables = engine->GetVariables();
 
 	LOG_I( module + "^w - Window Attributes - \n" );
-	LONG width = variables->GetVarValue( "vid_width", EmptyType<LONG>() );
-	LONG height = variables->GetVarValue( "vid_height", EmptyType<LONG>() );
-	int32_t fullscreen = variables->GetVarValue( "vid_fullscreen", EmptyType<int32_t>() );
+	LONG width = engine->GetVariable<int32_t>( "vid_width" );//variables->GetVarValue( "vid_width", EmptyType<LONG>() );
+	LONG height = engine->GetVariable<int32_t>( "vid_height" );//variables->GetVarValue( "vid_height", EmptyType<LONG>() );
+	int32_t fullscreen = engine->GetVariable<int32_t>( "vid_fullscreen" );//variables->GetVarValue( "vid_fullscreen", EmptyType<int32_t>() );
 
 	LOG_I( module + "^w Width - %1% \n", width );
 	LOG_I( module + "^w Height - %1% \n", height );
@@ -142,6 +141,9 @@ void SwapCurrentRunningApp( shared_ptr<Application>& currentApp, shared_ptr<Appl
 		engine->UnInitialize();
 
 		engine->Initialize( g_gfxDriver, g_audioDriver, data );
+
+		
+
 		engine->LoadConfig( "Data/Config/Config.cfg" );
 		newRunApp->Init( g_argc, g_argList, engine );
 		
@@ -155,6 +157,8 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 					 LPTSTR    /*lpCmdLine*/,
 					 int       /*nCmdShow*/)
 {
+
+	RegisterExceptionHandler();
 
 	try
 	{
@@ -190,7 +194,6 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 
 			windowData = any( spAppWindow->Get( EmptyType<HDC>() ) );
 
-
 			engine->Initialize( g_gfxDriver , g_audioDriver, windowData );
 			
 			if( FileManager::instance().openPack( "Data.zip" ) )
@@ -200,6 +203,12 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 			{
 				LOG_I( module + " ^rAll resource data being read from file io.\n" );
 			}
+
+			/*//------------------------------------------------------------------------
+			boost::shared_ptr< IFile > layoutTest;
+			FileManager::instance().getFile( "Data/Config/window.layout", layoutTest );
+			engine->GetGuiManager()->LoadLayout( layoutTest );
+			//*/
 
 			engine->LoadConfig( "Data/Config/Config.cfg" );
 
@@ -245,6 +254,10 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 			if( g_keys[ VK_F2 ] == true && appChangeDelay >= 1.0f )
 			{
 				SwapCurrentRunningApp( currentAppRunning, nextAppRunning, windowData );
+				appChangeDelay = 0.0f;
+			}else if ( g_keys[ VK_F3 ] == true && appChangeDelay >= 1.0f )
+			{
+				SwapCurrentRunningApp( currentAppRunning, currentAppRunning, windowData );
 				appChangeDelay = 0.0f;
 			}
 
@@ -323,7 +336,7 @@ void ScreenToWorld( int& x, int& y )
 	if( !g_engine.expired() )
 	{
 		shared_ptr<Engine> ptr = g_engine.lock();
-		Math::SpVector2r pos = Math::make_vector<SpReal>( static_cast<SpReal>(x), static_cast<SpReal>(y) );
+		Math::Vector2f pos = Math::make_vector<SpReal>( static_cast<SpReal>(x), static_cast<SpReal>(y) );
 		ptr->ScreenToWorld( pos, pos );
 		x = static_cast<int>(pos[0]);
 		y = static_cast<int>(pos[1]);

@@ -12,7 +12,7 @@ const boost::int32_t kMaxLoadBuffers = 2;
 
 void OalAudioStreamObject::Stream()
 {
-	ALint bufferQueseStatus,looping;
+	ALint bufferQueseStatus;
 	ALuint currentBuffer;
 	ALenum format;
 	ALsizei size;
@@ -118,16 +118,16 @@ void OalAudioStreamObject::DoPause()
 	m_audioDriver->RemoveStreamObject( this );
 }
 
-void OalAudioStreamObject::DoSetPosition( const Math::SpVector3r& position )
+void OalAudioStreamObject::DoSetPosition( const Math::Vector3f& position )
 {
 	alSource3f( m_sourceHandle, AL_POSITION, position[0], position[1], position[2] );
 }
 
-const Math::SpVector3r OalAudioStreamObject::DoGetPosition() const
+const Math::Vector3f OalAudioStreamObject::DoGetPosition() const
 {
 	ALfloat position[3];
 	alGetSourcefv( m_sourceHandle, AL_POSITION, position );
-	return Math::SpVector3r( position[0],position[1],position[2] );
+	return Math::Vector3f( position[0],position[1],position[2] );
 }
 
 Cloneable* OalAudioStreamObject::DoClone() const

@@ -10,7 +10,7 @@ Projection Projection::CreateOrtho2D( SpReal left, SpReal top, SpReal right, SpR
 	const SpReal zNear = 1.0f;
 	const SpReal zFar = -1.0f;
 
-	projection.proj = Math::SpMatrix4x4r::Identity();
+	projection.proj = Math::Matrix4x4f::Identity();
 	projection.proj( 0, 0 ) = 2.0f / ( right - left );
 	projection.proj( 1, 1 ) = 2.0f / ( top - bottom );
 	projection.proj( 2, 2 ) = -2.0f / ( zFar - zNear );
@@ -27,7 +27,7 @@ Projection Projection::CreatePerspective( SpReal fov, SpReal aspectRatio, SpReal
 {
 	Projection projection;
 
-	projection.proj = Math::SpMatrix4x4r::Identity();
+	projection.proj = Math::Matrix4x4f::Identity();
 	projection.proj( 0, 0 ) = aspectRatio;
 	projection.proj( 1, 1 ) = 1.0f / tan( Math::Angle2Degree( fov / 2.0f )  );
 	projection.proj( 2, 2 ) = ( zFar + zNear )/( zNear - zFar );
