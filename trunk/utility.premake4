@@ -8,8 +8,98 @@ function RemoveDirs( directorys_ )
 	end
 end
 
+function ProjConfig( projName )
+ 	--------------------------------
+	-- Debug config
+	--------------------------------
+	configuration( "Debug" .. _ACTION )
+	
+		targetdir( "../Build/bin/Debug" .. _ACTION )
+		-- set the binary output name
+		targetname( projName .. "_debug" .. _ACTION )
+		-- set the directory were built objs go
+		objdir( "../Obj/" .. _ACTION .. "/debug" )
+		
+		defines
+		{
+			"_DEBUG"
+		}
+		
+		flags
+		{
+			"No64BitChecks",
+			"NoManifest",
+			"NoPCH",
+			"NoRTTI",
+			"StaticRuntime",
+			"Symbols"
+		}
+	configuration ({})
+	
+	--------------------------------
+	-- Release config
+	--------------------------------
+	configuration( "Release" .. _ACTION )
+	
+		targetdir( "../Build/bin/Release" .. _ACTION )
+		-- set the binary output name
+		targetname( projName .. "_Release" .. _ACTION )
+		-- set the directory were built objs go
+		objdir( "../Obj/" .. _ACTION .. "/release" )
+		
+		
+		defines
+		{
+			"NDEBUG"
+		}
+		
+		flags
+		{
+			"No64BitChecks",
+			"NoManifest",
+			"NoPCH",
+			"NoRTTI",
+			"StaticRuntime",
+			"OptimizeSpeed",
+			"NoEditAndContinue"
+		}
+	configuration ({})
+	
+	
+	--------------------------------
+	-- Final config
+	--------------------------------
+	configuration( "Final" .. _ACTION )
+	
+		targetdir( "../Build/bin/Final" .. _ACTION )
+		-- set the binary output name
+		targetname( projName )
+		-- set the directory were built objs go
+		objdir( "../Obj/" .. _ACTION .. "/Final" )
+		
+		
+		defines
+		{
+			"NDEBUG"
+		}
+		
+		flags
+		{
+			"No64BitChecks",
+			"NoManifest",
+			"NoPCH",
+			"NoRTTI",
+			"StaticRuntime",
+			"OptimizeSpeed",
+			"NoEditAndContinue"
+		}
+	configuration ({})
+	
+end
+
 -- CUtil class
 CUtil = 
 {
+	projConfig = ProjConfig,
 	rmDirs = RemoveDirs
 }

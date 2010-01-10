@@ -19,7 +19,7 @@ namespace GUI
 	{
 	public:
 		virtual ~GuiText(){}
-		GuiText( const Math::SpVector2r& position, const boost::shared_ptr<GfxDriver>& gfxDriver,
+		GuiText( const Math::Vector2f& position, const boost::shared_ptr<GfxDriver>& gfxDriver,
 			const Rgba& textColor, boost::uint32_t maxCharLen, const boost::shared_ptr<Font>& font, const SpString& text, bool multiLine = false );
 
 		void SetCharPos( boost::uint32_t posX )

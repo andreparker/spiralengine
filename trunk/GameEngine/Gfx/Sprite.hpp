@@ -71,7 +71,7 @@ namespace Spiral
 			m_position[1] = y;
 		}
 
-		const Math::SpVector2r& GetPosition()const
+		const Math::Vector2f& GetPosition()const
 		{
 			return m_position;
 		}
@@ -140,7 +140,7 @@ namespace Spiral
 		boost::shared_ptr< VertexBuffer > m_buffer;
 		Rect< SpReal > m_spriteTexCoords;
 
-		Math::SpVector2r m_position;
+		Math::Vector2f m_position;
 		SpReal m_angle,m_width,m_height;
 		bool m_alphaBlend;
 		bool m_additiveBlend;

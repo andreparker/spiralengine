@@ -1,4 +1,5 @@
 #include "Log.hpp"
+#include "../Script/ScriptManager.hpp"
 
 #include <cstdlib>
 #include <cstdio>
@@ -17,6 +18,17 @@ LogRouter::LogRouter()
 
 LogRouter::~LogRouter()
 {
+}
+
+void LogRouter::Register( const shared_ptr<ScriptManager>& scriptMgr )
+{
+	luabind::scope s = luabind::namespace_("Log")
+	[
+		luabind::def( "Log_I", Spiral::ScriptLog<Int2Bit<logFlag_system_init>::value> ),
+		luabind::def( "Log_E", Spiral::ScriptLog<Int2Bit<logFlag_error>::value> )
+	];
+
+	scriptMgr->RegisterModule( s );
 }
 
 void LogRouter::addLogger( shared_ptr< LogModule >& logger )
@@ -100,3 +112,4 @@ std::string StripColorCodes( const std::string& logStr )
 	
 	return logStr;
 }
+

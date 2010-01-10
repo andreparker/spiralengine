@@ -21,13 +21,13 @@ namespace Spiral
 		bool Initialize( const boost::any& data );
 		bool UnInitialize();
 
-		void SetWorld( const Math::SpMatrix4x4r& world );
-		void SetView( const Math::SpMatrix4x4r& view );
-		void SetProjection( const Math::SpMatrix4x4r& proj );
-		void GetView( Math::SpMatrix4x4r& view );
-		void GetProjection( Math::SpMatrix4x4r& proj );
+		void SetWorld( const Math::Matrix4x4f& world );
+		void SetView( const Math::Matrix4x4f& view );
+		void SetProjection( const Math::Matrix4x4f& proj );
+		void GetView( Math::Matrix4x4f& view );
+		void GetProjection( Math::Matrix4x4f& proj );
 
-		void Draw( const Math::SpVector2r& position, const Rect< SpReal >& rect, const Rect< SpReal >& textureCoords );
+		void Draw( const Math::Vector2f& position, const Rect< SpReal >& rect, const Rect< SpReal >& textureCoords );
 		void Draw( const std::list< Sprite* >& spriteList );
 		void Draw( boost::shared_ptr<Sprite>& sprite );
 		bool CreateSprite( boost::shared_ptr< Sprite >& sprite, boost::shared_ptr< Texture >& texture, const Rect< SpReal >& spriteTexCoords, const Rect< SpReal >& spriteInfo );
@@ -58,7 +58,7 @@ namespace Spiral
 		typedef std::list< RenderState* >::iterator StateItr;
 		std::list< RenderState* > m_stateList;
 
-		Math::SpMatrix4x4r m_view,m_world;
+		Math::Matrix4x4f m_view,m_world;
 		boost::int32_t m_scrWidth,m_scrHeight;
 
 	};

@@ -5,49 +5,49 @@
 #include "src/Core/util/DisableMSVCWarnings.h"
 
 #ifdef _MSC_VER
-  #include <malloc.h> // for _aligned_malloc -- need it regardless of whether vectorization is enabled
-  #if (_MSC_VER >= 1500) // 2008 or later
-    // Remember that usage of defined() in a #define is undefined by the standard.
-    // a user reported that in 64-bit mode, MSVC doesn't care to define _M_IX86_FP.
-    #if (defined(_M_IX86_FP) && (_M_IX86_FP >= 2)) || defined(_M_X64)
-      #define EIGEN_SSE2_ON_MSVC_2008_OR_LATER
-    #endif   
-  #endif
+#include <malloc.h> // for _aligned_malloc -- need it regardless of whether vectorization is enabled
+#if (_MSC_VER >= 1500) // 2008 or later
+// Remember that usage of defined() in a #define is undefined by the standard.
+// a user reported that in 64-bit mode, MSVC doesn't care to define _M_IX86_FP.
+#if (defined(_M_IX86_FP) && (_M_IX86_FP >= 2)) || defined(_M_X64)
+#define EIGEN_SSE2_ON_MSVC_2008_OR_LATER
+#endif
+#endif
 #endif
 
 #ifdef __GNUC__
-  #define EIGEN_GNUC_AT_LEAST(x,y) ((__GNUC__>=x && __GNUC_MINOR__>=y) || __GNUC__>x)
+#define EIGEN_GNUC_AT_LEAST(x,y) ((__GNUC__>=x && __GNUC_MINOR__>=y) || __GNUC__>x)
 #else
-  #define EIGEN_GNUC_AT_LEAST(x,y) 0
+#define EIGEN_GNUC_AT_LEAST(x,y) 0
 #endif
 
 // Remember that usage of defined() in a #define is undefined by the standard
 #if (defined __SSE2__) && ( (!defined __GNUC__) || EIGEN_GNUC_AT_LEAST(4,2) )
-  #define EIGEN_SSE2_BUT_NOT_OLD_GCC
+#define EIGEN_SSE2_BUT_NOT_OLD_GCC
 #endif
 
 #ifndef EIGEN_DONT_VECTORIZE
-  #if defined (EIGEN_SSE2_BUT_NOT_OLD_GCC) || defined(EIGEN_SSE2_ON_MSVC_2008_OR_LATER)
-    #define EIGEN_VECTORIZE
-    #define EIGEN_VECTORIZE_SSE
-    #include <emmintrin.h>
-    #include <xmmintrin.h>
-    #ifdef __SSE3__
-      #include <pmmintrin.h>
-    #endif
-    #ifdef __SSSE3__
-      #include <tmmintrin.h>
-    #endif
-  #elif defined __ALTIVEC__
-    #define EIGEN_VECTORIZE
-    #define EIGEN_VECTORIZE_ALTIVEC
-    #include <altivec.h>
-    // We need to #undef all these ugly tokens defined in <altivec.h>
-    // => use __vector instead of vector
-    #undef bool
-    #undef vector
-    #undef pixel
-  #endif
+#if defined (EIGEN_SSE2_BUT_NOT_OLD_GCC) || defined(EIGEN_SSE2_ON_MSVC_2008_OR_LATER)
+#define EIGEN_VECTORIZE
+#define EIGEN_VECTORIZE_SSE
+#include <emmintrin.h>
+#include <xmmintrin.h>
+#ifdef __SSE3__
+#include <pmmintrin.h>
+#endif
+#ifdef __SSSE3__
+#include <tmmintrin.h>
+#endif
+#elif defined __ALTIVEC__
+#define EIGEN_VECTORIZE
+#define EIGEN_VECTORIZE_ALTIVEC
+#include <altivec.h>
+// We need to #undef all these ugly tokens defined in <altivec.h>
+// => use __vector instead of vector
+#undef bool
+#undef vector
+#undef pixel
+#endif
 #endif
 
 #include <cstdlib>
@@ -61,11 +61,11 @@
 #include <limits>
 
 #if (defined(_CPPUNWIND) || defined(__EXCEPTIONS)) && !defined(EIGEN_NO_EXCEPTIONS)
-  #define EIGEN_EXCEPTIONS
+#define EIGEN_EXCEPTIONS
 #endif
 
 #ifdef EIGEN_EXCEPTIONS
-  #include <new>
+#include <new>
 #endif
 
 // this needs to be done after all possible windows C header includes and before any Eigen source includes
@@ -75,7 +75,8 @@
 #error The preprocessor symbols 'min' or 'max' are defined. If you are compiling on Windows, do #define NOMINMAX to prevent windows.h from defining these symbols.
 #endif
 
-namespace Eigen {
+namespace Eigen
+{
 
 /** \defgroup Core_Module Core module
   * This is the main module of Eigen providing dense matrix and vector support
@@ -100,9 +101,9 @@ namespace Eigen {
 #include "src/Core/GenericPacketMath.h"
 
 #if defined EIGEN_VECTORIZE_SSE
-  #include "src/Core/arch/SSE/PacketMath.h"
+#include "src/Core/arch/SSE/PacketMath.h"
 #elif defined EIGEN_VECTORIZE_ALTIVEC
-  #include "src/Core/arch/AltiVec/PacketMath.h"
+#include "src/Core/arch/AltiVec/PacketMath.h"
 #endif
 
 #ifndef EIGEN_CACHEFRIENDLY_PRODUCT_THRESHOLD
@@ -114,8 +115,8 @@ namespace Eigen {
 #include "src/Core/Coeffs.h"
 
 #ifndef EIGEN_PARSED_BY_DOXYGEN // work around Doxygen bug triggered by Assign.h r814874
-                                // at least confirmed with Doxygen 1.5.5 and 1.5.6
-  #include "src/Core/Assign.h"
+// at least confirmed with Doxygen 1.5.5 and 1.5.6
+#include "src/Core/Assign.h"
 #endif
 
 #include "src/Core/MatrixStorage.h"

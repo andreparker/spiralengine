@@ -24,8 +24,8 @@ namespace Audio
 		virtual void DoPause();
 		virtual void DoSetVolume( SpReal vol );
 
-		virtual void DoSetPosition( const Math::SpVector3r& position );
-		virtual const Math::SpVector3r DoGetPosition()const;
+		virtual void DoSetPosition( const Math::Vector3f& position );
+		virtual const Math::Vector3f DoGetPosition()const;
 
 		virtual Cloneable* DoClone()const;
 

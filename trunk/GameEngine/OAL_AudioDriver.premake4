@@ -1,0 +1,44 @@
+
+dofile( "../utility.premake4" )
+
+project( "OAL_AudioDriver" )
+	
+	language( "C++" )
+	kind( "StaticLib" )
+	
+	-- use compiler name for folder /build/compiler
+	location( "../Build/" .. _ACTION )
+	
+	files
+	{
+		"Audio/OAL/**.cpp",
+		"Audio/OAL/**.hpp"
+	}
+
+	-- add window defines 
+	if os.get() == "windows"
+	then
+		defines
+		{
+			"WIN32",
+			"_WINDOWS",
+			"NOMINMAX" -- prevent windows.h from defining them
+		}
+		-- link with AL
+		links
+		{
+			"OpenAL32"
+		}
+	end
+	
+	-- add disabling of depricated warnings
+	if _ACTION == "vs2005" or _ACTION == "vs2008"
+	then
+		defines
+		{
+			"_CRT_SECURE_NO_WARNINGS"
+		}
+	end
+	
+	CUtil.projConfig( "OAL_AudioDriver" )
+	

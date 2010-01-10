@@ -23,13 +23,13 @@ namespace Spiral
         virtual bool DoInitialize( const boost::any& data );
         virtual bool DoUnInitialize();
 
-		virtual void DoSetWorld( const Math::SpMatrix4x4r& world );
-		virtual void DoSetView( const Math::SpMatrix4x4r& view );
-		virtual void DoSetProjection( const Math::SpMatrix4x4r& proj );
-		virtual void DoGetView( Math::SpMatrix4x4r& view );
-		virtual void DoGetProjection( Math::SpMatrix4x4r& proj );
+		virtual void DoSetWorld( const Math::Matrix4x4f& world );
+		virtual void DoSetView( const Math::Matrix4x4f& view );
+		virtual void DoSetProjection( const Math::Matrix4x4f& proj );
+		virtual void DoGetView( Math::Matrix4x4f& view );
+		virtual void DoGetProjection( Math::Matrix4x4f& proj );
 
-		virtual void DoDraw( const Math::SpVector2r& position, const Rect< SpReal >& rect, const Rect< SpReal >& textureCoords );
+		virtual void DoDraw( const Math::Vector2f& position, const Rect< SpReal >& rect, const Rect< SpReal >& textureCoords );
 		virtual void DoDraw( const std::list< Sprite* >& spriteList );
 		virtual void DoDraw( boost::shared_ptr<Sprite>& sprite );
 		virtual bool DoCreateSprite( boost::shared_ptr< Sprite >& sprite, boost::shared_ptr< Texture >& texture, const Rect< SpReal >& spriteTexCoords, const Rect< SpReal >& spriteInfo );

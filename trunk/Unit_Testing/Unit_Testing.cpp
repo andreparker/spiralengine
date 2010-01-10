@@ -16,6 +16,7 @@
 #include <iostream>
 #include <algorithm>
 #include <boost/function.hpp>
+#include <boost/functional/hash.hpp>
 
 using namespace Spiral;
 using namespace boost;
@@ -94,4 +95,12 @@ BOOST_AUTO_TEST_CASE( PowerOf2_Rounding )
 	cout << "next power2 47 = " << RoundNextPwr2( 47 ) << endl;
 	cout << "next power2 56 = " << RoundNextPwr2( 56 ) << endl;
 	cout << "next power2 100 = " << RoundNextPwr2( 100 ) << endl;
+}
+
+BOOST_AUTO_TEST_CASE( BoostHash )
+{
+	boost::hash< string > test;
+	string str = "A Simple String";
+
+	cout << "hash for str: " << str <<" = "<< test( str ) << endl;
 }

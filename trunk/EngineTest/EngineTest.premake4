@@ -1,4 +1,6 @@
 
+dofile( "../utility.premake4" )
+
 project( "SimpleApp" )
 
 	language( "C++" )
@@ -45,60 +47,4 @@ project( "SimpleApp" )
 		}
 	end
 	
-	--------------------------------
-	-- Debug config
-	--------------------------------
-	configuration( "Debug" .. _ACTION )
-	
-		targetdir( "../Build/bin/Debug" .. _ACTION )
-		-- set the binary output name
-		targetname( "SimpleApp_deb" .. _ACTION )
-		-- set the directory were built objs go
-		objdir( "../Obj/" .. _ACTION .. "/debug" )
-		
-		defines
-		{
-			"_DEBUG"
-		}
-		
-		flags
-		{
-			"ExtraWarnings",
-			"No64BitChecks",
-			"NoManifest",
-			"NoPCH",
-			"NoRTTI",
-			"StaticRuntime",
-			"Symbols"
-		}
-	configuration ({})
-	
-	--------------------------------
-	-- Release config
-	--------------------------------
-	configuration( "Release" .. _ACTION )
-	
-		targetdir( "../Build/bin/Release" .. _ACTION )
-		-- set the binary output name
-		targetname( "SimpleApp_rel" .. _ACTION )
-		-- set the directory were built objs go
-		objdir( "../Obj/" .. _ACTION .. "/release" )
-		
-		
-		defines
-		{
-			"NDEBUG"
-		}
-		
-		flags
-		{
-			"ExtraWarnings",
-			"No64BitChecks",
-			"NoManifest",
-			"NoPCH",
-			"NoRTTI",
-			"StaticRuntime",
-			"OptimizeSpeed",
-			"NoEditAndContinue"
-		}
-	configuration ({})
+	CUtil.projConfig( "SimpleApp" )

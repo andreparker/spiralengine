@@ -8,15 +8,28 @@
 using namespace Spiral;
 using namespace Spiral::GUI;
 
-GuiFrame::GuiFrame( const Math::SpVector2r& position, const Rect< SpReal >& rect, const Rect< SpReal >& textCoords, 
+GuiFrame::GuiFrame():
+GuiWindow( Math::make_vector<SpReal>(0,0), Rect<SpReal>(),Rect<SpReal>(),boost::shared_ptr<Texture>(), false ),
+m_frameBar(),m_posX( 0.0f ), m_posY( 0.0f ),m_mouseDown( false )
+{
+	CreateFrameBar( Rect<SpReal>(), Rect<SpReal>(), false );
+}
+
+GuiFrame::GuiFrame( const Math::Vector2f& position, const Rect< SpReal >& rect, const Rect< SpReal >& textCoords, 
 				   const boost::shared_ptr< Texture >& texture, bool bAlpha ): 
 GuiWindow( position, rect, textCoords, texture, bAlpha ), m_frameBar(),m_posX( 0.0f ), m_posY( 0.0f ),m_mouseDown( false )
 {
+	CreateFrameBar(rect, textCoords, bAlpha);
+}
+
+
+void GuiFrame::CreateFrameBar( const Rect< SpReal > &rect, const Rect< SpReal >& textCoords, bool bAlpha )
+{
 	m_frameBar = boost::make_shared< GuiWindow >
-		        ( Math::make_vector( 0.0f, 0.0f ), 
-				  Rect<SpReal>( 0.0f, rect.right, 30.0f, 0.0f ),
-				  textCoords, boost::shared_ptr< Texture >(),
-				  bAlpha );
+		( Math::make_vector( 0.0f, 0.0f ), 
+		Rect<SpReal>( 0.0f, rect.right, 30.0f, 0.0f ),
+		textCoords, boost::shared_ptr< Texture >(),
+		bAlpha );
 
 	m_frameBar->Show();
 
@@ -25,6 +38,13 @@ GuiWindow( position, rect, textCoords, texture, bAlpha ), m_frameBar(),m_posX( 0
 	m_frameBar->ConnectHandler( mouse_move, boost::bind( &GuiFrame::OnMouseMove, this, _1, _2, _3 ) );
 
 	AddChild( m_frameBar );
+}
+
+
+void GuiFrame::SetRect( const Rect< SpReal >& rt )
+{
+	GuiWindow::SetRect( rt );
+	m_frameBar->SetRect( Rect<SpReal>( 0.0f, rt.right, 30.0f, 0.0f ) );
 }
 
 void GuiFrame::OnMouseDownBar( boost::int32_t eventId, GuiWindow* window, const boost::any& data )
@@ -48,7 +68,7 @@ void GuiFrame::ResetWindow()
 
 void GuiFrame::SaveLastPosition( const mouse_position& pos )
 {
-	Math::SpVector2r windowPos = GetLocalPosition();
+	Math::Vector2f windowPos = GetLocalPosition();
 
 	m_posX = pos.x - windowPos[0];
 	m_posY = pos.y - windowPos[1];
@@ -59,7 +79,7 @@ void GuiFrame::OnMouseMove( boost::int32_t eventId, GuiWindow* window, const boo
 	if( m_mouseDown )
 	{
 		const mouse_position pos = boost::any_cast< const mouse_position >( data );
-		Math::SpVector2r windowPos = GetLocalPosition();
+		Math::Vector2f windowPos = GetLocalPosition();
 
 		SpReal distX = pos.x - windowPos[0];
 		SpReal distY = pos.y - windowPos[1];
@@ -71,3 +91,4 @@ void GuiFrame::OnMouseMove( boost::int32_t eventId, GuiWindow* window, const boo
 
 	}
 }
+

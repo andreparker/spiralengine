@@ -45,86 +45,102 @@
 template<typename BinaryOp, typename Lhs, typename Rhs>
 struct ei_traits<SparseCwiseBinaryOp<BinaryOp, Lhs, Rhs> >
 {
-  typedef typename ei_result_of<
-                     BinaryOp(
-                       typename Lhs::Scalar,
-                       typename Rhs::Scalar
-                     )
-                   >::type Scalar;
-  typedef typename Lhs::Nested LhsNested;
-  typedef typename Rhs::Nested RhsNested;
-  typedef typename ei_unref<LhsNested>::type _LhsNested;
-  typedef typename ei_unref<RhsNested>::type _RhsNested;
-  enum {
-    LhsCoeffReadCost = _LhsNested::CoeffReadCost,
-    RhsCoeffReadCost = _RhsNested::CoeffReadCost,
-    LhsFlags = _LhsNested::Flags,
-    RhsFlags = _RhsNested::Flags,
-    RowsAtCompileTime = Lhs::RowsAtCompileTime,
-    ColsAtCompileTime = Lhs::ColsAtCompileTime,
-    MaxRowsAtCompileTime = Lhs::MaxRowsAtCompileTime,
-    MaxColsAtCompileTime = Lhs::MaxColsAtCompileTime,
-    Flags = (int(LhsFlags) | int(RhsFlags)) & HereditaryBits,
-    CoeffReadCost = LhsCoeffReadCost + RhsCoeffReadCost + ei_functor_traits<BinaryOp>::Cost
-  };
+    typedef typename ei_result_of <
+    BinaryOp(
+        typename Lhs::Scalar,
+        typename Rhs::Scalar
+    )
+    >::type Scalar;
+    typedef typename Lhs::Nested LhsNested;
+    typedef typename Rhs::Nested RhsNested;
+    typedef typename ei_unref<LhsNested>::type _LhsNested;
+    typedef typename ei_unref<RhsNested>::type _RhsNested;
+    enum
+    {
+        LhsCoeffReadCost = _LhsNested::CoeffReadCost,
+        RhsCoeffReadCost = _RhsNested::CoeffReadCost,
+        LhsFlags = _LhsNested::Flags,
+        RhsFlags = _RhsNested::Flags,
+        RowsAtCompileTime = Lhs::RowsAtCompileTime,
+        ColsAtCompileTime = Lhs::ColsAtCompileTime,
+        MaxRowsAtCompileTime = Lhs::MaxRowsAtCompileTime,
+        MaxColsAtCompileTime = Lhs::MaxColsAtCompileTime,
+        Flags = ( int( LhsFlags ) | int( RhsFlags ) ) & HereditaryBits,
+        CoeffReadCost = LhsCoeffReadCost + RhsCoeffReadCost + ei_functor_traits<BinaryOp>::Cost
+    };
 };
 
 template<typename BinaryOp, typename Lhs, typename Rhs>
 class SparseCwiseBinaryOp : ei_no_assignment_operator,
-  public SparseMatrixBase<SparseCwiseBinaryOp<BinaryOp, Lhs, Rhs> >
+            public SparseMatrixBase<SparseCwiseBinaryOp<BinaryOp, Lhs, Rhs> >
 {
-  public:
+public:
 
     class InnerIterator;
 
-    EIGEN_SPARSE_GENERIC_PUBLIC_INTERFACE(SparseCwiseBinaryOp)
+    EIGEN_SPARSE_GENERIC_PUBLIC_INTERFACE( SparseCwiseBinaryOp )
     typedef typename ei_traits<SparseCwiseBinaryOp>::LhsNested LhsNested;
     typedef typename ei_traits<SparseCwiseBinaryOp>::RhsNested RhsNested;
     typedef typename ei_unref<LhsNested>::type _LhsNested;
     typedef typename ei_unref<RhsNested>::type _RhsNested;
 
-    EIGEN_STRONG_INLINE SparseCwiseBinaryOp(const Lhs& lhs, const Rhs& rhs, const BinaryOp& func = BinaryOp())
-      : m_lhs(lhs), m_rhs(rhs), m_functor(func)
+    EIGEN_STRONG_INLINE SparseCwiseBinaryOp( const Lhs& lhs, const Rhs& rhs, const BinaryOp& func = BinaryOp() )
+            : m_lhs( lhs ), m_rhs( rhs ), m_functor( func )
     {
-      EIGEN_STATIC_ASSERT((_LhsNested::Flags&RowMajorBit)==(_RhsNested::Flags&RowMajorBit),
-        BOTH_MATRICES_MUST_HAVE_THE_SAME_STORAGE_ORDER)
-      EIGEN_STATIC_ASSERT((ei_functor_allows_mixing_real_and_complex<BinaryOp>::ret
-                           ? int(ei_is_same_type<typename Lhs::RealScalar, typename Rhs::RealScalar>::ret)
-                           : int(ei_is_same_type<typename Lhs::Scalar, typename Rhs::Scalar>::ret)),
-        YOU_MIXED_DIFFERENT_NUMERIC_TYPES__YOU_NEED_TO_USE_THE_CAST_METHOD_OF_MATRIXBASE_TO_CAST_NUMERIC_TYPES_EXPLICITLY)
-      // require the sizes to match
-      EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(Lhs, Rhs)
-      ei_assert(lhs.rows() == rhs.rows() && lhs.cols() == rhs.cols());
+        EIGEN_STATIC_ASSERT( ( _LhsNested::Flags&RowMajorBit ) == ( _RhsNested::Flags&RowMajorBit ),
+                             BOTH_MATRICES_MUST_HAVE_THE_SAME_STORAGE_ORDER )
+        EIGEN_STATIC_ASSERT( ( ei_functor_allows_mixing_real_and_complex<BinaryOp>::ret
+                               ? int( ei_is_same_type<typename Lhs::RealScalar, typename Rhs::RealScalar>::ret )
+                               : int( ei_is_same_type<typename Lhs::Scalar, typename Rhs::Scalar>::ret ) ),
+                             YOU_MIXED_DIFFERENT_NUMERIC_TYPES__YOU_NEED_TO_USE_THE_CAST_METHOD_OF_MATRIXBASE_TO_CAST_NUMERIC_TYPES_EXPLICITLY )
+        // require the sizes to match
+        EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE( Lhs, Rhs )
+        ei_assert( lhs.rows() == rhs.rows() && lhs.cols() == rhs.cols() );
     }
 
-    EIGEN_STRONG_INLINE int rows() const { return m_lhs.rows(); }
-    EIGEN_STRONG_INLINE int cols() const { return m_lhs.cols(); }
+    EIGEN_STRONG_INLINE int rows() const
+    {
+        return m_lhs.rows();
+    }
+    EIGEN_STRONG_INLINE int cols() const
+    {
+        return m_lhs.cols();
+    }
 
-    EIGEN_STRONG_INLINE const _LhsNested& lhs() const { return m_lhs; }
-    EIGEN_STRONG_INLINE const _RhsNested& rhs() const { return m_rhs; }
-    EIGEN_STRONG_INLINE const BinaryOp& functor() const { return m_functor; }
+    EIGEN_STRONG_INLINE const _LhsNested& lhs() const
+    {
+        return m_lhs;
+    }
+    EIGEN_STRONG_INLINE const _RhsNested& rhs() const
+    {
+        return m_rhs;
+    }
+    EIGEN_STRONG_INLINE const BinaryOp& functor() const
+    {
+        return m_functor;
+    }
 
-  protected:
+protected:
     const LhsNested m_lhs;
     const RhsNested m_rhs;
     const BinaryOp m_functor;
 };
 
-template<typename BinaryOp, typename Lhs, typename Rhs, typename Derived,
-  int _LhsStorageMode = int(Lhs::Flags) & SparseBit,
-  int _RhsStorageMode = int(Rhs::Flags) & SparseBit>
+template < typename BinaryOp, typename Lhs, typename Rhs, typename Derived,
+int _LhsStorageMode = int( Lhs::Flags ) & SparseBit,
+int _RhsStorageMode = int( Rhs::Flags ) & SparseBit >
 class ei_sparse_cwise_binary_op_inner_iterator_selector;
 
 template<typename BinaryOp, typename Lhs, typename Rhs>
-class SparseCwiseBinaryOp<BinaryOp,Lhs,Rhs>::InnerIterator
-  : public ei_sparse_cwise_binary_op_inner_iterator_selector<BinaryOp,Lhs,Rhs, typename SparseCwiseBinaryOp<BinaryOp,Lhs,Rhs>::InnerIterator>
+class SparseCwiseBinaryOp<BinaryOp, Lhs, Rhs>::InnerIterator
+            : public ei_sparse_cwise_binary_op_inner_iterator_selector<BinaryOp, Lhs, Rhs, typename SparseCwiseBinaryOp<BinaryOp, Lhs, Rhs>::InnerIterator>
 {
-  public:
-    typedef ei_sparse_cwise_binary_op_inner_iterator_selector<
-      BinaryOp,Lhs,Rhs, InnerIterator> Base;
+public:
+    typedef ei_sparse_cwise_binary_op_inner_iterator_selector <
+    BinaryOp, Lhs, Rhs, InnerIterator > Base;
 
-    EIGEN_STRONG_INLINE InnerIterator(const SparseCwiseBinaryOp& binOp, int outer)
-      : Base(binOp,outer)
+    EIGEN_STRONG_INLINE InnerIterator( const SparseCwiseBinaryOp& binOp, int outer )
+            : Base( binOp, outer )
     {}
 };
 
@@ -147,51 +163,68 @@ class ei_sparse_cwise_binary_op_inner_iterator_selector<BinaryOp, Lhs, Rhs, Deri
     typedef typename ei_traits<CwiseBinaryXpr>::_RhsNested _RhsNested;
     typedef typename _LhsNested::InnerIterator LhsIterator;
     typedef typename _RhsNested::InnerIterator RhsIterator;
-  public:
+public:
 
-    EIGEN_STRONG_INLINE ei_sparse_cwise_binary_op_inner_iterator_selector(const CwiseBinaryXpr& xpr, int outer)
-      : m_lhsIter(xpr.lhs(),outer), m_rhsIter(xpr.rhs(),outer), m_functor(xpr.functor())
+    EIGEN_STRONG_INLINE ei_sparse_cwise_binary_op_inner_iterator_selector( const CwiseBinaryXpr& xpr, int outer )
+            : m_lhsIter( xpr.lhs(), outer ), m_rhsIter( xpr.rhs(), outer ), m_functor( xpr.functor() )
     {
-      this->operator++();
+        this->operator++();
     }
 
     EIGEN_STRONG_INLINE Derived& operator++()
     {
-      if (m_lhsIter && m_rhsIter && (m_lhsIter.index() == m_rhsIter.index()))
-      {
-        m_id = m_lhsIter.index();
-        m_value = m_functor(m_lhsIter.value(), m_rhsIter.value());
-        ++m_lhsIter;
-        ++m_rhsIter;
-      }
-      else if (m_lhsIter && (!m_rhsIter || (m_lhsIter.index() < m_rhsIter.index())))
-      {
-        m_id = m_lhsIter.index();
-        m_value = m_functor(m_lhsIter.value(), Scalar(0));
-        ++m_lhsIter;
-      }
-      else if (m_rhsIter && (!m_lhsIter || (m_lhsIter.index() > m_rhsIter.index())))
-      {
-        m_id = m_rhsIter.index();
-        m_value = m_functor(Scalar(0), m_rhsIter.value());
-        ++m_rhsIter;
-      }
-      else
-      {
-        m_id = -1;
-      }
-      return *static_cast<Derived*>(this);
+        if ( m_lhsIter && m_rhsIter && ( m_lhsIter.index() == m_rhsIter.index() ) )
+        {
+            m_id = m_lhsIter.index();
+            m_value = m_functor( m_lhsIter.value(), m_rhsIter.value() );
+            ++m_lhsIter;
+            ++m_rhsIter;
+        }
+        else
+            if ( m_lhsIter && ( !m_rhsIter || ( m_lhsIter.index() < m_rhsIter.index() ) ) )
+            {
+                m_id = m_lhsIter.index();
+                m_value = m_functor( m_lhsIter.value(), Scalar( 0 ) );
+                ++m_lhsIter;
+            }
+            else
+                if ( m_rhsIter && ( !m_lhsIter || ( m_lhsIter.index() > m_rhsIter.index() ) ) )
+                {
+                    m_id = m_rhsIter.index();
+                    m_value = m_functor( Scalar( 0 ), m_rhsIter.value() );
+                    ++m_rhsIter;
+                }
+                else
+                {
+                    m_id = -1;
+                }
+        return *static_cast<Derived*>( this );
     }
 
-    EIGEN_STRONG_INLINE Scalar value() const { return m_value; }
+    EIGEN_STRONG_INLINE Scalar value() const
+    {
+        return m_value;
+    }
 
-    EIGEN_STRONG_INLINE int index() const { return m_id; }
-    EIGEN_STRONG_INLINE int row() const { return m_lhsIter.row(); }
-    EIGEN_STRONG_INLINE int col() const { return m_lhsIter.col(); }
+    EIGEN_STRONG_INLINE int index() const
+    {
+        return m_id;
+    }
+    EIGEN_STRONG_INLINE int row() const
+    {
+        return m_lhsIter.row();
+    }
+    EIGEN_STRONG_INLINE int col() const
+    {
+        return m_lhsIter.col();
+    }
 
-    EIGEN_STRONG_INLINE operator bool() const { return m_id>=0; }
+    EIGEN_STRONG_INLINE operator bool() const
+    {
+        return m_id >= 0;
+    }
 
-  protected:
+protected:
     LhsIterator m_lhsIter;
     RhsIterator m_rhsIter;
     const BinaryOp& m_functor;
@@ -210,43 +243,58 @@ class ei_sparse_cwise_binary_op_inner_iterator_selector<ei_scalar_product_op<T>,
     typedef typename _LhsNested::InnerIterator LhsIterator;
     typedef typename ei_traits<CwiseBinaryXpr>::_RhsNested _RhsNested;
     typedef typename _RhsNested::InnerIterator RhsIterator;
-  public:
+public:
 
-    EIGEN_STRONG_INLINE ei_sparse_cwise_binary_op_inner_iterator_selector(const CwiseBinaryXpr& xpr, int outer)
-      : m_lhsIter(xpr.lhs(),outer), m_rhsIter(xpr.rhs(),outer), m_functor(xpr.functor())
+    EIGEN_STRONG_INLINE ei_sparse_cwise_binary_op_inner_iterator_selector( const CwiseBinaryXpr& xpr, int outer )
+            : m_lhsIter( xpr.lhs(), outer ), m_rhsIter( xpr.rhs(), outer ), m_functor( xpr.functor() )
     {
-      while (m_lhsIter && m_rhsIter && (m_lhsIter.index() != m_rhsIter.index()))
-      {
-        if (m_lhsIter.index() < m_rhsIter.index())
-          ++m_lhsIter;
-        else
-          ++m_rhsIter;
-      }
+        while ( m_lhsIter && m_rhsIter && ( m_lhsIter.index() != m_rhsIter.index() ) )
+        {
+            if ( m_lhsIter.index() < m_rhsIter.index() )
+                ++m_lhsIter;
+            else
+                ++m_rhsIter;
+        }
     }
 
     EIGEN_STRONG_INLINE Derived& operator++()
     {
-      ++m_lhsIter;
-      ++m_rhsIter;
-      while (m_lhsIter && m_rhsIter && (m_lhsIter.index() != m_rhsIter.index()))
-      {
-        if (m_lhsIter.index() < m_rhsIter.index())
-          ++m_lhsIter;
-        else
-          ++m_rhsIter;
-      }
-      return *static_cast<Derived*>(this);
+        ++m_lhsIter;
+        ++m_rhsIter;
+        while ( m_lhsIter && m_rhsIter && ( m_lhsIter.index() != m_rhsIter.index() ) )
+        {
+            if ( m_lhsIter.index() < m_rhsIter.index() )
+                ++m_lhsIter;
+            else
+                ++m_rhsIter;
+        }
+        return *static_cast<Derived*>( this );
     }
 
-    EIGEN_STRONG_INLINE Scalar value() const { return m_functor(m_lhsIter.value(), m_rhsIter.value()); }
+    EIGEN_STRONG_INLINE Scalar value() const
+    {
+        return m_functor( m_lhsIter.value(), m_rhsIter.value() );
+    }
 
-    EIGEN_STRONG_INLINE int index() const { return m_lhsIter.index(); }
-    EIGEN_STRONG_INLINE int row() const { return m_lhsIter.row(); }
-    EIGEN_STRONG_INLINE int col() const { return m_lhsIter.col(); }
+    EIGEN_STRONG_INLINE int index() const
+    {
+        return m_lhsIter.index();
+    }
+    EIGEN_STRONG_INLINE int row() const
+    {
+        return m_lhsIter.row();
+    }
+    EIGEN_STRONG_INLINE int col() const
+    {
+        return m_lhsIter.col();
+    }
 
-    EIGEN_STRONG_INLINE operator bool() const { return (m_lhsIter && m_rhsIter); }
+    EIGEN_STRONG_INLINE operator bool() const
+    {
+        return ( m_lhsIter && m_rhsIter );
+    }
 
-  protected:
+protected:
     LhsIterator m_lhsIter;
     RhsIterator m_rhsIter;
     const BinaryFunc& m_functor;
@@ -262,30 +310,44 @@ class ei_sparse_cwise_binary_op_inner_iterator_selector<ei_scalar_product_op<T>,
     typedef typename ei_traits<CwiseBinaryXpr>::_LhsNested _LhsNested;
     typedef typename ei_traits<CwiseBinaryXpr>::RhsNested RhsNested;
     typedef typename _LhsNested::InnerIterator LhsIterator;
-    enum { IsRowMajor = (int(Lhs::Flags)&RowMajorBit)==RowMajorBit };
-  public:
+    enum { IsRowMajor = ( int( Lhs::Flags ) & RowMajorBit ) == RowMajorBit };
+public:
 
-    EIGEN_STRONG_INLINE ei_sparse_cwise_binary_op_inner_iterator_selector(const CwiseBinaryXpr& xpr, int outer)
-      : m_rhs(xpr.rhs()), m_lhsIter(xpr.lhs(),outer), m_functor(xpr.functor()), m_outer(outer)
+    EIGEN_STRONG_INLINE ei_sparse_cwise_binary_op_inner_iterator_selector( const CwiseBinaryXpr& xpr, int outer )
+            : m_rhs( xpr.rhs() ), m_lhsIter( xpr.lhs(), outer ), m_functor( xpr.functor() ), m_outer( outer )
     {}
 
     EIGEN_STRONG_INLINE Derived& operator++()
     {
-      ++m_lhsIter;
-      return *static_cast<Derived*>(this);
+        ++m_lhsIter;
+        return *static_cast<Derived*>( this );
     }
 
     EIGEN_STRONG_INLINE Scalar value() const
-    { return m_functor(m_lhsIter.value(),
-                       m_rhs.coeff(IsRowMajor?m_outer:m_lhsIter.index(),IsRowMajor?m_lhsIter.index():m_outer)); }
+    {
+        return m_functor( m_lhsIter.value(),
+                          m_rhs.coeff( IsRowMajor ? m_outer : m_lhsIter.index(), IsRowMajor ? m_lhsIter.index() : m_outer ) );
+    }
 
-    EIGEN_STRONG_INLINE int index() const { return m_lhsIter.index(); }
-    EIGEN_STRONG_INLINE int row() const { return m_lhsIter.row(); }
-    EIGEN_STRONG_INLINE int col() const { return m_lhsIter.col(); }
+    EIGEN_STRONG_INLINE int index() const
+    {
+        return m_lhsIter.index();
+    }
+    EIGEN_STRONG_INLINE int row() const
+    {
+        return m_lhsIter.row();
+    }
+    EIGEN_STRONG_INLINE int col() const
+    {
+        return m_lhsIter.col();
+    }
 
-    EIGEN_STRONG_INLINE operator bool() const { return m_lhsIter; }
+    EIGEN_STRONG_INLINE operator bool() const
+    {
+        return m_lhsIter;
+    }
 
-  protected:
+protected:
     const RhsNested m_rhs;
     LhsIterator m_lhsIter;
     const BinaryFunc m_functor;
@@ -301,29 +363,43 @@ class ei_sparse_cwise_binary_op_inner_iterator_selector<ei_scalar_product_op<T>,
     typedef typename CwiseBinaryXpr::Scalar Scalar;
     typedef typename ei_traits<CwiseBinaryXpr>::_RhsNested _RhsNested;
     typedef typename _RhsNested::InnerIterator RhsIterator;
-    enum { IsRowMajor = (int(Rhs::Flags)&RowMajorBit)==RowMajorBit };
-  public:
+    enum { IsRowMajor = ( int( Rhs::Flags ) & RowMajorBit ) == RowMajorBit };
+public:
 
-    EIGEN_STRONG_INLINE ei_sparse_cwise_binary_op_inner_iterator_selector(const CwiseBinaryXpr& xpr, int outer)
-      : m_xpr(xpr), m_rhsIter(xpr.rhs(),outer), m_functor(xpr.functor()), m_outer(outer)
+    EIGEN_STRONG_INLINE ei_sparse_cwise_binary_op_inner_iterator_selector( const CwiseBinaryXpr& xpr, int outer )
+            : m_xpr( xpr ), m_rhsIter( xpr.rhs(), outer ), m_functor( xpr.functor() ), m_outer( outer )
     {}
 
     EIGEN_STRONG_INLINE Derived& operator++()
     {
-      ++m_rhsIter;
-      return *static_cast<Derived*>(this);
+        ++m_rhsIter;
+        return *static_cast<Derived*>( this );
     }
 
     EIGEN_STRONG_INLINE Scalar value() const
-    { return m_functor(m_xpr.lhs().coeff(IsRowMajor?m_outer:m_rhsIter.index(),IsRowMajor?m_rhsIter.index():m_outer), m_rhsIter.value()); }
+    {
+        return m_functor( m_xpr.lhs().coeff( IsRowMajor ? m_outer : m_rhsIter.index(), IsRowMajor ? m_rhsIter.index() : m_outer ), m_rhsIter.value() );
+    }
 
-    EIGEN_STRONG_INLINE int index() const { return m_rhsIter.index(); }
-    EIGEN_STRONG_INLINE int row() const { return m_rhsIter.row(); }
-    EIGEN_STRONG_INLINE int col() const { return m_rhsIter.col(); }
+    EIGEN_STRONG_INLINE int index() const
+    {
+        return m_rhsIter.index();
+    }
+    EIGEN_STRONG_INLINE int row() const
+    {
+        return m_rhsIter.row();
+    }
+    EIGEN_STRONG_INLINE int col() const
+    {
+        return m_rhsIter.col();
+    }
 
-    EIGEN_STRONG_INLINE operator bool() const { return m_rhsIter; }
+    EIGEN_STRONG_INLINE operator bool() const
+    {
+        return m_rhsIter;
+    }
 
-  protected:
+protected:
     const CwiseBinaryXpr& m_xpr;
     RhsIterator m_rhsIter;
     const BinaryFunc& m_functor;
@@ -337,52 +413,52 @@ class ei_sparse_cwise_binary_op_inner_iterator_selector<ei_scalar_product_op<T>,
 
 template<typename Derived>
 template<typename OtherDerived>
-EIGEN_STRONG_INLINE const SparseCwiseBinaryOp<ei_scalar_difference_op<typename ei_traits<Derived>::Scalar>,
-                                 Derived, OtherDerived>
-SparseMatrixBase<Derived>::operator-(const SparseMatrixBase<OtherDerived> &other) const
+EIGEN_STRONG_INLINE const SparseCwiseBinaryOp < ei_scalar_difference_op<typename ei_traits<Derived>::Scalar>,
+Derived, OtherDerived >
+SparseMatrixBase<Derived>::operator-( const SparseMatrixBase<OtherDerived> &other ) const
 {
-  return SparseCwiseBinaryOp<ei_scalar_difference_op<Scalar>,
-                       Derived, OtherDerived>(derived(), other.derived());
+    return SparseCwiseBinaryOp < ei_scalar_difference_op<Scalar>,
+           Derived, OtherDerived > ( derived(), other.derived() );
 }
 
 template<typename Derived>
 template<typename OtherDerived>
 EIGEN_STRONG_INLINE Derived &
-SparseMatrixBase<Derived>::operator-=(const SparseMatrixBase<OtherDerived> &other)
+SparseMatrixBase<Derived>::operator-=( const SparseMatrixBase<OtherDerived> &other )
 {
-  return *this = derived() - other.derived();
+    return *this = derived() - other.derived();
 }
 
 template<typename Derived>
 template<typename OtherDerived>
 EIGEN_STRONG_INLINE const SparseCwiseBinaryOp<ei_scalar_sum_op<typename ei_traits<Derived>::Scalar>, Derived, OtherDerived>
-SparseMatrixBase<Derived>::operator+(const SparseMatrixBase<OtherDerived> &other) const
+SparseMatrixBase<Derived>::operator+( const SparseMatrixBase<OtherDerived> &other ) const
 {
-  return SparseCwiseBinaryOp<ei_scalar_sum_op<Scalar>, Derived, OtherDerived>(derived(), other.derived());
+    return SparseCwiseBinaryOp<ei_scalar_sum_op<Scalar>, Derived, OtherDerived>( derived(), other.derived() );
 }
 
 template<typename Derived>
 template<typename OtherDerived>
 EIGEN_STRONG_INLINE Derived &
-SparseMatrixBase<Derived>::operator+=(const SparseMatrixBase<OtherDerived>& other)
+SparseMatrixBase<Derived>::operator+=( const SparseMatrixBase<OtherDerived>& other )
 {
-  return *this = derived() + other.derived();
+    return *this = derived() + other.derived();
 }
 
 template<typename ExpressionType>
 template<typename OtherDerived>
 EIGEN_STRONG_INLINE const EIGEN_SPARSE_CWISE_PRODUCT_RETURN_TYPE
-SparseCwise<ExpressionType>::operator*(const SparseMatrixBase<OtherDerived> &other) const
+SparseCwise<ExpressionType>::operator*( const SparseMatrixBase<OtherDerived> &other ) const
 {
-  return EIGEN_SPARSE_CWISE_PRODUCT_RETURN_TYPE(_expression(), other.derived());
+    return EIGEN_SPARSE_CWISE_PRODUCT_RETURN_TYPE( _expression(), other.derived() );
 }
 
 template<typename ExpressionType>
 template<typename OtherDerived>
 EIGEN_STRONG_INLINE const EIGEN_SPARSE_CWISE_PRODUCT_RETURN_TYPE
-SparseCwise<ExpressionType>::operator*(const MatrixBase<OtherDerived> &other) const
+SparseCwise<ExpressionType>::operator*( const MatrixBase<OtherDerived> &other ) const
 {
-  return EIGEN_SPARSE_CWISE_PRODUCT_RETURN_TYPE(_expression(), other.derived());
+    return EIGEN_SPARSE_CWISE_PRODUCT_RETURN_TYPE( _expression(), other.derived() );
 }
 
 // template<typename ExpressionType>
@@ -403,9 +479,9 @@ SparseCwise<ExpressionType>::operator*(const MatrixBase<OtherDerived> &other) co
 
 template<typename ExpressionType>
 template<typename OtherDerived>
-inline ExpressionType& SparseCwise<ExpressionType>::operator*=(const SparseMatrixBase<OtherDerived> &other)
+inline ExpressionType& SparseCwise<ExpressionType>::operator*=( const SparseMatrixBase<OtherDerived> &other )
 {
-  return m_matrix.const_cast_derived() = _expression() * other.derived();
+    return m_matrix.const_cast_derived() = _expression() * other.derived();
 }
 
 // template<typename ExpressionType>
@@ -417,18 +493,18 @@ inline ExpressionType& SparseCwise<ExpressionType>::operator*=(const SparseMatri
 
 template<typename ExpressionType>
 template<typename OtherDerived>
-EIGEN_STRONG_INLINE const EIGEN_SPARSE_CWISE_BINOP_RETURN_TYPE(ei_scalar_min_op)
-SparseCwise<ExpressionType>::min(const SparseMatrixBase<OtherDerived> &other) const
+EIGEN_STRONG_INLINE const EIGEN_SPARSE_CWISE_BINOP_RETURN_TYPE( ei_scalar_min_op )
+SparseCwise<ExpressionType>::min( const SparseMatrixBase<OtherDerived> &other ) const
 {
-  return EIGEN_SPARSE_CWISE_BINOP_RETURN_TYPE(ei_scalar_min_op)(_expression(), other.derived());
+    return EIGEN_SPARSE_CWISE_BINOP_RETURN_TYPE( ei_scalar_min_op )( _expression(), other.derived() );
 }
 
 template<typename ExpressionType>
 template<typename OtherDerived>
-EIGEN_STRONG_INLINE const EIGEN_SPARSE_CWISE_BINOP_RETURN_TYPE(ei_scalar_max_op)
-SparseCwise<ExpressionType>::max(const SparseMatrixBase<OtherDerived> &other) const
+EIGEN_STRONG_INLINE const EIGEN_SPARSE_CWISE_BINOP_RETURN_TYPE( ei_scalar_max_op )
+SparseCwise<ExpressionType>::max( const SparseMatrixBase<OtherDerived> &other ) const
 {
-  return EIGEN_SPARSE_CWISE_BINOP_RETURN_TYPE(ei_scalar_max_op)(_expression(), other.derived());
+    return EIGEN_SPARSE_CWISE_BINOP_RETURN_TYPE( ei_scalar_max_op )( _expression(), other.derived() );
 }
 
 // template<typename Derived>

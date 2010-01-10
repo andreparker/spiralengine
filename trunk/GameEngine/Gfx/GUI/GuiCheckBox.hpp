@@ -11,7 +11,7 @@ namespace GUI
 	class GuiCheckBox : public GuiButton
 	{
 	public:
-		GuiCheckBox( const Math::SpVector2r& position, const Rect< SpReal >& rect, 
+		GuiCheckBox( const Math::Vector2f& position, const Rect< SpReal >& rect, 
 			const Rect< SpReal >& bgTextCoords,const Rect< SpReal >& ckTextCoords,
 			const boost::shared_ptr< Texture >& bgTexture,const boost::shared_ptr< Texture >& ckTexture
 			, bool bBgAlpha, bool bCkAlpha );

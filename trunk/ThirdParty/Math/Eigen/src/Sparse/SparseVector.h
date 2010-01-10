@@ -37,211 +37,270 @@
 template<typename _Scalar, int _Flags>
 struct ei_traits<SparseVector<_Scalar, _Flags> >
 {
-  typedef _Scalar Scalar;
-  enum {
-    IsColVector = _Flags & RowMajorBit ? 0 : 1,
+    typedef _Scalar Scalar;
+    enum
+    {
+        IsColVector = _Flags & RowMajorBit ? 0 : 1,
 
-    RowsAtCompileTime = IsColVector ? Dynamic : 1,
-    ColsAtCompileTime = IsColVector ? 1 : Dynamic,
-    MaxRowsAtCompileTime = RowsAtCompileTime,
-    MaxColsAtCompileTime = ColsAtCompileTime,
-    Flags = SparseBit | _Flags,
-    CoeffReadCost = NumTraits<Scalar>::ReadCost,
-    SupportedAccessPatterns = InnerRandomAccessPattern
-  };
+        RowsAtCompileTime = IsColVector ? Dynamic : 1,
+        ColsAtCompileTime = IsColVector ? 1 : Dynamic,
+        MaxRowsAtCompileTime = RowsAtCompileTime,
+        MaxColsAtCompileTime = ColsAtCompileTime,
+        Flags = SparseBit | _Flags,
+        CoeffReadCost = NumTraits<Scalar>::ReadCost,
+        SupportedAccessPatterns = InnerRandomAccessPattern
+    };
 };
 
 template<typename _Scalar, int _Flags>
 class SparseVector
-  : public SparseMatrixBase<SparseVector<_Scalar, _Flags> >
+            : public SparseMatrixBase<SparseVector<_Scalar, _Flags> >
 {
-  public:
-    EIGEN_SPARSE_GENERIC_PUBLIC_INTERFACE(SparseVector)
-    EIGEN_SPARSE_INHERIT_ASSIGNMENT_OPERATOR(SparseVector, +=)
-    EIGEN_SPARSE_INHERIT_ASSIGNMENT_OPERATOR(SparseVector, -=)
+public:
+    EIGEN_SPARSE_GENERIC_PUBLIC_INTERFACE( SparseVector )
+    EIGEN_SPARSE_INHERIT_ASSIGNMENT_OPERATOR( SparseVector, += )
+    EIGEN_SPARSE_INHERIT_ASSIGNMENT_OPERATOR( SparseVector, -= )
 //     EIGEN_SPARSE_INHERIT_ASSIGNMENT_OPERATOR(SparseVector, =)
 
-  protected:
-  public:
+protected:
+public:
 
     typedef SparseMatrixBase<SparseVector> SparseBase;
     enum { IsColVector = ei_traits<SparseVector>::IsColVector };
 
     CompressedStorage<Scalar> m_data;
     int m_size;
-    
-    CompressedStorage<Scalar>& _data() { return m_data; }
-    CompressedStorage<Scalar>& _data() const { return m_data; }
 
-  public:
-
-    EIGEN_STRONG_INLINE int rows() const { return IsColVector ? m_size : 1; }
-    EIGEN_STRONG_INLINE int cols() const { return IsColVector ? 1 : m_size; }
-    EIGEN_STRONG_INLINE int innerSize() const { return m_size; }
-    EIGEN_STRONG_INLINE int outerSize() const { return 1; }
-    EIGEN_STRONG_INLINE int innerNonZeros(int j) const { ei_assert(j==0); return m_size; }
-
-    EIGEN_STRONG_INLINE const Scalar* _valuePtr() const { return &m_data.value(0); }
-    EIGEN_STRONG_INLINE Scalar* _valuePtr() { return &m_data.value(0); }
-
-    EIGEN_STRONG_INLINE const int* _innerIndexPtr() const { return &m_data.index(0); }
-    EIGEN_STRONG_INLINE int* _innerIndexPtr() { return &m_data.index(0); }
-
-    inline Scalar coeff(int row, int col) const
+    CompressedStorage<Scalar>& _data()
     {
-      ei_assert((IsColVector ? col : row)==0);
-      return coeff(IsColVector ? row : col);
+        return m_data;
     }
-    inline Scalar coeff(int i) const { return m_data.at(i); }
-
-    inline Scalar& coeffRef(int row, int col)
+    CompressedStorage<Scalar>& _data() const
     {
-      ei_assert((IsColVector ? col : row)==0);
-      return coeff(IsColVector ? row : col);
+        return m_data;
+    }
+
+public:
+
+    EIGEN_STRONG_INLINE int rows() const
+    {
+        return IsColVector ? m_size : 1;
+    }
+    EIGEN_STRONG_INLINE int cols() const
+    {
+        return IsColVector ? 1 : m_size;
+    }
+    EIGEN_STRONG_INLINE int innerSize() const
+    {
+        return m_size;
+    }
+    EIGEN_STRONG_INLINE int outerSize() const
+    {
+        return 1;
+    }
+    EIGEN_STRONG_INLINE int innerNonZeros( int j ) const
+    {
+        ei_assert( j == 0 );
+        return m_size;
+    }
+
+    EIGEN_STRONG_INLINE const Scalar* _valuePtr() const
+    {
+        return &m_data.value( 0 );
+    }
+    EIGEN_STRONG_INLINE Scalar* _valuePtr()
+    {
+        return &m_data.value( 0 );
+    }
+
+    EIGEN_STRONG_INLINE const int* _innerIndexPtr() const
+    {
+        return &m_data.index( 0 );
+    }
+    EIGEN_STRONG_INLINE int* _innerIndexPtr()
+    {
+        return &m_data.index( 0 );
+    }
+
+    inline Scalar coeff( int row, int col ) const
+    {
+        ei_assert( ( IsColVector ? col : row ) == 0 );
+        return coeff( IsColVector ? row : col );
+    }
+    inline Scalar coeff( int i ) const
+    {
+        return m_data.at( i );
+    }
+
+    inline Scalar& coeffRef( int row, int col )
+    {
+        ei_assert( ( IsColVector ? col : row ) == 0 );
+        return coeff( IsColVector ? row : col );
     }
 
     /** \returns a reference to the coefficient value at given index \a i
       * This operation involes a log(rho*size) binary search. If the coefficient does not
       * exist yet, then a sorted insertion into a sequential buffer is performed.
-      * 
+      *
       * This insertion might be very costly if the number of nonzeros above \a i is large.
       */
-    inline Scalar& coeffRef(int i)
+    inline Scalar& coeffRef( int i )
     {
-      return m_data.atWithInsertion(i);
+        return m_data.atWithInsertion( i );
     }
 
-  public:
+public:
 
     class InnerIterator;
 
-    inline void setZero() { m_data.clear(); }
+    inline void setZero()
+    {
+        m_data.clear();
+    }
 
     /** \returns the number of non zero coefficients */
-    inline int nonZeros() const  { return m_data.size(); }
-
-    /**
-      */
-    inline void reserve(int reserveSize) { m_data.reserve(reserveSize); }
-    
-    inline void startFill(int reserve)
+    inline int nonZeros() const
     {
-      setZero();
-      m_data.reserve(reserve);
+        return m_data.size();
     }
 
     /**
       */
-    inline Scalar& fill(int r, int c)
+    inline void reserve( int reserveSize )
     {
-      ei_assert(r==0 || c==0);
-      return fill(IsColVector ? r : c);
+        m_data.reserve( reserveSize );
     }
-    
-    inline Scalar& fill(int i)
+
+    inline void startFill( int reserve )
     {
-      m_data.append(0, i);
-      return m_data.value(m_data.size()-1);
+        setZero();
+        m_data.reserve( reserve );
     }
-    
-    inline Scalar& fillrand(int r, int c)
+
+    /**
+      */
+    inline Scalar& fill( int r, int c )
     {
-      ei_assert(r==0 || c==0);
-      return fillrand(IsColVector ? r : c);
+        ei_assert( r == 0 || c == 0 );
+        return fill( IsColVector ? r : c );
+    }
+
+    inline Scalar& fill( int i )
+    {
+        m_data.append( 0, i );
+        return m_data.value( m_data.size() - 1 );
+    }
+
+    inline Scalar& fillrand( int r, int c )
+    {
+        ei_assert( r == 0 || c == 0 );
+        return fillrand( IsColVector ? r : c );
     }
 
     /** Like fill() but with random coordinates.
       */
-    inline Scalar& fillrand(int i)
+    inline Scalar& fillrand( int i )
     {
-      int startId = 0;
-      int id = m_data.size() - 1;
-      m_data.resize(id+2,1);
+        int startId = 0;
+        int id = m_data.size() - 1;
+        m_data.resize( id + 2, 1 );
 
-      while ( (id >= startId) && (m_data.index(id) > i) )
-      {
-        m_data.index(id+1) = m_data.index(id);
-        m_data.value(id+1) = m_data.value(id);
-        --id;
-      }
-      m_data.index(id+1) = i;
-      m_data.value(id+1) = 0;
-      return m_data.value(id+1);
+        while ( ( id >= startId ) && ( m_data.index( id ) > i ) )
+        {
+            m_data.index( id + 1 ) = m_data.index( id );
+            m_data.value( id + 1 ) = m_data.value( id );
+            --id;
+        }
+        m_data.index( id + 1 ) = i;
+        m_data.value( id + 1 ) = 0;
+        return m_data.value( id + 1 );
     }
-    
+
     inline void endFill() {}
-    
-    void prune(Scalar reference, RealScalar epsilon = precision<RealScalar>())
+
+    void prune( Scalar reference, RealScalar epsilon = precision<RealScalar>() )
     {
-      m_data.prune(reference,epsilon);
-    }
-    
-    void resize(int rows, int cols)
-    {
-      ei_assert(rows==1 || cols==1);
-      resize(IsColVector ? rows : cols);
+        m_data.prune( reference, epsilon );
     }
 
-    void resize(int newSize)
+    void resize( int rows, int cols )
     {
-      m_size = newSize;
-      m_data.clear();
+        ei_assert( rows == 1 || cols == 1 );
+        resize( IsColVector ? rows : cols );
     }
 
-    void resizeNonZeros(int size) { m_data.resize(size); }
-
-    inline SparseVector() : m_size(0) { resize(0); }
-
-    inline SparseVector(int size) : m_size(0) { resize(size); }
-    
-    inline SparseVector(int rows, int cols) : m_size(0) { resize(rows,cols); }
-
-    template<typename OtherDerived>
-    inline SparseVector(const MatrixBase<OtherDerived>& other)
-      : m_size(0)
+    void resize( int newSize )
     {
-      *this = other.derived();
-    }
-    
-    template<typename OtherDerived>
-    inline SparseVector(const SparseMatrixBase<OtherDerived>& other)
-      : m_size(0)
-    {
-      *this = other.derived();
+        m_size = newSize;
+        m_data.clear();
     }
 
-    inline SparseVector(const SparseVector& other)
-      : m_size(0)
+    void resizeNonZeros( int size )
     {
-      *this = other.derived();
+        m_data.resize( size );
     }
 
-    inline void swap(SparseVector& other)
+    inline SparseVector() : m_size( 0 )
     {
-      std::swap(m_size, other.m_size);
-      m_data.swap(other.m_data);
+        resize( 0 );
     }
 
-    inline SparseVector& operator=(const SparseVector& other)
+    inline SparseVector( int size ) : m_size( 0 )
     {
-      if (other.isRValue())
-      {
-        swap(other.const_cast_derived());
-      }
-      else
-      {
-        resize(other.size());
-        m_data = other.m_data;
-      }
-      return *this;
+        resize( size );
+    }
+
+    inline SparseVector( int rows, int cols ) : m_size( 0 )
+    {
+        resize( rows, cols );
     }
 
     template<typename OtherDerived>
-    inline SparseVector& operator=(const SparseMatrixBase<OtherDerived>& other)
+    inline SparseVector( const MatrixBase<OtherDerived>& other )
+            : m_size( 0 )
     {
-      return Base::operator=(other);
+        *this = other.derived();
     }
-    
+
+    template<typename OtherDerived>
+    inline SparseVector( const SparseMatrixBase<OtherDerived>& other )
+            : m_size( 0 )
+    {
+        *this = other.derived();
+    }
+
+    inline SparseVector( const SparseVector& other )
+            : m_size( 0 )
+    {
+        *this = other.derived();
+    }
+
+    inline void swap( SparseVector& other )
+    {
+        std::swap( m_size, other.m_size );
+        m_data.swap( other.m_data );
+    }
+
+    inline SparseVector& operator=( const SparseVector& other )
+    {
+        if ( other.isRValue() )
+        {
+            swap( other.const_cast_derived() );
+        }
+        else
+        {
+            resize( other.size() );
+            m_data = other.m_data;
+        }
+        return *this;
+    }
+
+    template<typename OtherDerived>
+    inline SparseVector& operator=( const SparseMatrixBase<OtherDerived>& other )
+    {
+        return Base::operator=( other );
+    }
+
 //       const bool needToTranspose = (Flags & RowMajorBit) != (OtherDerived::Flags & RowMajorBit);
 //       if (needToTranspose)
 //       {
@@ -292,12 +351,12 @@ class SparseVector
 //       }
 //     }
 
-    friend std::ostream & operator << (std::ostream & s, const SparseVector& m)
+    friend std::ostream & operator << ( std::ostream & s, const SparseVector& m )
     {
-      for (unsigned int i=0; i<m.nonZeros(); ++i)
-        s << "(" << m.m_data.value(i) << "," << m.m_data.index(i) << ") ";
-      s << std::endl;
-      return s;
+        for ( unsigned int i = 0; i < m.nonZeros(); ++i )
+            s << "(" << m.m_data.value( i ) << "," << m.m_data.index( i ) << ") ";
+        s << std::endl;
+        return s;
     }
 
     // this specialized version does not seems to be faster
@@ -327,36 +386,58 @@ class SparseVector
 };
 
 template<typename Scalar, int _Flags>
-class SparseVector<Scalar,_Flags>::InnerIterator
+class SparseVector<Scalar, _Flags>::InnerIterator
 {
-  public:
-    InnerIterator(const SparseVector& vec, int outer=0)
-      : m_data(vec.m_data), m_id(0), m_end(m_data.size())
+public:
+    InnerIterator( const SparseVector& vec, int outer = 0 )
+            : m_data( vec.m_data ), m_id( 0 ), m_end( m_data.size() )
     {
-      ei_assert(outer==0);
+        ei_assert( outer == 0 );
     }
-    
-    InnerIterator(const CompressedStorage<Scalar>& data)
-      : m_data(data), m_id(0), m_end(m_data.size())
+
+    InnerIterator( const CompressedStorage<Scalar>& data )
+            : m_data( data ), m_id( 0 ), m_end( m_data.size() )
     {}
 
     template<unsigned int Added, unsigned int Removed>
-    InnerIterator(const Flagged<SparseVector,Added,Removed>& vec, int outer)
-      : m_data(vec._expression().m_data), m_id(0), m_end(m_data.size())
+    InnerIterator( const Flagged<SparseVector, Added, Removed>& vec, int outer )
+            : m_data( vec._expression().m_data ), m_id( 0 ), m_end( m_data.size() )
     {}
 
-    inline InnerIterator& operator++() { m_id++; return *this; }
+    inline InnerIterator& operator++()
+    {
+        m_id++;
+        return *this;
+    }
 
-    inline Scalar value() const { return m_data.value(m_id); }
-    inline Scalar& valueRef() { return const_cast<Scalar&>(m_data.value(m_id)); }
+    inline Scalar value() const
+    {
+        return m_data.value( m_id );
+    }
+    inline Scalar& valueRef()
+    {
+        return const_cast<Scalar&>( m_data.value( m_id ) );
+    }
 
-    inline int index() const { return m_data.index(m_id); }
-    inline int row() const { return IsColVector ? index() : 0; }
-    inline int col() const { return IsColVector ? 0 : index(); }
+    inline int index() const
+    {
+        return m_data.index( m_id );
+    }
+    inline int row() const
+    {
+        return IsColVector ? index() : 0;
+    }
+    inline int col() const
+    {
+        return IsColVector ? 0 : index();
+    }
 
-    inline operator bool() const { return (m_id < m_end); }
+    inline operator bool() const
+    {
+        return ( m_id < m_end );
+    }
 
-  protected:
+protected:
     const CompressedStorage<Scalar>& m_data;
     int m_id;
     const int m_end;

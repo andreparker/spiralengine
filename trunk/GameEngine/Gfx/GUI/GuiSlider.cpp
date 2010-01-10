@@ -9,7 +9,7 @@
 using namespace Spiral;
 using namespace Spiral::GUI;
 
-GuiSlider::GuiSlider( const Math::SpVector2r& position, const Rect<SpReal>& rect, const Rect<SpReal>& bgTexCoords,
+GuiSlider::GuiSlider( const Math::Vector2f& position, const Rect<SpReal>& rect, const Rect<SpReal>& bgTexCoords,
 					 const Rect<SpReal>& sliderTexCoords, boost::uint32_t sliderSize, const boost::shared_ptr<Texture>& bgTexture, 
 					 const boost::shared_ptr<Texture>& sliderTexture, const GuiSliderDir& dir, bool bBgAlpha, bool bSliderAlpha ):
 GuiWindow( position, rect, bgTexCoords, bgTexture, bBgAlpha ),m_slider(),m_sliderSize(sliderSize),m_sliderDir(dir),m_minRange(0),
@@ -55,7 +55,7 @@ void GuiSlider::SetRange( boost::int32_t min_, boost::int32_t max_ )
 
 boost::int32_t GuiSlider::GetSliderPos() const
 {
-	Math::SpVector2r position = m_slider->GetLocalPosition(), delta( 0.0f, 0.0f );
+	Math::Vector2f position = m_slider->GetLocalPosition(), delta( 0.0f, 0.0f );
 	Rect<SpReal> bounds = GetRect();
 	Rect<SpReal> slider_bounds = m_slider->GetRect();
 	SpReal percent,dist;
@@ -76,8 +76,8 @@ boost::int32_t GuiSlider::GetSliderPos() const
 void GuiSlider::OnMouseDown( boost::int32_t eventId, GuiWindow* window, const boost::any& data )
 {
 	const mouse_position pos = boost::any_cast< const mouse_position >( data );
-	Math::SpVector2r position = WorldToLocal( pos.x, pos.y );
-	Math::SpVector2r sliderPos = m_slider->GetLocalPosition();
+	Math::Vector2f position = WorldToLocal( pos.x, pos.y );
+	Math::Vector2f sliderPos = m_slider->GetLocalPosition();
 	if( m_sliderDir.GetDir() == GuiSliderDir::Horizontal )
 	{
 		sliderPos[0] = position[0];
@@ -143,7 +143,7 @@ Spiral::SpReal GuiSlider::GetDelta( const mouse_position& pos_ ) const
 
 void GuiSlider::MoveSlider( SpReal delta )
 {
-	Math::SpVector2r position = m_slider->GetLocalPosition();
+	Math::Vector2f position = m_slider->GetLocalPosition();
 	if( m_sliderDir.GetDir() == GuiSliderDir::Horizontal )
 	{
 		position[0] += delta;
@@ -157,7 +157,7 @@ void GuiSlider::MoveSlider( SpReal delta )
 
 void GuiSlider::SliderBoundsCheck()
 {
-	Math::SpVector2r position = m_slider->GetLocalPosition(), delta( 0.0f, 0.0f );
+	Math::Vector2f position = m_slider->GetLocalPosition(), delta( 0.0f, 0.0f );
 	Rect<SpReal> bounds = GetRect();
 	Rect<SpReal> slider_bounds = m_slider->GetRect();
 	SpReal minDelta,maxDelta;

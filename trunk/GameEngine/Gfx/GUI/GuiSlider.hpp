@@ -42,7 +42,7 @@ namespace GUI
 	class GuiSlider : public GuiWindow
 	{
 	public:
-		GuiSlider( const Math::SpVector2r& position, const Rect<SpReal>& rect, const Rect<SpReal>& bgTexCoords,
+		GuiSlider( const Math::Vector2f& position, const Rect<SpReal>& rect, const Rect<SpReal>& bgTexCoords,
 			const Rect<SpReal>& sliderTexCoords, boost::uint32_t sliderSize, const boost::shared_ptr<Texture>& bgTexture,
 			const boost::shared_ptr<Texture>& sliderTexture, const GuiSliderDir& dir, bool bBgAlpha, bool bSliderAlpha );
 

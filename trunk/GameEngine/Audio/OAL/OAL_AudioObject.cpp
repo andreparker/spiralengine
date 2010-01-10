@@ -63,17 +63,17 @@ void OalAudioObject::DoPause()
 	}
 }
 
-void OalAudioObject::DoSetPosition( const Math::SpVector3r& position )
+void OalAudioObject::DoSetPosition( const Math::Vector3f& position )
 {
 	alSource3f( m_sourceHandle, AL_POSITION, position[0], position[1], position[2] );
 }
 
-const Math::SpVector3r OalAudioObject::DoGetPosition() const
+const Math::Vector3f OalAudioObject::DoGetPosition() const
 {
 	ALfloat position[3];
 	alGetSourcefv( m_sourceHandle, AL_POSITION, position );
 
-	return Math::SpVector3r( position[0], position[1], position[2] );
+	return Math::Vector3f( position[0], position[1], position[2] );
 }
 
 Cloneable* OalAudioObject::DoClone() const

@@ -237,27 +237,27 @@ void WinOglDriver::DoDraw( boost::shared_ptr<Sprite>& sprite )
 	m_glDriver->Draw( sprite );
 }
 
-void WinOglDriver::DoSetWorld( const Math::SpMatrix4x4r& world )
+void WinOglDriver::DoSetWorld( const Math::Matrix4x4f& world )
 {
 	m_glDriver->SetWorld( world );
 }
 
-void WinOglDriver::DoSetView( const Math::SpMatrix4x4r& view )
+void WinOglDriver::DoSetView( const Math::Matrix4x4f& view )
 {
 	m_glDriver->SetView( view );
 }
 
-void WinOglDriver::DoSetProjection( const Math::SpMatrix4x4r& proj )
+void WinOglDriver::DoSetProjection( const Math::Matrix4x4f& proj )
 {
 	m_glDriver->SetProjection( proj );
 }
 
-void WinOglDriver::DoGetView( Math::SpMatrix4x4r& view )
+void WinOglDriver::DoGetView( Math::Matrix4x4f& view )
 {
 	m_glDriver->GetView( view );
 }
 
-void WinOglDriver::DoGetProjection( Math::SpMatrix4x4r& proj )
+void WinOglDriver::DoGetProjection( Math::Matrix4x4f& proj )
 {
 	m_glDriver->GetProjection( proj );
 }
@@ -272,7 +272,7 @@ void WinOglDriver::DoSet( const BlendMode_t& mode )
 	m_glDriver->Set( mode );
 }
 
-void WinOglDriver::DoDraw( const Math::SpVector2r& position, const Rect< SpReal >& rect, const Rect< SpReal >& textureCoords )
+void WinOglDriver::DoDraw( const Math::Vector2f& position, const Rect< SpReal >& rect, const Rect< SpReal >& textureCoords )
 {
 	m_glDriver->Draw( position, rect, textureCoords );
 }

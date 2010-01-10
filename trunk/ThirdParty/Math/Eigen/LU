@@ -5,7 +5,8 @@
 
 #include "src/Core/util/DisableMSVCWarnings.h"
 
-namespace Eigen {
+namespace Eigen
+{
 
 /** \defgroup LU_Module LU module
   * This module includes %LU decomposition and related notions such as matrix inversion and determinant.

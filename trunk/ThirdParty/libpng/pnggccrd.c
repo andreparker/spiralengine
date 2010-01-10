@@ -6,17 +6,17 @@
     defined(PNG_ASSEMBLER_CODE_SUPPORTED) && \
     defined(PNG_MMX_CODE_SUPPORTED)
 
-int PNGAPI png_dummy_mmx_support(void);
+int PNGAPI png_dummy_mmx_support( void );
 
 static int _mmx_supported = 2; // 0: no MMX; 1: MMX supported; 2: not tested
 
 int PNGAPI
-png_dummy_mmx_support(void) __attribute__((noinline));
+png_dummy_mmx_support( void ) __attribute__( ( noinline ) );
 
 int PNGAPI
-png_dummy_mmx_support(void)
+png_dummy_mmx_support( void )
 {
-   int result;
+    int result;
 #if defined(PNG_MMX_CODE_SUPPORTED)  // superfluous, but what the heck
     __asm__ __volatile__ (
 #if defined(__x86_64__)
@@ -59,7 +59,7 @@ png_dummy_mmx_support(void)
 
         "xorl %%eax, %%eax    \n\t"  // set eax to zero and...
         "incl %%eax           \n\t"  // ...increment eax to 1.  This pair is
-                                     // faster than the instruction "mov eax, 1"
+        // faster than the instruction "mov eax, 1"
         "cpuid                \n\t"  // get the CPU identification info again
         "andl $0x800000, %%edx \n\t" // mask out all bits but MMX bit (23)
         "cmpl $0, %%edx       \n\t"  // 0 = MMX not supported
@@ -68,9 +68,9 @@ png_dummy_mmx_support(void)
         "movl $1, %%eax       \n\t"  // set return value to 1
         "jmp  1f              \n\t"  // DONE:  have MMX support
 
-    "0:                       \n\t"  // .NOT_SUPPORTED: target label for jump instructions
+        "0:                       \n\t"  // .NOT_SUPPORTED: target label for jump instructions
         "movl $0, %%eax       \n\t"  // set return value to 0
-    "1:                       \n\t"  // .RETURN: target label for jump instructions
+        "1:                       \n\t"  // .RETURN: target label for jump instructions
 #if defined(__x86_64__)
         "popq %%rdx           \n\t"  // restore rdx
         "popq %%rcx           \n\t"  // restore rcx
@@ -82,17 +82,17 @@ png_dummy_mmx_support(void)
 #endif
 
 //      "ret                  \n\t"  // DONE:  no MMX support
-                                     // (fall through to standard C "ret")
+        // (fall through to standard C "ret")
 
-        : "=a" (result)              // output list
+    : "=a" ( result )            // output list
 
-        :                            // any variables used on input (none)
+                :                            // any variables used on input (none)
 
-                                     // no clobber list
+                // no clobber list
 //      , "%ebx", "%ecx", "%edx"     // GRR:  we handle these manually
 //      , "memory"   // if write to a variable gcc thought was in a reg
 //      , "cc"       // "condition codes" (flag bits)
-    );
+            );
     _mmx_supported = result;
 #else
     _mmx_supported = 0;

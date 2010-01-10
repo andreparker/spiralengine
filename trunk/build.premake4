@@ -17,14 +17,28 @@ solution( "Spiral" )
 	configurations
 	{
 		"Debug" .. _ACTION, 
-		"Release" .. _ACTION
+		"Release" .. _ACTION,
+		"Final" .. _ACTION
 	}
 	
-	dofile( "GameEngine/SpiralEngine.premake4" )
-	dofile( "Unit_Testing/UnitTest.premake4" )
-	dofile( "EngineTest/EngineTest.premake4" )
+	-- Main
+	dofile( "GameEngine/SpiralEngine.premake4"     )
+	dofile( "GameEngine/OAL_AudioDriver.premake4"  )
+	dofile( "GameEngine/Win32_Ogl_Driver.premake4" )
+
+	-- Test
+	dofile( "Unit_Testing/UnitTest.premake4"       )
+	dofile( "EngineTest/EngineTest.premake4"       )
+		
+	-- ThirdParty libs
+	dofile( "ThirdParty/Common.premake4"     )
+	dofile( "ThirdParty/FreeType.premake4"   )
+	dofile( "ThirdParty/GLee.premake4"       )
+	dofile( "ThirdParty/Lua.premake4"        )
+	dofile( "ThirdParty/LuaBind.premake4"    )
+	dofile( "ThirdParty/OggVorbis.premake4"  )
 	
 	-- tempory until tested on other os's
 	if os.get() == "windows" then
-	dofile( "Console/SpConsole.premake4" )
+		dofile( "Console/SpConsole.premake4" )
 	end

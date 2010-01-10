@@ -11,13 +11,13 @@ using namespace Spiral::GUI;
 
 boost::int32_t GuiWindow::window_ID = 0;
 
-void GuiWindow::UpdatePositions( const Math::SpVector2r& worldPosition )
+void GuiWindow::UpdatePositions( const Math::Vector2f& worldPosition )
 {
 	m_worldPosition = worldPosition + m_localPosition;
 	std::for_each( m_children.begin(), m_children.end(), boost::bind( &GuiWindow::UpdatePositions, _1, boost::cref(m_worldPosition) ) );
 }
 
-GuiWindow::GuiWindow( const Math::SpVector2r& position, const Rect< SpReal >& rect, const Rect< SpReal >& textCoords,const boost::shared_ptr< Texture >& texture, bool bAlpha ):
+GuiWindow::GuiWindow( const Math::Vector2f& position, const Rect< SpReal >& rect, const Rect< SpReal >& textCoords,const boost::shared_ptr< Texture >& texture, bool bAlpha ):
 m_localPosition( position ),
 m_worldPosition( position ),
 m_rect( rect ),
@@ -36,7 +36,25 @@ m_parent(NULL)
 {
 }
 
-GuiWindow::GuiWindow( const Math::SpVector2r& position, const Rect< SpReal >& rect, const boost::shared_ptr< Texture >& texture, bool bAlpha ):
+GuiWindow::GuiWindow():
+m_localPosition(),
+m_worldPosition(),
+m_rect(),
+m_textCoords( Rect< SpReal >( 0.0f, 1.0f, 1.0f, 0.0f ) ),
+m_texture(),
+m_children(),
+m_windowId( window_ID++ ),
+m_eventHandlers(),
+m_hasFocus(false),
+m_alpha(false),
+m_dirty(false),
+m_show(false),
+m_allowFocus(true),
+m_clipChildren(false),
+m_parent(NULL)
+{}
+
+GuiWindow::GuiWindow( const Math::Vector2f& position, const Rect< SpReal >& rect, const boost::shared_ptr< Texture >& texture, bool bAlpha ):
 m_localPosition( position ),
 m_worldPosition( position ),
 m_rect( rect ),
@@ -122,6 +140,13 @@ bool GuiWindow::SetFocus( SpReal x, SpReal y )
 // 			(*itr)->SetFocus( x, y );
 // 		}
 
+		if( lastFocusWindow && lastFocusWindow->IsAncestor( this ) )
+		{
+			lastFocusWindow->CallHandler( focus_lost, lastFocusWindow, boost::any() );
+			lastFocusWindow->m_hasFocus = false;
+			lastFocusWindow = NULL;
+		}
+
 		ResetWindow();
 	}
 
@@ -136,12 +161,12 @@ bool GuiWindow::SetFocus( SpReal x, SpReal y )
 	return hasFocus;
 }
 
-boost::shared_ptr< GuiWindow > GuiWindow::Create( const Math::SpVector2r& position, const Rect< SpReal >& rect, const boost::shared_ptr< Texture >& texture, bool bAlpha )
+boost::shared_ptr< GuiWindow > GuiWindow::Create( const Math::Vector2f& position, const Rect< SpReal >& rect, const boost::shared_ptr< Texture >& texture, bool bAlpha )
 {
 	return boost::make_shared< GuiWindow >( position, rect, texture, bAlpha );
 }
 
-boost::shared_ptr< GuiWindow > GuiWindow::Create( const Math::SpVector2r& position, const Rect< SpReal >& rect, const Rect< SpReal >& textCoords, boost::shared_ptr< Texture >& texture, bool bAlpha )
+boost::shared_ptr< GuiWindow > GuiWindow::Create( const Math::Vector2f& position, const Rect< SpReal >& rect, const Rect< SpReal >& textCoords, boost::shared_ptr< Texture >& texture, bool bAlpha )
 {
 	return boost::make_shared< GuiWindow >( position, rect, textCoords, texture, bAlpha );
 }
@@ -158,7 +183,7 @@ void GuiWindow::DisConnectHandler( boost::int32_t eventId )
 
 void GuiWindow::MouseDown( const mouse_position& pos )
 {
-	if( m_show /*&& ContainsPoint( pos.x, pos.y )*/ )
+	if( m_show  )
 	{
 		ProcessMouseEvent( GUI::mouse_down, pos );
 	}
@@ -166,7 +191,7 @@ void GuiWindow::MouseDown( const mouse_position& pos )
 
 void GuiWindow::MouseUp( const mouse_position& pos )
 {
-	if( m_show /*&& ContainsPoint( pos.x, pos.y )*/ )
+	if( m_show  )
 	{
 		ProcessMouseEvent( GUI::mouse_up, pos );
 	}
@@ -287,3 +312,23 @@ GuiWindow* GuiWindow::GetChild( boost::uint32_t window_id ) const
 	return NULL;
 }
 
+
+
+bool GuiWindow::IsAncestor( const GuiWindow* window )
+{
+	bool isAncestor = false;
+	GuiWindow* parent = GetParent();
+
+	while( parent )
+	{
+		if( parent == window )
+		{
+			isAncestor = true;
+			break;
+		}
+
+		parent = parent->GetParent();
+	}
+
+	return isAncestor;
+}

@@ -151,3 +151,58 @@ project( "SpConsole" )
 			"NoEditAndContinue"
 		}
 	configuration ({})
+	
+	--------------------------------
+	-- Final config
+	--------------------------------
+	configuration( "Final" .. _ACTION )
+	
+		targetdir( "../Build/bin/Final" .. _ACTION )
+		-- set the binary output name
+		targetname( "Console" )
+		-- set the directory were built objs go
+		objdir( "../Obj/" .. _ACTION .. "/Final" )
+		
+		
+		defines
+		{
+			"NDEBUG"
+		}
+		
+		if os.get() == "windows" then
+		
+		links
+		{
+			"wxmsw28_richtext",
+			"wxmsw28_adv",
+			"wxmsw28_html",
+			"wxmsw28_core",
+			"wxbase28_xml",
+			"wxbase28",
+			"wxtiff",
+			"wxjpeg",
+			"wxpng",
+			"wxzlib",
+			"wxregex",
+			"wxexpat",
+			"winmm",
+			"comctl32",
+			"rpcrt4",
+			"wsock32",
+			"odbc32"
+		}
+		
+		end
+		
+		flags
+		{
+			"ExtraWarnings",
+			"No64BitChecks",
+			-- "NoManifest",
+			"NoPCH",
+			"NoRTTI",
+			"OptimizeSpeed",
+			--"StaticRuntime",
+			"NoEditAndContinue"
+		}
+	configuration ({})

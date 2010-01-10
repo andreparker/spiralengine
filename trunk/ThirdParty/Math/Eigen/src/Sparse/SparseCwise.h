@@ -56,25 +56,28 @@
 
 template<typename ExpressionType> class SparseCwise
 {
-  public:
+public:
 
     typedef typename ei_traits<ExpressionType>::Scalar Scalar;
-    typedef typename ei_meta_if<ei_must_nest_by_value<ExpressionType>::ret,
-        ExpressionType, const ExpressionType&>::ret ExpressionTypeNested;
+    typedef typename ei_meta_if < ei_must_nest_by_value<ExpressionType>::ret,
+    ExpressionType, const ExpressionType& >::ret ExpressionTypeNested;
     typedef CwiseUnaryOp<ei_scalar_add_op<Scalar>, ExpressionType> ScalarAddReturnType;
 
-    inline SparseCwise(const ExpressionType& matrix) : m_matrix(matrix) {}
+    inline SparseCwise( const ExpressionType& matrix ) : m_matrix( matrix ) {}
 
     /** \internal */
-    inline const ExpressionType& _expression() const { return m_matrix; }
+    inline const ExpressionType& _expression() const
+    {
+        return m_matrix;
+    }
 
     template<typename OtherDerived>
     const EIGEN_SPARSE_CWISE_PRODUCT_RETURN_TYPE
-    operator*(const SparseMatrixBase<OtherDerived> &other) const;
+    operator*( const SparseMatrixBase<OtherDerived> &other ) const;
 
     template<typename OtherDerived>
     const EIGEN_SPARSE_CWISE_PRODUCT_RETURN_TYPE
-    operator*(const MatrixBase<OtherDerived> &other) const;
+    operator*( const MatrixBase<OtherDerived> &other ) const;
 
 //     template<typename OtherDerived>
 //     const EIGEN_SPARSE_CWISE_BINOP_RETURN_TYPE(ei_scalar_quotient_op)
@@ -85,15 +88,15 @@ template<typename ExpressionType> class SparseCwise
 //     operator/(const MatrixBase<OtherDerived> &other) const;
 
     template<typename OtherDerived>
-    const EIGEN_SPARSE_CWISE_BINOP_RETURN_TYPE(ei_scalar_min_op)
-    min(const SparseMatrixBase<OtherDerived> &other) const;
+    const EIGEN_SPARSE_CWISE_BINOP_RETURN_TYPE( ei_scalar_min_op )
+    min( const SparseMatrixBase<OtherDerived> &other ) const;
 
     template<typename OtherDerived>
-    const EIGEN_SPARSE_CWISE_BINOP_RETURN_TYPE(ei_scalar_max_op)
-    max(const SparseMatrixBase<OtherDerived> &other) const;
+    const EIGEN_SPARSE_CWISE_BINOP_RETURN_TYPE( ei_scalar_max_op )
+    max( const SparseMatrixBase<OtherDerived> &other ) const;
 
-    const EIGEN_SPARSE_CWISE_UNOP_RETURN_TYPE(ei_scalar_abs_op)      abs() const;
-    const EIGEN_SPARSE_CWISE_UNOP_RETURN_TYPE(ei_scalar_abs2_op)     abs2() const;
+    const EIGEN_SPARSE_CWISE_UNOP_RETURN_TYPE( ei_scalar_abs_op )      abs() const;
+    const EIGEN_SPARSE_CWISE_UNOP_RETURN_TYPE( ei_scalar_abs2_op )     abs2() const;
 //     const EIGEN_SPARSE_CWISE_UNOP_RETURN_TYPE(ei_scalar_square_op)   square() const;
 //     const EIGEN_SPARSE_CWISE_UNOP_RETURN_TYPE(ei_scalar_cube_op)     cube() const;
 //     const EIGEN_SPARSE_CWISE_UNOP_RETURN_TYPE(ei_scalar_inverse_op)  inverse() const;
@@ -105,7 +108,7 @@ template<typename ExpressionType> class SparseCwise
 //     const EIGEN_SPARSE_CWISE_UNOP_RETURN_TYPE(ei_scalar_pow_op)      pow(const Scalar& exponent) const;
 
     template<typename OtherDerived>
-    inline ExpressionType& operator*=(const SparseMatrixBase<OtherDerived> &other);
+    inline ExpressionType& operator*=( const SparseMatrixBase<OtherDerived> &other );
 
 //     template<typename OtherDerived>
 //     inline ExpressionType& operator/=(const SparseMatrixBase<OtherDerived> &other);
@@ -150,11 +153,11 @@ template<typename ExpressionType> class SparseCwise
     */
 
     // allow to extend SparseCwise outside Eigen
-    #ifdef EIGEN_SPARSE_CWISE_PLUGIN
-    #include EIGEN_SPARSE_CWISE_PLUGIN
-    #endif
+#ifdef EIGEN_SPARSE_CWISE_PLUGIN
+#include EIGEN_SPARSE_CWISE_PLUGIN
+#endif
 
-  protected:
+protected:
     ExpressionTypeNested m_matrix;
 };
 
@@ -162,14 +165,14 @@ template<typename Derived>
 inline const SparseCwise<Derived>
 SparseMatrixBase<Derived>::cwise() const
 {
-  return derived();
+    return derived();
 }
 
 template<typename Derived>
 inline SparseCwise<Derived>
 SparseMatrixBase<Derived>::cwise()
 {
-  return derived();
+    return derived();
 }
 
 #endif // EIGEN_SPARSE_CWISE_H

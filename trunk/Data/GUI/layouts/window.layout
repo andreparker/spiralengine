@@ -1,0 +1,85 @@
+
+layout ; root, every file must contain this
+{
+
+; this pre-loads the texture
+texture
+{
+	fileName "Data/GUI/def_window_new.png"
+	tagName  "Window_texture"
+}
+
+texture
+{
+	fileName "Data/GUI/def_frame_window.png"
+	tagName  "Frame_window_texture"
+}
+
+
+;===================================================================
+; eClass Type ( Type == window,frame,editBox,slider,button,textBox,scrollWindow,checkBox )
+;===================================================================
+eClass frame  ;element class of standerd type window
+{
+	;============================================
+	; attributes - can be in any order
+	;============================================
+	name         "Test window"                   ; window name
+	alpha        true                            ; true / false alpha blend
+	clipChildren false
+	allowFocus   true
+	show         true
+	
+	position
+	{
+		x 0.0
+		y 0.0
+	}
+	
+	window_rect
+	{
+		left   0.0
+		right  128.0
+		top    0.0
+		bottom 512.0
+	}
+	
+	texture_rect
+	{
+		left   0.0
+		right  1.0
+		top    0.0
+		bottom 1.0
+	}
+	
+	; texture without filename just grabs it if already loaded
+	; if not loaded, you will just get the error texture ( pink checkered )
+	texture
+	{
+		tagName  "Frame_window_texture"
+	}
+	
+	; include a element file as a child
+	eFile "Data/GUI/layouts/child0.layout"
+	{
+		; its is vital to only have one main declared element in the file
+		; override the last declared elements size
+		window_rect
+		{
+			left   0.0
+			right  100.0
+			top    0.0
+			bottom 256.0
+		}
+		
+		// override position
+		position
+		{
+			x 20.0
+			y 10.0
+		}
+	}
+	
+}
+
+};layout 

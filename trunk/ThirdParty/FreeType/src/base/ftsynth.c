@@ -23,26 +23,26 @@
 #include FT_BITMAP_H
 
 
-  /*************************************************************************/
-  /*************************************************************************/
-  /****                                                                 ****/
-  /****   EXPERIMENTAL OBLIQUING SUPPORT                                ****/
-  /****                                                                 ****/
-  /*************************************************************************/
-  /*************************************************************************/
+/*************************************************************************/
+/*************************************************************************/
+/****                                                                 ****/
+/****   EXPERIMENTAL OBLIQUING SUPPORT                                ****/
+/****                                                                 ****/
+/*************************************************************************/
+/*************************************************************************/
 
-  /* documentation is in ftsynth.h */
+/* documentation is in ftsynth.h */
 
-  FT_EXPORT_DEF( void )
-  FT_GlyphSlot_Oblique( FT_GlyphSlot  slot )
-  {
+FT_EXPORT_DEF( void )
+FT_GlyphSlot_Oblique( FT_GlyphSlot  slot )
+{
     FT_Matrix    transform;
     FT_Outline*  outline = &slot->outline;
 
 
     /* only oblique outline glyphs */
     if ( slot->format != FT_GLYPH_FORMAT_OUTLINE )
-      return;
+        return;
 
     /* we don't touch the advance width */
 
@@ -56,23 +56,23 @@
     transform.yy = 0x10000L;
 
     FT_Outline_Transform( outline, &transform );
-  }
+}
 
 
-  /*************************************************************************/
-  /*************************************************************************/
-  /****                                                                 ****/
-  /****   EXPERIMENTAL EMBOLDENING/OUTLINING SUPPORT                    ****/
-  /****                                                                 ****/
-  /*************************************************************************/
-  /*************************************************************************/
+/*************************************************************************/
+/*************************************************************************/
+/****                                                                 ****/
+/****   EXPERIMENTAL EMBOLDENING/OUTLINING SUPPORT                    ****/
+/****                                                                 ****/
+/*************************************************************************/
+/*************************************************************************/
 
 
-  /* documentation is in ftsynth.h */
+/* documentation is in ftsynth.h */
 
-  FT_EXPORT_DEF( void )
-  FT_GlyphSlot_Embolden( FT_GlyphSlot  slot )
-  {
+FT_EXPORT_DEF( void )
+FT_GlyphSlot_Embolden( FT_GlyphSlot  slot )
+{
     FT_Library  library = slot->library;
     FT_Face     face    = slot->face;
     FT_Error    error;
@@ -80,8 +80,8 @@
 
 
     if ( slot->format != FT_GLYPH_FORMAT_OUTLINE &&
-         slot->format != FT_GLYPH_FORMAT_BITMAP )
-      return;
+            slot->format != FT_GLYPH_FORMAT_BITMAP )
+        return;
 
     /* some reasonable strength */
     xstr = FT_MulFix( face->units_per_EM,
@@ -90,36 +90,37 @@
 
     if ( slot->format == FT_GLYPH_FORMAT_OUTLINE )
     {
-      error = FT_Outline_Embolden( &slot->outline, xstr );
-      /* ignore error */
+        error = FT_Outline_Embolden( &slot->outline, xstr );
+        /* ignore error */
 
-      /* this is more than enough for most glyphs; if you need accurate */
-      /* values, you have to call FT_Outline_Get_CBox                   */
-      xstr = xstr * 2;
-      ystr = xstr;
+        /* this is more than enough for most glyphs; if you need accurate */
+        /* values, you have to call FT_Outline_Get_CBox                   */
+        xstr = xstr * 2;
+        ystr = xstr;
     }
-    else if ( slot->format == FT_GLYPH_FORMAT_BITMAP )
-    {
-      /* round to full pixels */
-      xstr &= ~63;
-      if ( xstr == 0 )
-        xstr = 1 << 6;
-      ystr &= ~63;
+    else
+        if ( slot->format == FT_GLYPH_FORMAT_BITMAP )
+        {
+            /* round to full pixels */
+            xstr &= ~63;
+            if ( xstr == 0 )
+                xstr = 1 << 6;
+            ystr &= ~63;
 
-      error = FT_GlyphSlot_Own_Bitmap( slot );
-      if ( error )
-        return;
+            error = FT_GlyphSlot_Own_Bitmap( slot );
+            if ( error )
+                return;
 
-      error = FT_Bitmap_Embolden( library, &slot->bitmap, xstr, ystr );
-      if ( error )
-        return;
-    }
+            error = FT_Bitmap_Embolden( library, &slot->bitmap, xstr, ystr );
+            if ( error )
+                return;
+        }
 
     if ( slot->advance.x )
-      slot->advance.x += xstr;
+        slot->advance.x += xstr;
 
     if ( slot->advance.y )
-      slot->advance.y += ystr;
+        slot->advance.y += ystr;
 
     slot->metrics.width        += xstr;
     slot->metrics.height       += ystr;
@@ -130,8 +131,8 @@
     slot->metrics.vertAdvance  += ystr;
 
     if ( slot->format == FT_GLYPH_FORMAT_BITMAP )
-      slot->bitmap_top += ystr >> 6;
-  }
+        slot->bitmap_top += ystr >> 6;
+}
 
 
 /* END */

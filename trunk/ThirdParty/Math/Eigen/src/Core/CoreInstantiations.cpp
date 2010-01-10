@@ -38,10 +38,10 @@ template static void ei_cache_friendly_product<TYPE>( \
   bool _rhsRowMajor, const TYPE* _rhs, int _rhsStride, \
   bool resRowMajor, TYPE* res, int resStride)
 
-EIGEN_INSTANTIATE_PRODUCT(float);
-EIGEN_INSTANTIATE_PRODUCT(double);
-EIGEN_INSTANTIATE_PRODUCT(int);
-EIGEN_INSTANTIATE_PRODUCT(std::complex<float>);
-EIGEN_INSTANTIATE_PRODUCT(std::complex<double>);
+EIGEN_INSTANTIATE_PRODUCT( float );
+EIGEN_INSTANTIATE_PRODUCT( double );
+EIGEN_INSTANTIATE_PRODUCT( int );
+EIGEN_INSTANTIATE_PRODUCT( std::complex<float> );
+EIGEN_INSTANTIATE_PRODUCT( std::complex<double> );
 
 }

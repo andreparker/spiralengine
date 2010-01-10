@@ -13,7 +13,7 @@ namespace GUI
 	class GuiScrollWindow : public GuiWindow
 	{
 	public:
-		GuiScrollWindow( const Math::SpVector2r& position, const Rect<SpReal>& rect,boost::uint32_t scrollBarThickness, 
+		GuiScrollWindow( const Math::Vector2f& position, const Rect<SpReal>& rect,boost::uint32_t scrollBarThickness, 
 			             const boost::shared_ptr<GuiWindow>& scrollContents, const boost::shared_ptr<GuiManager>& guiManager );
 
 		void AttachWindow( const boost::shared_ptr<GuiWindow>& window );

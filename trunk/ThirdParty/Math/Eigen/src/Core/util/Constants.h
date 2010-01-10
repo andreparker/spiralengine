@@ -180,9 +180,9 @@ const unsigned int SparseBit = 0x1000;
 
 // list of flags that are inherited by default
 const unsigned int HereditaryBits = RowMajorBit
-                                  | EvalBeforeNestingBit
-                                  | EvalBeforeAssigningBit
-                                  | SparseBit;
+                                    | EvalBeforeNestingBit
+                                    | EvalBeforeAssigningBit
+                                    | SparseBit;
 
 // Possible values for the Mode parameter of part() and of extract()
 const unsigned int UpperTriangular = UpperTriangularBit;
@@ -203,40 +203,44 @@ enum CornerType { TopLeft, TopRight, BottomLeft, BottomRight };
 enum DirectionType { Vertical, Horizontal };
 enum ProductEvaluationMode { NormalProduct, CacheFriendlyProduct, DiagonalProduct, SparseTimeSparseProduct, SparseTimeDenseProduct, DenseTimeSparseProduct };
 
-enum {
-  /** \internal Equivalent to a slice vectorization for fixed-size matrices having good alignment
-    * and good size */
-  InnerVectorization,
-  /** \internal Vectorization path using a single loop plus scalar loops for the
-    * unaligned boundaries */
-  LinearVectorization,
-  /** \internal Generic vectorization path using one vectorized loop per row/column with some
-    * scalar loops to handle the unaligned boundaries */
-  SliceVectorization,
-  NoVectorization
+enum
+{
+    /** \internal Equivalent to a slice vectorization for fixed-size matrices having good alignment
+      * and good size */
+    InnerVectorization,
+    /** \internal Vectorization path using a single loop plus scalar loops for the
+      * unaligned boundaries */
+    LinearVectorization,
+    /** \internal Generic vectorization path using one vectorized loop per row/column with some
+      * scalar loops to handle the unaligned boundaries */
+    SliceVectorization,
+    NoVectorization
 };
 
-enum {
-  NoUnrolling,
-  InnerUnrolling,
-  CompleteUnrolling
+enum
+{
+    NoUnrolling,
+    InnerUnrolling,
+    CompleteUnrolling
 };
 
-enum {
-  ColMajor = 0,
-  RowMajor = 0x1,  // it is only a coincidence that this is equal to RowMajorBit -- don't rely on that
-  /** \internal Don't require alignment for the matrix itself (the array of coefficients, if dynamically allocated, may still be
-                requested to be aligned) */
-  DontAlign = 0,
-  /** \internal Align the matrix itself if it is vectorizable fixed-size */
-  AutoAlign = 0x2
+enum
+{
+    ColMajor = 0,
+    RowMajor = 0x1,  // it is only a coincidence that this is equal to RowMajorBit -- don't rely on that
+    /** \internal Don't require alignment for the matrix itself (the array of coefficients, if dynamically allocated, may still be
+                  requested to be aligned) */
+    DontAlign = 0,
+    /** \internal Align the matrix itself if it is vectorizable fixed-size */
+    AutoAlign = 0x2
 };
 
-enum {
-  IsDense         = 0,
-  IsSparse        = SparseBit,
-  NoDirectAccess  = 0,
-  HasDirectAccess = DirectAccessBit
+enum
+{
+    IsDense         = 0,
+    IsSparse        = SparseBit,
+    NoDirectAccess  = 0,
+    HasDirectAccess = DirectAccessBit
 };
 
 #endif // EIGEN_CONSTANTS_H

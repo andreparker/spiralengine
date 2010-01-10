@@ -14,10 +14,12 @@
 //    MAKE_ALIGNED_NEW
 //    ... declarations
 //  private:
-//    SpVector3r position;
-//    SpVector2r etc;
+//    Vector3f position;
+//    Vector2f etc;
 //    ....
 // }
+// NOTE: any class containing a Matrix or vector or containing a class that has a matrix or vector
+//       must be allocated on the heap
 #define MAKE_ALIGNED_NEW EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
 namespace Spiral
@@ -27,19 +29,19 @@ namespace Math
 {
 	const SpReal PI = 3.141592f;
 
-	typedef Eigen::Matrix< SpReal, 2, 1 > SpVector2r;
-	typedef Eigen::Matrix< SpReal, 3, 1 > SpVector3r;
-	typedef Eigen::Matrix< SpReal, 4, 1 > SpVector4r;
+	typedef Eigen::Matrix< SpReal, 2, 1 > Vector2f;
+	typedef Eigen::Matrix< SpReal, 3, 1 > Vector3f;
+	typedef Eigen::Matrix< SpReal, 4, 1 > Vector4f;
 
-	typedef Eigen::Matrix< SpReal, 2, 2 > SpMatrix2x2r;
-	typedef Eigen::Matrix< SpReal, 3, 3 > SpMatrix3x3r;
-	typedef Eigen::Matrix< SpReal, 4, 4 > SpMatrix4x4r;
+	typedef Eigen::Matrix< SpReal, 2, 2 > Matrix2x2f;
+	typedef Eigen::Matrix< SpReal, 3, 3 > Matrix3x3f;
+	typedef Eigen::Matrix< SpReal, 4, 4 > Matrix4x4f;
 
-	typedef Eigen::Transform< SpReal, 2 > SpTransform2r;
-	typedef Eigen::Transform< SpReal, 3 > SpTransform3r;
-	typedef Eigen::Transform< SpReal, 4 > SpTransform4r;
+	typedef Eigen::Transform< SpReal, 2 > Transform2f;
+	typedef Eigen::Transform< SpReal, 3 > Transform3f;
+	typedef Eigen::Transform< SpReal, 4 > Transform4f;
 
-	typedef Eigen::AngleAxis< SpReal > SpAngleAxisr;
+	typedef Eigen::AngleAxis< SpReal > AngleAxisf;
 
 
 	inline SpReal Angle2Degree( SpReal angle )
@@ -83,8 +85,8 @@ namespace Math
 		return Eigen::Matrix< Scalar, 4, 1 >( vec[0], vec[1], vec[2], c0 );
 	}
 
-	bool UnProject( const SpVector3r& winPos, const SpMatrix4x4r& modelViewProj, const Rect<SpReal>& viewPort, SpVector3r& unProjPos );
-	bool Project( const SpVector3r& ProjPos,const SpMatrix4x4r& modelViewProj, const Rect<SpReal>& viewPort, SpVector3r& winPos );
+	bool UnProject( const Vector3f& winPos, const Matrix4x4f& modelViewProj, const Rect<SpReal>& viewPort, Vector3f& unProjPos );
+	bool Project( const Vector3f& ProjPos,const Matrix4x4f& modelViewProj, const Rect<SpReal>& viewPort, Vector3f& winPos );
 }
 }
 

@@ -3,7 +3,12 @@
 
 #include "../../Core/Sp_DataTypes.hpp"
 #include "../../Core/EventSubscriber.hpp"
+
 #include <boost/shared_ptr.hpp>
+#include <boost/weak_ptr.hpp>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/function.hpp>
+#include <map>
 #include <list>
 
 namespace Spiral
@@ -13,6 +18,7 @@ namespace Spiral
 	class Font;
 	class Rgba;
 
+	class IFile;
 	class Engine;
 namespace GUI
 {
@@ -72,6 +78,18 @@ namespace GUI
 		*/
 		void Clear();
 
+		/*!
+		   @function  LoadLayout
+		   @brief     loads a .layout file containing gui elements to create
+		   @return    bool
+		   @param     const boost::shared_ptr<IFile> & layout
+		*/
+		bool LoadLayout( const boost::shared_ptr<IFile>& layout );
+
+		Engine* GetEngine()const
+		{
+			return m_pImplEngine;
+		}
 
 		boost::shared_ptr< GuiButton >   Make_DefButton( SpReal posX, SpReal posY, SpReal width, SpReal height );
 		boost::shared_ptr< GuiWindow >   Make_DefWindow( SpReal posX, SpReal posY, SpReal width, SpReal height );
@@ -106,11 +124,44 @@ namespace GUI
 
 		void TraverseRender( const boost::shared_ptr< GfxDriver >& gfxDrvier,const boost::shared_ptr< GuiWindow >& window )const;
 
+	private:
+
+		bool IsElement( const std::string& type )const
+		{
+			return bool( type == "eClass" );
+		}
+
+		bool LoadSubLayout( const boost::shared_ptr< GuiWindow >& window, const boost::shared_ptr< IFile >& layoutFile )const;
+		bool LoadLayoutImpl( const boost::shared_ptr< IFile >& layoutFile, const boost::function< void( const boost::shared_ptr<GuiWindow>& ) >& storeFunction )const;
+
+		boost::shared_ptr< GuiWindow > Create_Element( const std::string& type, const std::string& parentPath, const boost::property_tree::ptree& tree )const;
+		boost::shared_ptr< GuiWindow > Create_Window_From_Tree( const std::string& parentPath, const boost::property_tree::ptree& tree )const;
+		boost::shared_ptr< GuiWindow > Create_Button_From_Tree( const std::string& parentPath, const boost::property_tree::ptree& tree )const;
+		boost::shared_ptr< GuiWindow > Create_Frame_From_Tree( const std::string& parentPath, const boost::property_tree::ptree& tree )const;
+		boost::shared_ptr< GuiWindow > Create_EditBox_From_Tree( const std::string& parentPath, const boost::property_tree::ptree& tree )const;
+		boost::shared_ptr< GuiWindow > Create_TextBox_From_Tree( const std::string& parentPath, const boost::property_tree::ptree& tree )const;
+		boost::shared_ptr< GuiWindow > Create_Scroll_From_Tree( const std::string& parentPath, const boost::property_tree::ptree& tree )const;
+		boost::shared_ptr< GuiWindow > Create_Slider_From_Tree( const std::string& parentPath, const boost::property_tree::ptree& tree )const;
+		boost::shared_ptr< GuiWindow > Create_CheckBox_From_Tree( const std::string& parentPath, const boost::property_tree::ptree& tree )const;
+
+		void BaseWindowAttributes( boost::property_tree::ptree::const_iterator& itr, const boost::shared_ptr< GuiWindow >& newWindow, const std::string& parentPath )const;
+		void OverRideAttributes( const std::string& parentPath, boost::property_tree::ptree::const_iterator& itr )const;
+
+
+	private:
 		typedef std::list< boost::shared_ptr< GuiWindow > >::iterator gui_window_itr;
 		typedef std::list< boost::shared_ptr< GuiWindow > >::const_iterator const_gui_window_itr;
+		typedef	boost::function< boost::shared_ptr< GuiWindow >( const std::string&, const boost::property_tree::ptree& ) > create_call;
 
+
+		typedef std::map< std::string, create_call >::iterator ElemItr;
+		typedef std::map< std::string, create_call >::const_iterator Const_ElemItr;
 		std::list< boost::shared_ptr< GuiWindow > > m_windowList;
+		std::map< std::string, create_call > m_elementCreate;
 		Engine* m_pImplEngine;
+
+	private:
+		mutable boost::weak_ptr< GuiWindow > m_lastAddedWindow;
 	};
 }
 

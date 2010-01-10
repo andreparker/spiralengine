@@ -1,0 +1,53 @@
+
+layout
+{
+	luaFile
+	{
+		fileName "Data/Scripts/TestButtonPressScript.lua"
+		tagName  "TestButtonScript"
+	}
+	
+	eClass button  ;element class of standerd type window
+	{
+
+		;============================================
+		; attributes - can be in any order
+		;============================================
+		name          "Test window"                   ; window name
+		alpha         true                            ; true / false alpha blend
+		clipChildren  false
+		allowFocus    true
+		show          true
+		OnButtonPress "OnButtonPress"                 ; call script function
+	
+		position
+		{
+			x 0.0
+			y 0.0
+		}
+	
+		window_rect
+		{
+			left   0.0
+			right  32.0
+			top    0.0
+			bottom 32.0
+		}
+	
+		texture_rect
+		{
+			left   0.0
+			right  0.5
+			top    0.0
+			bottom 1.0
+		}
+	
+		texture
+		{
+			fileName "Data/GUI/def_button.png"
+			tagName  "Button_texture"
+		}
+	
+	}
+	
+}

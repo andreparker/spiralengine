@@ -1,0 +1,38 @@
+
+dofile( "../utility.premake4" )
+
+project( "LuaBind" )
+
+	language( "C++" )
+	
+	if os.get() == "windows"
+	then
+		kind( "SharedLib" )
+	    defines{
+					"LUABIND_DYNAMIC_LINK"
+				}
+	else
+		kind( "StaticLib" )
+	end
+	
+	-- use compiler name for folder /build/compiler
+	location( "../Build/" .. _ACTION )
+	
+	files
+	{
+		"luabind/src/**.cpp"
+	}
+	
+	-- include dirs
+	includedirs 
+	{
+		"Lua",
+		"luabind"
+	}
+	
+	links
+	{
+		"Lua"
+	}
+	
+	CUtil.projConfig( "LuaBind" )

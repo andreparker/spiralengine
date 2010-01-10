@@ -18,7 +18,7 @@ using namespace Spiral::GUI;
 using namespace boost;
 
 
-GuiEditBox::GuiEditBox( const Math::SpVector2r& position, const boost::shared_ptr<GfxDriver>& gfxDriver,const Rgba& backColor,
+GuiEditBox::GuiEditBox( const Math::Vector2f& position, const boost::shared_ptr<GfxDriver>& gfxDriver,const Rgba& backColor,
 					    const Rgba& forColor, const boost::shared_ptr<Font>& font, boost::uint32_t maxCharLen, const SpString& defText ):
 GuiWindow( position, Rect<SpReal>(), shared_ptr<Texture>(), false ), m_textBox()
 {

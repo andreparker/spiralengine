@@ -21,7 +21,7 @@ namespace GUI
 	class GuiList : public GuiWindow
 	{
 	public:
-		GuiList( const Math::SpVector2r& position, const SpString itemList[], boost::uint32_t itemCount,
+		GuiList( const Math::Vector2f& position, const SpString itemList[], boost::uint32_t itemCount,
 			boost::uint32_t maxListSize, boost::uint32_t maxItemNameLength, const boost::shared_ptr< Font >& font );
 		virtual ~GuiList();
 

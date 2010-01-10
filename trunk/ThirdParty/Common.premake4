@@ -1,0 +1,42 @@
+
+dofile( "../utility.premake4" )
+
+project( "Common" )
+
+	language( "C++" )
+	kind( "StaticLib" )
+	
+	-- use compiler name for folder /build/compiler
+	location( "../Build/" .. _ACTION )
+	
+	files
+	{
+		"Zip/**.hpp",
+		"Zip/**.cpp",
+		
+		"libpng/**.h",
+		"libpng/**.c",
+		
+		"Zlib/**.h",
+		"Zlib/**.c",
+	}
+	
+	-- add window defines 
+	if os.get() == "windows"
+	then
+		defines
+		{
+			"WIN32",
+			"_WINDOWS",
+			"NOMINMAX" -- prevent windows.h from defining them
+		}
+	end
+	
+	-- include dirs
+	includedirs 
+	{
+		"zlib"
+	}
+	
+	
+	CUtil.projConfig( "Common" )

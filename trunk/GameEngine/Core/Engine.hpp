@@ -15,6 +15,7 @@
 #include <boost/type_traits.hpp>
 #include <boost/static_assert.hpp>
 #include <boost/assert.hpp>
+#include <boost/property_tree/ptree.hpp>
 
 #include "Sp_DataTypes.hpp"
 #include "../Gfx/SpriteLayerImplFwd.hpp"
@@ -35,6 +36,7 @@ namespace Spiral
 	class EventPublisher;
 	class EventSubscriber;
 	class ProcessManager;
+	class ScriptManager;
 	class CVar;
 
 namespace Audio
@@ -87,6 +89,14 @@ namespace GUI
 		   @param     const std::string & textureName - texture tag name
 		*/
 		bool CacheTexture( const boost::shared_ptr< Texture >& texture, const std::string& textureName );
+
+		/*!
+		   @function  GetTexture
+		   @brief     gets a texture by its tag name
+		   @return    boost::shared_ptr< Texture >
+		   @param     const std::string & textureName
+		*/
+		boost::shared_ptr< Texture > GetTexture( const std::string& textureName )const;
 
 		/*!
 		   @function  LoadTexture
@@ -257,11 +267,6 @@ namespace GUI
 			return m_gfxDriver;
 		}
 
-		const boost::shared_ptr< CVar >& GetVariables()const
-		{
-			return m_variables;
-		}
-
 		const boost::shared_ptr< EventPublisher >& GetEventPublisher()const
 		{
 			return m_eventPublisher;
@@ -281,15 +286,20 @@ namespace GUI
 		{
 			return m_processManager;
 		}
+
+		const boost::shared_ptr< ScriptManager >& GetScriptManager()const
+		{
+			return m_scriptManager;
+		}
 		/*!
 		   @function  ScreenToWorld
 		   @brief     translates a screen position to world cordinates
 		   @return    void
-		   @param     const Math::SpVector2r & scr_pos
-		   @param     Math::SpVector2r & world
+		   @param     const Math::Vector2f & scr_pos
+		   @param     Math::Vector2f & world
 		*/
-		void ScreenToWorld( const Math::SpVector2r& scr_pos, Math::SpVector2r& world );
-		void WorldToScreen( const Math::SpVector2r& world_pos, Math::SpVector2r& scr_pos );
+		void ScreenToWorld( const Math::Vector2f& scr_pos, Math::Vector2f& world );
+		void WorldToScreen( const Math::Vector2f& world_pos, Math::Vector2f& scr_pos );
 
 		/*!
 		   @function  LoadConfig
@@ -313,7 +323,14 @@ namespace GUI
 			return object;
 		}
 
+		template< class Type >
+		Type GetVariable( const std::string& varName )const;
+
 	private:
+
+		SpReal GetVariable_Real( const std::string& varName )const;
+		const std::string GetVariable_String( const std::string& varName )const;
+		boost::int32_t GetVariable_Int32( const std::string& varName )const;
 		
 		void EnableThreads();
 		void DisableThreads();
@@ -321,6 +338,7 @@ namespace GUI
 		VisualGameObject* CreateVisual( const char* gameObjectType );
 		void StoreObjects( const boost::shared_ptr<GameObject>& obj, const boost::shared_ptr<VisualGameObject>& vis );
 
+		void CreateDefTexture();
 		/*!
 		   @function  ClearTextureCatalog
 		   @brief     clears and resets the texture catalog
@@ -403,6 +421,8 @@ namespace GUI
 
 		void InitEventPublisher();
 
+		void RegisterScriptModules();
+
 		template< class T >
 		const T GetAttr( const EngineAttribute& attr )const
 		{
@@ -417,7 +437,6 @@ namespace GUI
 		boost::shared_ptr< EventPublisher >       m_eventPublisher;
 		boost::shared_ptr< GfxDriver >            m_gfxDriver;
 		boost::shared_ptr< Audio::AudioDriver >   m_audioDriver;
-		boost::shared_ptr< CVar >                 m_variables;
 		boost::scoped_ptr< ResourceCatalog >      m_catolog;
 		Camera*                                   m_camera;
 		boost::shared_array< SpriteLayer >        m_spriteLayer;
@@ -434,9 +453,29 @@ namespace GUI
 		bool                                      m_threadsEnabled;
 		bool                                      m_modulesCreated;
 		boost::shared_ptr< ProcessManager >       m_processManager;
+		boost::property_tree::ptree               m_engineVariables;
+		boost::shared_ptr< ScriptManager >        m_scriptManager;
 
 		Engine();
 	};
+
+	template<>
+	inline SpReal Engine::GetVariable( const std::string& varName )const
+	{
+		return GetVariable_Real( varName );
+	}
+
+	template<>
+	inline boost::int32_t Engine::GetVariable( const std::string& varName )const
+	{
+		return GetVariable_Int32( varName );
+	}
+
+	template<>
+	inline const std::string Engine::GetVariable( const std::string& varName )const
+	{
+		return GetVariable_String( varName );
+	}
 }
 
 #endif

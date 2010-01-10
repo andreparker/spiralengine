@@ -25,28 +25,28 @@
 FT_BEGIN_HEADER
 
 
-  /* the CJK-specific script class */
+/* the CJK-specific script class */
 
-  FT_CALLBACK_TABLE const AF_ScriptClassRec
-  af_cjk_script_class;
+FT_CALLBACK_TABLE const AF_ScriptClassRec
+af_cjk_script_class;
 
 
-  FT_LOCAL( FT_Error )
-  af_cjk_metrics_init( AF_LatinMetrics  metrics,
-                       FT_Face          face );
+FT_LOCAL( FT_Error )
+af_cjk_metrics_init( AF_LatinMetrics  metrics,
+                     FT_Face          face );
 
-  FT_LOCAL( void )
-  af_cjk_metrics_scale( AF_LatinMetrics  metrics,
-                        AF_Scaler        scaler );
+FT_LOCAL( void )
+af_cjk_metrics_scale( AF_LatinMetrics  metrics,
+                      AF_Scaler        scaler );
 
-  FT_LOCAL( FT_Error )
-  af_cjk_hints_init( AF_GlyphHints    hints,
-                     AF_LatinMetrics  metrics );
+FT_LOCAL( FT_Error )
+af_cjk_hints_init( AF_GlyphHints    hints,
+                   AF_LatinMetrics  metrics );
 
-  FT_LOCAL( FT_Error )
-  af_cjk_hints_apply( AF_GlyphHints    hints,
-                      FT_Outline*      outline,
-                      AF_LatinMetrics  metrics );
+FT_LOCAL( FT_Error )
+af_cjk_hints_apply( AF_GlyphHints    hints,
+                    FT_Outline*      outline,
+                    AF_LatinMetrics  metrics );
 
 /* */
 
