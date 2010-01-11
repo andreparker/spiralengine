@@ -24,7 +24,10 @@ solution( "Spiral" )
 	-- Main
 	dofile( "GameEngine/SpiralEngine.premake4"     )
 	dofile( "GameEngine/OAL_AudioDriver.premake4"  )
-	dofile( "GameEngine/Win32_Ogl_Driver.premake4" )
+	
+	if os.get() == "windows" then
+		dofile( "GameEngine/Win32_Ogl_Driver.premake4" )
+	end
 
 	-- Test
 	dofile( "Unit_Testing/UnitTest.premake4"       )

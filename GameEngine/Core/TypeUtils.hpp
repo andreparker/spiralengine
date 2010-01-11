@@ -36,7 +36,7 @@ namespace Spiral
 		{
 			holePart = bits / 10L
 		};
-		static const boost::uint32_t value = ( static_cast<boost::uint32_t>(  ( float( bits * 0.1f - holePart ) > 0.0f ? 1 : 0 )  ) << place ) | 
+		static const boost::uint32_t value = ( static_cast<boost::uint32_t>(  ( float( bits * 0.1f - holePart ) > 0.0f ? 1 : 0 )  ) << place ) |
 			Binary2Dec< holePart, place+1 >::value;
 	};
 
@@ -59,7 +59,7 @@ namespace Spiral
 	};
 
 	template< class T, T compVal >
-	struct equal_to_val : public std::binary_function< T, T, bool >
+	struct equal_to_val : std::binary_function< T, T, bool >
 	{
 		bool operator()( const T& val )
 		{
@@ -70,12 +70,14 @@ namespace Spiral
 	template< class Itr, class Cond, class Func >
 	void foreach_if( Itr first, Itr last,Func func, Cond cond )
 	{
-		while( first++ != last )
+		while( first != last )
 		{
 			if( cond( *first ) )
 			{
 				func( *first );
 			}
+
+			++first;
 		}
 	}
 
@@ -108,6 +110,7 @@ namespace Spiral
 	{
 		typedef T type;
 	};
+
 }
 
 #endif
