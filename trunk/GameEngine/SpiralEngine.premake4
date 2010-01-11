@@ -14,7 +14,14 @@ project( "SpiralEngine" )
 		files
 		{
 			"Platform/Win32/**.cpp",
-			"Platform/Win32/**.hpp",
+			"Platform/Win32/**.hpp"
+		}
+	elseif os.get() == "linux"
+	then
+		files
+		{
+			"Platform/Linux/**.cpp",
+			"Platform/Linux/**.hpp"
 		}
 	end
 	
@@ -67,7 +74,8 @@ project( "SpiralEngine" )
 		"../ThirdParty/FreeType/include",
 		"../ThirdParty/OggVorbis/include",
 		"../ThirdParty/luabind",
-		"../ThirdParty/Lua"
+		"../ThirdParty/Lua",
+		"../ThirdParty/loki-0.1.7/include"
 	}
 	
 	-- exclude these files
@@ -81,6 +89,15 @@ project( "SpiralEngine" )
 		"Gfx/Iphone_Ogl/**.hpp"
 	}
 	
+	links
+	{	
+		-- projects
+		"Common",
+		"FreeType",
+		"LuaBind",
+		"OggVorbis",
+		"OAL_AudioDriver"
+	}
 	-- add window defines 
 	if os.get() == "windows"
 	then
@@ -93,15 +110,13 @@ project( "SpiralEngine" )
 
 		buildoptions( "/EHa" )
 		links
-		{	
-			-- projects
-			"Common",
-			"FreeType",
-			"LuaBind",
-			"OggVorbis",
-			"OAL_AudioDriver",
+		{
 			"Win32_Ogl_Driver"
 		}
+		
+	elseif os.get() == "linux"
+	then
+		
 	end
 	
 	-- add disabling of depricated warnings
