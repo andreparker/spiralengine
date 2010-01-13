@@ -16,12 +16,12 @@ using namespace boost;
 
 const boost::uint32_t kPadHeight = 4;
 GuiText::GuiText( const Math::Vector2f& position, const boost::shared_ptr<GfxDriver>& gfxDriver, const Rgba& textColor,
-				 boost::uint32_t maxCharLen, const boost::shared_ptr<Font>& font, const wString& text, bool multiline ):
+				  boost::uint32_t maxCharLen, const boost::shared_ptr<Font>& font, const wString& text, bool multiline ):
 GuiWindow( position, Rect<SpReal>(), shared_ptr<Texture>(), true ), m_text( text ), m_charPos( 0 ),
 m_font( font ),m_editSurface(),m_maxCharLen( maxCharLen ),m_fontColor( textColor ),m_multiline(multiline),
 m_gfxDriver( gfxDriver.get() )
 {
-	SetFont( font, gfxDriver );
+	SetFont( font, gfxDriver.get() );
 }
 
 GuiText::GuiText():
@@ -102,12 +102,12 @@ void GuiText::ClearBox()
 	}
 }
 
-void GuiText::SetFont( const boost::shared_ptr< Font >& font, const boost::shared_ptr< GfxDriver >& gfxDriver )
+void GuiText::SetFont( const boost::shared_ptr< Font >& font, GfxDriver* gfxDriver )
 {
 	boost::int32_t width;
 	boost::int32_t height;
 
-	m_gfxDriver = gfxDriver.get();
+	m_gfxDriver = gfxDriver;
 	if( m_multiline )
 	{
 		font->CalcSurfaceSize( m_text, width, height );

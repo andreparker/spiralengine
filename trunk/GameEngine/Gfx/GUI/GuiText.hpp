@@ -56,7 +56,7 @@ namespace GUI
 		void EraseEnd();
 		void ClearBox();
 
-		void SetFont( const boost::shared_ptr< Font >& font, const boost::shared_ptr< GfxDriver >& gfxDriver );
+		void SetFont( const boost::shared_ptr< Font >& font, GfxDriver* gfxDriver );
 		void SetMaxCharLen( boost::uint32_t maxCharLen );
 		void SetFontColor( const Rgba& color );
 	private:
