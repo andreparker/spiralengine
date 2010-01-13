@@ -136,7 +136,7 @@ void GuiSpriteEditor::Show( bool show /*= true */ )
 }
 
 void GuiSpriteEditor::AddTextBox( const shared_ptr< GUI::GuiManager >& guiManager, SpReal nextPosY, const Rgba& kFontColor, 
-								 const shared_ptr< Font >& arialn, uint32_t kMaxEditLen, const Spiral::SpString& text  )
+								 const shared_ptr< Font >& arialn, uint32_t kMaxEditLen, const Spiral::wString& text  )
 {
 	shared_ptr< GUI::GuiText > addedText = guiManager->Make_DefTextBox( 10.0f, nextPosY, kFontColor, arialn, kMaxEditLen, text );
 
@@ -149,7 +149,7 @@ void GuiSpriteEditor::AddTextBox( const shared_ptr< GUI::GuiManager >& guiManage
 }
 
 void GuiSpriteEditor::AddText( const shared_ptr< GUI::GuiManager >& guiManager, const Rgba& kFontColor,const shared_ptr< Font >& arialn,
-			                   const shared_ptr<GUI::GuiButton>& button, const SpString& text )
+			                   const shared_ptr<GUI::GuiButton>& button, const wString& text )
 {
 	shared_ptr< GUI::GuiText > saveText = guiManager->Make_DefTextBox( 10.0f, 8.0f, kFontColor, arialn, 8, text );
 	button->AddChild( saveText );

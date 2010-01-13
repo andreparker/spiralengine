@@ -11,12 +11,6 @@ using namespace Spiral::GUI;
 
 boost::int32_t GuiWindow::window_ID = 0;
 
-void GuiWindow::UpdatePositions( const Math::Vector2f& worldPosition )
-{
-	m_worldPosition = worldPosition + m_localPosition;
-	std::for_each( m_children.begin(), m_children.end(), boost::bind( &GuiWindow::UpdatePositions, _1, boost::cref(m_worldPosition) ) );
-}
-
 GuiWindow::GuiWindow( const Math::Vector2f& position, const Rect< SpReal >& rect, const Rect< SpReal >& textCoords,const boost::shared_ptr< Texture >& texture, bool bAlpha ):
 m_localPosition( position ),
 m_worldPosition( position ),
@@ -32,7 +26,8 @@ m_dirty(false),
 m_show(false),
 m_allowFocus(true),
 m_clipChildren(false),
-m_parent(NULL)
+m_parent(NULL),
+m_name("default")
 {
 }
 
@@ -51,7 +46,8 @@ m_dirty(false),
 m_show(false),
 m_allowFocus(true),
 m_clipChildren(false),
-m_parent(NULL)
+m_parent(NULL),
+m_name( "default" )
 {}
 
 GuiWindow::GuiWindow( const Math::Vector2f& position, const Rect< SpReal >& rect, const boost::shared_ptr< Texture >& texture, bool bAlpha ):
@@ -68,8 +64,16 @@ m_dirty(false),
 m_show(false),
 m_allowFocus(true),
 m_clipChildren(false),
-m_parent(NULL)
+m_parent(NULL),
+m_name( "default" )
 {
+}
+
+void GuiWindow::UpdatePositions( const Math::Vector2f& worldPosition )
+{
+	m_worldPosition = worldPosition + m_localPosition;
+	std::for_each( m_children.begin(), m_children.end(), 
+		           boost::bind( &GuiWindow::UpdatePositions, _1, boost::cref(m_worldPosition) ) );
 }
 
 void GuiWindow::AddChild( const boost::shared_ptr< GuiWindow >& window )
@@ -217,7 +221,11 @@ void GuiWindow::ProcessEvent( boost::int32_t eventId, const boost::any& data )
 			
 			if( (*itr)->m_hasFocus )
 			{
+				boost::shared_ptr<GuiWindow> NukeGuard( *itr );         // in case some does something to delete this poor soul
+				                                                 // while in his call back rountine
+
 				(*itr)->CallHandler( eventId, (*itr).get(), data );
+				
 				break;
 			}
 			(*itr)->ProcessEvent( eventId, data );
@@ -314,7 +322,7 @@ GuiWindow* GuiWindow::GetChild( boost::uint32_t window_id ) const
 
 
 
-bool GuiWindow::IsAncestor( const GuiWindow* window )
+bool GuiWindow::IsAncestor( const GuiWindow* window )const
 {
 	bool isAncestor = false;
 	GuiWindow* parent = GetParent();
@@ -331,4 +339,39 @@ bool GuiWindow::IsAncestor( const GuiWindow* window )
 	}
 
 	return isAncestor;
+}
+
+const GuiWindow* GuiWindow::GetAncestor() const
+{
+	const GuiWindow* parent = GetParent();
+	const GuiWindow* lastParent = const_cast<GuiWindow*>(this);
+
+	while( parent )
+	{
+		lastParent = parent;
+		parent = parent->GetParent();
+	}
+
+	return lastParent;
+}
+
+const GuiWindow* GuiWindow::FindWindow( const std::string& name ) const
+{
+	const GuiWindow* window = this;
+
+	if( m_name == name )
+	{
+		return window;
+	}
+
+	for( Const_WindowItr itr = m_children.begin(); itr != m_children.end(); ++itr )
+	{
+		window = (*itr)->FindWindow( name );
+		if( window )
+		{
+			return window;
+		}
+	}
+
+	return NULL;
 }

@@ -15,11 +15,15 @@ const uint32_t kPadding = 2; // raise it 3 pixels
 
 FreeTypeFont::~FreeTypeFont()
 {
-
 }
 
+FreeTypeFont::FreeTypeFont( const FreeTypeFont& font ):
+Font( font.GetCharWidth(),  ( font.m_face->size->metrics.height >> 6 ) ), 
+m_library( font.m_library ), m_face( font.m_face ),m_data( font.m_data )
+{}
+
 FreeTypeFont::FreeTypeFont( FT_Library library, FT_Face font,const boost::shared_array< boost::int8_t >& data, boost::int32_t width, boost::int32_t height ):
-Font( width, ( font->size->metrics.height >> 6 ) ),m_library( library ), m_face( font ),m_data( data )
+Font( width, ( font->size->metrics.height >> 6 ) ),m_library( library ), m_face( font, FT_Done_Face ),m_data( data )
 {
 
 }
@@ -30,14 +34,14 @@ Font( width, ( font->size->metrics.height >> 6 ) ),m_library( library ), m_face(
    @return    boost::int32_t
    @param     const std::string & str
 */
-boost::uint32_t FindMaxStrSize( const SpString& str )
+boost::uint32_t FindMaxStrSize( const wString& str )
 {
 	uint32_t firstPos = 0,lastPos = 0;
 	uint32_t len = 0;
 
-	typedef tokenizer< char_separator<SpChar>, SpString::const_iterator, SpString > wTokenizer;
+	typedef tokenizer< char_separator<wChar>, wString::const_iterator, wString > wTokenizer;
 	
-	wTokenizer tokens( str,char_separator<SpChar>( L"\n" ) );
+	wTokenizer tokens( str,char_separator<wChar>( L"\n" ) );
 	for( wTokenizer::iterator itr = tokens.begin(); itr != tokens.end(); ++itr )
 	{
 		uint32_t curlen = (*itr).length();
@@ -48,7 +52,7 @@ boost::uint32_t FindMaxStrSize( const SpString& str )
 	return ( len == 0 ? str.length() : len );
 }
 
-void FreeTypeFont::DoCalcSurfaceSize( const SpString& str, boost::int32_t& surfWidth, boost::int32_t& surfHeight )
+void FreeTypeFont::DoCalcSurfaceSize( const wString& str, boost::int32_t& surfWidth, boost::int32_t& surfHeight )
 {
 	surfWidth = FindMaxStrSize( str ) * (m_face->max_advance_width/2 >> 6 );
 	surfHeight = GetCharHeight() * ( 1 + count_element_occurences( str.begin(), str.end(), '\n' ) ) + GetCharHeight();
@@ -137,9 +141,9 @@ struct TextData
 };
 
 template< void Render( const SurfacePosition&, const FT_Bitmap&, const Rgba&, boost::shared_ptr< Surface >& ) >
-void DrawText( TextData& data, const SpString& str, const Rgba& color )
+void DrawText( TextData& data, const wString& str, const Rgba& color )
 {
-	const SpChar* text = str.c_str();
+	const wChar* text = str.c_str();
 
 	SurfacePosition pos( data.cursorPos.x, ( data.face->size->metrics.height >> 6 ) - kPadding );
 	bool useKerning = bool( FT_HAS_KERNING( data.face ) ? true : false );
@@ -147,7 +151,7 @@ void DrawText( TextData& data, const SpString& str, const Rgba& color )
 
 	while( *text != 0 )
 	{
-		SpChar c = *text;
+		wChar c = *text;
 
 		if( c == '\n' )
 		{
@@ -189,39 +193,60 @@ void DrawText( TextData& data, const SpString& str, const Rgba& color )
 	data.cursorPos.y = pos.y - (( data.face->size->metrics.height >> 6 )) ;
 }
 
-void FreeTypeFont::DoRenderAlpha( boost::shared_ptr< Surface >& surface, const SpString& str, const Rgba& color )
+void FreeTypeFont::DoRenderAlpha( boost::shared_ptr< Surface >& surface, const wString& str, const Rgba& color )
 {
-	TextData renderInfo( m_face, surface, SurfacePosition() );
+	TextData renderInfo( m_face.get(), surface, SurfacePosition() );
+
+	SetTheFontSize();
 	DrawText< RenderBitmapAlpha >( renderInfo, str, color );
 }
 
-void FreeTypeFont::DoRenderOpaque( boost::shared_ptr< Surface >& surface, const SpString& str, const Rgba& color )
+void FreeTypeFont::DoRenderOpaque( boost::shared_ptr< Surface >& surface, const wString& str, const Rgba& color )
 {
-	TextData renderInfo( m_face, surface, SurfacePosition() );
+	TextData renderInfo( m_face.get(), surface, SurfacePosition() );
+
+	SetTheFontSize();
 	DrawText< RenderBitmapOpaque >( renderInfo, str, color );
 }
 
-void FreeTypeFont::DoRenderAlpha( boost::shared_ptr< Surface >& surface, boost::uint32_t& cursorX, const SpString& str, const Rgba& color )
+void FreeTypeFont::DoRenderAlpha( boost::shared_ptr< Surface >& surface, boost::uint32_t& cursorX, const wString& str, const Rgba& color )
 {
-	TextData renderInfo( m_face, surface, SurfacePosition(cursorX,0) );
+	TextData renderInfo( m_face.get(), surface, SurfacePosition(cursorX,0) );
+
+	SetTheFontSize();
 	DrawText< RenderBitmapAlpha >( renderInfo, str, color );
+	
 	cursorX = renderInfo.cursorPos.x;
 }
 
-void FreeTypeFont::DoRenderOpaque( boost::shared_ptr< Surface >& surface, boost::uint32_t& cursorX, const SpString& str, const Rgba& color )
+void FreeTypeFont::DoRenderOpaque( boost::shared_ptr< Surface >& surface, boost::uint32_t& cursorX, const wString& str, const Rgba& color )
 {
-	TextData renderInfo( m_face, surface, SurfacePosition(cursorX,0) );
+	TextData renderInfo( m_face.get(), surface, SurfacePosition(cursorX,0) );
+	
+	SetTheFontSize();
 	DrawText< RenderBitmapOpaque >( renderInfo, str, color );
+	
 	cursorX = renderInfo.cursorPos.x;
 }
 
 bool FreeTypeFont::DoSetSize( boost::int32_t width, boost::int32_t height )
 {
-	FT_Error result = FT_Set_Pixel_Sizes( m_face, width, height );
+	FT_Error result = FT_Set_Pixel_Sizes( m_face.get(), width, height );
 	if( !result )
 	{
-		SetSize( width, ( m_face->size->metrics.height >> 6 ) );
+		SetSize( width, height );
 	}
 
 	return bool( !result );
+}
+
+FreeTypeFont* FreeTypeFont::DoClone() const
+{
+	return new FreeTypeFont( *this );
+}
+
+
+void FreeTypeFont::SetTheFontSize()
+{
+	SetFontSize( GetCharWidth(), GetCharHeight() );
 }

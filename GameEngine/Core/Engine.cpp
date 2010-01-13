@@ -7,6 +7,7 @@
 #include "Events.hpp"
 #include "GameObject.hpp"
 #include "ProcessManager.hpp"
+#include "Cloneable.hpp"
 
 #include "../Audio/AudioDriver.hpp"
 
@@ -29,6 +30,7 @@
 #include "../Gfx/gui/Gui.hpp"
 
 #include "../Script/ScriptManager.hpp"
+#include "../Script/ScriptUtils.hpp"
 
 #include "GameStateMachine.hpp"
 #include "GameState.hpp"
@@ -48,6 +50,7 @@
 #include <boost/bind.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/info_parser.hpp>
+#include <loki/ScopeGuard.h>
 
 using namespace Spiral;
 using namespace boost;
@@ -164,7 +167,10 @@ void Engine::UnInitialize()
 void Engine::RegisterScriptModules()
 {
 	// register loging to script
-	LOG_REGISTER_SCRIPT_MGR( GetScriptManager() );
+	LOG_REGISTER_SCRIPT_MGR( m_scriptManager );
+
+	m_guiManager->Register( m_scriptManager );
+	RegisterScriptUtils( m_scriptManager );
 }
 
 void Engine::ClearObjectList()
@@ -277,6 +283,7 @@ boost::shared_ptr< Texture > Engine::GetTexture( const std::string& textureName 
 	return texture;
 }
 
+
 boost::shared_ptr< Texture > Engine::LoadTexture( const std::string& fileName, const std::string& TextureName )
 {
 	LOG_I( module + "^w Loading texture - ^g%1% ^wnameTag - ^g%2% ^w....\n", fileName.c_str(), TextureName.c_str() );
@@ -302,7 +309,7 @@ boost::shared_ptr< Texture > Engine::LoadTexture( const std::string& fileName, c
 		shared_ptr< IFile > pngFile;
 		if( FileManager::instance().getFile( fileName, pngFile ) )
 		{
-			File_Auto_Close< IFile > facPng( pngFile );
+			Loki::ScopeGuard fileGuard = Loki::MakeObjGuard( *pngFile, &IFile::Close );
 			shared_ptr< GfxUtil::Image > newImage = GfxUtil::Image::LoadPng( pngFile );
 			if( newImage )
 			{
@@ -584,14 +591,14 @@ boost::shared_ptr< Font > Engine::LoadFont( const std::string& fontFile, const s
 	LOG_I( module + "^w Loading font file - ^g%1% ^wnameTag - ^g%2% ^wwidth - ^g%3% ^wheight - ^g%4%....\n", fontFile.c_str(), fontName.c_str(), charWidth, charHeight );
 	if( itr != m_catolog->m_fontCatalog.end() )
 	{
-		font = (*itr).second;
+		font = (*itr).second->Clone_Cast< Font >();
 		LOG_I( module + "^w Font already exists, grabbing it from catalog.\n" );
 	}else
 	{
 		boost::shared_ptr< IFile > file;
 		if( FileManager::instance().getFile( fontFile, file ))
 		{
-			File_Auto_Close< IFile > fac( file );
+			Loki::ScopeGuard guard = Loki::MakeObjGuard( *file, &IFile::Close );
 			font = m_fontFactory->CreateFont( file, charWidth, charHeight );
 			m_catolog->m_fontCatalog[ fontName ] = font;
 			m_catolog->m_fontSize += file->Size(); 
@@ -767,7 +774,7 @@ bool Engine::LoadConfig( const std::string& fileName )
 	boost::shared_ptr< IFile > configFile;
 	if( FileManager::instance().getFile( fileName, configFile ) )
 	{
-		File_Auto_Close< IFile > ac( configFile );
+		Loki::ScopeGuard guard = Loki::MakeObjGuard( *configFile, &IFile::Close );
 		boost::shared_ptr< std::istream > pStream = configFile->GetStream();
 		boost::property_tree::info_parser::read_info( *pStream, m_engineVariables );
 		SetGfxValues();
@@ -899,3 +906,19 @@ boost::int32_t Engine::GetVariable_Int32( const std::string& varName ) const
 	return m_engineVariables.get<boost::int32_t>( varName , -1 );
 }
 
+
+boost::shared_ptr< Font > Engine::GetFont( const std::string& fontName ) const
+{
+	ResourceCatalog::FontCatalogItr itr = m_catolog->m_fontCatalog.find( fontName );
+	boost::shared_ptr< Font > font;
+	LOG_I( module + "^w Grabbing font - ^wnameTag - ^g%1% ....\n", fontName.c_str() );
+	if( itr != m_catolog->m_fontCatalog.end() )
+	{
+		font = (*itr).second->Clone_Cast< Font >();
+	}else
+	{
+		LOG_E( module + "^rFont not found!\n" );
+	}
+
+	return font;
+}

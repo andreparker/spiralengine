@@ -8,9 +8,10 @@
 
 namespace Spiral
 {
-	typedef float SpReal;
-	typedef std::wstring SpString;
-	typedef wchar_t SpChar;
+	typedef float                SpReal;
+	typedef std::wstring         wString;
+	typedef wchar_t              wChar;
+	typedef std::string          cString;
 
 }
 

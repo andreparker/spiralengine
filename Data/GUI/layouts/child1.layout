@@ -13,7 +13,7 @@ layout
 		;============================================
 		; attributes - can be in any order
 		;============================================
-		name          "Test window"                   ; window name
+		name          "Button window"                   ; window name
 		alpha         true                            ; true / false alpha blend
 		clipChildren  false
 		allowFocus    true

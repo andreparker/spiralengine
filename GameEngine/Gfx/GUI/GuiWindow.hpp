@@ -156,7 +156,30 @@ namespace GUI
 			return m_parent;
 		}
 
-		bool IsAncestor( const GuiWindow* window );
+		const GuiWindow* FindWindow( const std::string& name )const;
+
+		GuiWindow* FindWindow( const std::string& name )
+		{
+			return const_cast<GuiWindow*>( static_cast<const GuiWindow*>(this)->FindWindow( name ) );
+		}
+
+		void SetName( const std::string& name )
+		{
+			m_name = name;
+		}
+
+		const std::string& GetName()const
+		{
+			return m_name;
+		}
+
+		bool IsAncestor( const GuiWindow* window )const;
+		const GuiWindow* GetAncestor()const;
+		
+		GuiWindow* GetAncestor()
+		{
+			return const_cast<GuiWindow*>( static_cast<const GuiWindow*>(this)->GetAncestor() );
+		}
 
 		virtual void SetRect( const Rect< SpReal >& rt )
 		{
@@ -311,7 +334,8 @@ namespace GUI
 		bool m_show;		///< shows the window
 		bool m_allowFocus;  ///< enable/disables focus on the window
 		bool m_clipChildren; ///< clips children to the window
-		GuiWindow* m_parent;
+		GuiWindow* m_parent; ///< parent
+		std::string m_name;  ///< window name
 
 	private:
 		static GuiWindow* lastHoverWindow;

@@ -20,7 +20,9 @@ namespace GUI
 	public:
 		virtual ~GuiText(){}
 		GuiText( const Math::Vector2f& position, const boost::shared_ptr<GfxDriver>& gfxDriver,
-			const Rgba& textColor, boost::uint32_t maxCharLen, const boost::shared_ptr<Font>& font, const SpString& text, bool multiLine = false );
+			const Rgba& textColor, boost::uint32_t maxCharLen, const boost::shared_ptr<Font>& font, const wString& text, bool multiLine = false );
+
+		GuiText();
 
 		void SetCharPos( boost::uint32_t posX )
 		{
@@ -32,7 +34,7 @@ namespace GUI
 			return m_charPos;
 		}
 
-		const SpString& GetText()const
+		const wString& GetText()const
 		{
 			return m_text;
 		}
@@ -48,23 +50,29 @@ namespace GUI
 		   @return    void
 		   @param     const std::string & text
 		*/
-		void SetText( const SpString& text );
-		void DrawChar( SpChar c );
+		void SetText( const wString& text );
+		void DrawChar( wChar c );
 
 		void EraseEnd();
 		void ClearBox();
+
+		void SetFont( const boost::shared_ptr< Font >& font, const boost::shared_ptr< GfxDriver >& gfxDriver );
+		void SetMaxCharLen( boost::uint32_t maxCharLen );
+		void SetFontColor( const Rgba& color );
 	private:
 
-		void DrawString( const SpString& text );
+		void DrawString( const wString& text );
+		void ResizeBox( boost::int32_t width, boost::int32_t height );
 		
 	private:
-		SpString m_text;
+		wString m_text;
 		boost::uint32_t m_charPos;
 		boost::shared_ptr<Font> m_font;
 		boost::shared_ptr<Surface> m_editSurface;
-		const boost::uint32_t m_maxCharLen;
+		boost::uint32_t m_maxCharLen;
 		Rgba m_fontColor;
 		bool m_multiline;
+		GfxDriver* m_gfxDriver;
 
 	};
 }
