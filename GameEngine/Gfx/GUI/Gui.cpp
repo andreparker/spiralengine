@@ -27,6 +27,7 @@
 #include <boost/assert.hpp>
 #include <boost/assign/list_of.hpp>
 #include <boost/type_traits.hpp>
+#include <loki/ScopeGuard.h>
 
 
 #include "GuiButton.hpp"
@@ -58,6 +59,12 @@ namespace
 	const std::string kKwClipChild   = "clipChildren";
 	const std::string kKwAllowFocus  = "allowFocus";
 	const std::string kKwShowWindow  = "show";
+
+	// text
+	const std::string kKwFont        = "font";
+	const std::string kKwForColor    = "forColor";
+	const std::string kKwBackColor   = "backColor";
+	const std::string kKwMaxCharLen  = "maxCharLen";
 
 	// button
 	const std::string kKwOnButtonPress = "OnButtonPress";
@@ -290,6 +297,18 @@ namespace
 		return bool( "true" == str ? true : ( "false" == str ? false : false ) );
 	}
 
+	template< class Type >
+	Type ExtractData( const std::string& str, const ptree& tree )
+	{
+		ptree::const_iterator dataItr = tree.find( str );
+		if( dataItr == tree.end() )
+		{
+			THROW_GENERAL_EXCEPTION( "Error Could not extract " + str + " !" );
+		}
+
+		return dataItr->second.get_value< Type >();
+	}
+
 	void ExtractBounds( const ptree& tree, SpReal* bounds )
 	{
 		ptree::const_iterator leftItr   = tree.find( "left" );
@@ -333,6 +352,35 @@ namespace
 		{
 			LOG_E( "^yExtractScript: ^rError opening script %1%\n", fileName->second.data() );
 		}
+	}
+
+	boost::shared_ptr< Font > ExtractFont( Engine* engine, const ptree& tree )
+	{
+		ptree::const_iterator fileName = tree.find( "fileName" );
+		ptree::const_iterator tagName  = tree.find( "tagName"  );
+		ptree::const_iterator fontWidth = tree.find( "width" );
+		ptree::const_iterator fontHeight = tree.find( "height" );
+
+		if( fontWidth == tree.end() || fontHeight == tree.end() )
+		{
+			THROW_GENERAL_EXCEPTION( "Error: Font extract, missing width/height!" );
+		}
+
+		boost::int32_t w = fontWidth->second.get_value<boost::int32_t>(16);
+		boost::int32_t h = fontHeight->second.get_value<boost::int32_t>(16);
+		boost::shared_ptr< Font > font = engine->LoadFont( fileName->second.data(), tagName->second.data(), w, h );
+
+
+		return font;
+	}
+
+	Rgba ExtractColor( const ptree& tree )
+	{
+		return Rgba( 
+			ExtractData<SpReal>( "red", tree ),
+			ExtractData<SpReal>( "green", tree ),
+			ExtractData<SpReal>( "blue", tree ),
+			ExtractData<SpReal>( "alpha", tree ) );
 	}
 
 	std::string currentlayoutFile = "";
@@ -568,7 +616,24 @@ boost::shared_ptr< GuiWindow > GuiManager::Create_EditBox_From_Tree( const std::
 
 boost::shared_ptr< GuiWindow > GuiManager::Create_TextBox_From_Tree( const std::string& parentPath, const boost::property_tree::ptree& tree ) const
 {
-	boost::shared_ptr< GuiWindow > newWindow;
+	boost::shared_ptr< GuiText > newWindow( new GuiText() );
+
+	for( ptree::const_iterator itr = tree.begin(); itr != tree.end(); ++itr )
+	{
+		BaseWindowAttributes( itr, newWindow, parentPath );
+
+		if( itr->first == kKwFont )
+		{
+			newWindow->SetFont( ExtractFont( const_cast<Engine*>(m_pImplEngine), itr->second ),
+				                const_cast<GfxDriver*>( m_pImplEngine->GetGfxDriver().get() ));
+		}else if( itr->first == kKwForColor )
+		{
+			newWindow->SetFontColor( ExtractColor( itr->second ) );
+		}else if( itr->first == kKwMaxCharLen )
+		{
+			newWindow->SetMaxCharLen( itr->second.get_value<boost::uint32_t>(16) );
+		}
+	}
 
 	return newWindow;
 }
