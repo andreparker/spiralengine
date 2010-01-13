@@ -32,14 +32,14 @@ namespace GUI
 		   @param     const std::string & defText	- defualt text in the box
 		*/
 		GuiEditBox( const Math::Vector2f& position, const boost::shared_ptr<GfxDriver>& gfxDriver,const Rgba& backColor,
-					const Rgba& forColor, const boost::shared_ptr<Font>& font, boost::uint32_t maxCharLen, const SpString& defText );
+					const Rgba& forColor, const boost::shared_ptr<Font>& font, boost::uint32_t maxCharLen, const wString& defText );
 
 		/*!
 		   @function  GetText
 		   @brief     gets the contents of the text box
 		   @return    const std::string&
 		*/
-		const SpString& GetText()const;
+		const wString& GetText()const;
 
 		/*!
 		   @function  SetText
@@ -47,10 +47,10 @@ namespace GUI
 		   @return    void
 		   @param     const std::string & text
 		*/
-		void SetText( const SpString& text );
+		void SetText( const wString& text );
 	private:
 
-		void DrawString( const SpString& str );
+		void DrawString( const wString& str );
 		void OnChar( boost::int32_t eventId, GuiWindow* window, const boost::any& data );
 		void OnDataChanged( boost::int32_t eventId, GuiWindow* window, const boost::any& data );
 	private:

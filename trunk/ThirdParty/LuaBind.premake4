@@ -5,15 +5,15 @@ project( "LuaBind" )
 
 	language( "C++" )
 	
-	if os.get() == "windows"
-	then
-		kind( "SharedLib" )
-	    defines{
-					"LUABIND_DYNAMIC_LINK"
-				}
-	else
+	--if os.get() == "windows"
+	--then
+	--	kind( "SharedLib" )
+	--    defines{
+	--			"LUABIND_DYNAMIC_LINK"
+	--		   }
+	--else
 		kind( "StaticLib" )
-	end
+	--end
 	
 	-- use compiler name for folder /build/compiler
 	location( "../Build/" .. _ACTION )
@@ -21,6 +21,11 @@ project( "LuaBind" )
 	files
 	{
 		"luabind/src/**.cpp"
+	}
+	
+	defines
+	{
+		"LUABIND_NO_RTTI"
 	}
 	
 	-- include dirs

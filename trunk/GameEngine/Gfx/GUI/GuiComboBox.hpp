@@ -30,7 +30,7 @@ namespace GUI
 		boost::int32_t GetItemInt( boost::int32_t index )const;
 		SpReal GetItemReal( boost::int32_t index )const;
 
-		bool AddItemText( const SpString& item );
+		bool AddItemText( const wString& item );
 		bool AddItemInt( boost::int32_t item );
 		bool AddItemReal( SpReal item );
 

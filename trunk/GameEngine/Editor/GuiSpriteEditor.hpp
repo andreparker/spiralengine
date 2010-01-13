@@ -45,10 +45,10 @@ namespace Editor
 	private:
 		void AddTextBox( const boost::shared_ptr< Spiral::GUI::GuiManager >& guiManager, Spiral::SpReal nextPosY, 
 			const Spiral::Rgba& kFontColor, const boost::shared_ptr< Spiral::Font >& arialn, boost::uint32_t kMaxEditLen,
-			const Spiral::SpString& text );
+			const Spiral::wString& text );
 
 		void AddText( const boost::shared_ptr< Spiral::GUI::GuiManager >& guiManager, const Spiral::Rgba& kFontColor,
-			const boost::shared_ptr< Spiral::Font >& arialn,const boost::shared_ptr<Spiral::GUI::GuiButton>& button, const Spiral::SpString& text );
+			const boost::shared_ptr< Spiral::Font >& arialn,const boost::shared_ptr<Spiral::GUI::GuiButton>& button, const Spiral::wString& text );
 
 	};
 }

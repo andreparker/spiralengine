@@ -38,13 +38,17 @@ bool App::DoInit( boost::int32_t /*argc*/, std::list< boost::shared_array< char 
     //m_arialN = engine->LoadFont( "c:/windows/fonts/arialn.ttf", "arial_n", 12, 14 );
     m_arialN = engine->LoadFont( "c:/windows/fonts/arialn.ttf", "arial_n", 16, 10 );
 
-    SpString text = L"Testing Font rendering code using true type font.\nThis font is arial narrow.\nTesting newline code\nTesting Font rendering code using true type font.\nTesting Font rendering code using true type font.\nTesting Font rendering code using true type font.\nTesting Font rendering code using true type font.\nTesting Font rendering code using true type font.\nTesting Font rendering code using true type font.\n";
+	shared_ptr< Font > testFont = m_arialN->Clone_Cast< Font >();
+	testFont->SetFontSize( 20, 12 );
+	shared_ptr< Font > testFont2 = testFont->Clone_Cast< Font >();
+	testFont2->SetFontSize( 8, 8 );
+    wString text = L"Testing Font rendering code using true type font.\nThis font is arial narrow.\nTesting newline code\nTesting Font rendering code using true type font.\nTesting Font rendering code using true type font.\nTesting Font rendering code using true type font.\nTesting Font rendering code using true type font.\nTesting Font rendering code using true type font.\nTesting Font rendering code using true type font.\n";
 
 
     shared_ptr< GUI::GuiManager > guiManager = engine->GetGuiManager();
-    shared_ptr< GUI::GuiText > guiText = guiManager->Make_DefTextBox( 32.0f, 100.0f, Rgba( 1.0f, 1.0f, 1.0f ), m_arialN, text.length() + 1, text );
+    shared_ptr< GUI::GuiText > guiText = guiManager->Make_DefTextBox( 32.0f, 100.0f, Rgba( 1.0f, 1.0f, 1.0f ), testFont, text.length() + 1, text );
     shared_ptr< GUI::GuiText > guiButtonText1 = guiManager->Make_DefTextBox( 8.0f, 10.0f, Rgba( 1.0f, 1.0f, 1.0f ), m_arialN, 10, L"Button 1" );
-    shared_ptr< GUI::GuiText > guiButtonText2 = guiManager->Make_DefTextBox( 8.0f, 10.0f, Rgba( 1.0f, 1.0f, 1.0f ), m_arialN, 10, L"Button 2" );
+    shared_ptr< GUI::GuiText > guiButtonText2 = guiManager->Make_DefTextBox( 8.0f, 10.0f, Rgba( 1.0f, 1.0f, 1.0f ), testFont2, 10, L"Button 2" );
 
     shared_ptr<GUI::GuiScrollWindow> scrollwindow( new GUI::GuiScrollWindow( Math::make_vector( 32.0f, 100.0f ),
             Rect<SpReal>( 0.0f, 150.0f, 64.0f, 0.0f ), 8, guiText, guiManager ) );
@@ -177,7 +181,7 @@ void App::SliderChanged( boost::int32_t /*eventId*/, Spiral::GUI::GuiWindow* win
     GUI::GuiEditBox* edit = static_cast<GUI::GuiEditBox*>( m_window->GetChild( m_sliderEditId ) );
     boost::int32_t sliderPos = slider->GetSliderPos();
 
-    SpString str = lexical_cast<SpString>( sliderPos );
+    wString str = lexical_cast<wString>( sliderPos );
 
     UpdateQueue_handle queue;
     queue->Add( bind( &GUI::GuiEditBox::SetText, edit, str ) );

@@ -19,7 +19,7 @@ using namespace boost;
 
 
 GuiEditBox::GuiEditBox( const Math::Vector2f& position, const boost::shared_ptr<GfxDriver>& gfxDriver,const Rgba& backColor,
-					    const Rgba& forColor, const boost::shared_ptr<Font>& font, boost::uint32_t maxCharLen, const SpString& defText ):
+					    const Rgba& forColor, const boost::shared_ptr<Font>& font, boost::uint32_t maxCharLen, const wString& defText ):
 GuiWindow( position, Rect<SpReal>(), shared_ptr<Texture>(), false ), m_textBox()
 {
 	Rect<SpReal> rect;
@@ -57,17 +57,17 @@ GuiWindow( position, Rect<SpReal>(), shared_ptr<Texture>(), false ), m_textBox()
 	Show();
 }
 
-void GuiEditBox::DrawString( const SpString& str )
+void GuiEditBox::DrawString( const wString& str )
 {
 	m_textBox->SetText( str );
 }
 
-const SpString& GuiEditBox::GetText() const
+const wString& GuiEditBox::GetText() const
 {
 	return m_textBox->GetText();
 }
 
-void GuiEditBox::SetText( const SpString& text )
+void GuiEditBox::SetText( const wString& text )
 {
 	m_textBox->SetText( text );
 }
@@ -77,7 +77,7 @@ void GuiEditBox::OnChar( boost::int32_t eventId, GuiWindow* window, const boost:
 	// this will not work, function being called from a thread
 	// opengl cannot render in different threads
 	// TODO: add update function for post updates for GuiWindows 
-	SpChar c = static_cast<SpChar>( any_cast<uint32_t>(data) );
+	wChar c = static_cast<wChar>( any_cast<uint32_t>(data) );
 	UpdateQueue_handle queue;
 
 	if( c == 0x08 )

@@ -77,6 +77,6 @@ void GuiButton::OnButtonPressScript()
 	if( m_gui && m_buttonPressScript != "" )
 	{
 		shared_ptr< ScriptManager > scriptMgr = m_gui->GetEngine()->GetScriptManager();
-		luabind::call_function<void>( scriptMgr->GetLuaState(), m_buttonPressScript.c_str() );
+		luabind::call_function<void>( scriptMgr->GetLuaState(), m_buttonPressScript.c_str(), this );
 	}
 }

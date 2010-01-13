@@ -77,6 +77,7 @@ namespace GUI
 		   @param     boost::int32_t charHeight
 		*/
 		boost::shared_ptr< Font > LoadFont( const std::string& fontFile, const std::string& fontName, boost::int32_t charWidth, boost::int32_t charHeight );
+		boost::shared_ptr< Font > GetFont( const std::string& fontNam )const;
 
 		bool UnCacheFont( const std::string& fontName );
 		bool UnCacheTexture( const std::string& textureName );

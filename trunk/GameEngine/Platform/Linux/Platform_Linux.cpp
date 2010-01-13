@@ -13,7 +13,7 @@ int main( int argc, char *argv[] )
         {
             if( SDL_Succeded( SDL_Init( kSdl_InitFlags ) ) )
             {
-                ScopeGaurd quitGaurd = MakeGaurd( SDL_Quit );
+                ScopeGuard quitGaurd = MakeGuard( SDL_Quit );
             }
             else
             {

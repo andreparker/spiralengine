@@ -4,6 +4,7 @@
 #include <boost/cstdint.hpp>
 #include <lualib.h>
 #include <memory.h>
+#include <sstream>
 
 #include "ScriptManager.hpp"
 #include "../Core/File.hpp"
@@ -59,6 +60,28 @@ namespace
 		return NULL;
 	}
 
+	int AddDebugInfo(lua_State* L)
+	{
+		lua_Debug d;
+		lua_getstack(L, 1, &d);
+		lua_getinfo(L, "Sln", &d);
+		std::string err = lua_tostring(L, -1);
+		lua_pop(L, 1);
+		std::stringstream msg;
+		msg << d.short_src << ":" << d.currentline;
+
+		if (d.name != 0)
+		{
+			msg << "(" << d.namewhat << " " << d.name << ")";
+		}
+
+		msg << " " << err;
+
+		LOG_E( "^rScript Error:" + msg.str() + "\n" );
+		lua_pushstring(L, msg.str().c_str());
+		return 1;
+	}
+
 	void close_state( lua_State* s )
 	{
 		lua_close( s );
@@ -84,6 +107,7 @@ bool ScriptManager::Initialize()
 	
 	// attach lua bind to the state
 	luabind::open( m_luaState.get() );
+	luabind::set_pcall_callback( AddDebugInfo );
 
 	return true;
 }

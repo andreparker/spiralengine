@@ -20,6 +20,8 @@ namespace Spiral
 
 	class IFile;
 	class Engine;
+	class ScriptManager;
+
 namespace GUI
 {
 	class GuiWindow;
@@ -37,6 +39,22 @@ namespace GUI
 	{
 	public:
 		GuiManager( Engine* engine );
+
+		/*!
+		   @function  FindWindow
+		   @brief     finds a window in the list
+		   @return    GuiWindow*
+		   @param     const std::string & name
+		*/
+		GuiWindow* FindWindow( const std::string& name );
+
+		/*!
+		   @function  Register
+		   @brief     allow script to access the gui
+		   @return    void
+		   @param     const boost::shared_ptr<ScriptManager> & scriptMgr
+		*/
+		void Register( const boost::shared_ptr<ScriptManager>& scriptMgr );
 
 		/*!
 		   @function  AddElement
@@ -78,6 +96,7 @@ namespace GUI
 		*/
 		void Clear();
 
+		void Delay_Clear();
 		/*!
 		   @function  LoadLayout
 		   @brief     loads a .layout file containing gui elements to create
@@ -85,6 +104,10 @@ namespace GUI
 		   @param     const boost::shared_ptr<IFile> & layout
 		*/
 		bool LoadLayout( const boost::shared_ptr<IFile>& layout );
+
+		void LoadLayout_Script( const std::string& fileName );
+
+		void Delay_LoadLayout_Script( const std::string& fileName );
 
 		Engine* GetEngine()const
 		{
@@ -96,11 +119,11 @@ namespace GUI
 		boost::shared_ptr< GuiFrame >    Make_DefFrame( SpReal posX, SpReal posY, SpReal width, SpReal height );
 		boost::shared_ptr< GuiCheckBox > Make_DefCheckBox( SpReal posX, SpReal posY, SpReal width, SpReal height );
 		boost::shared_ptr< GuiText >     Make_DefTextBox( SpReal posX, SpReal posY, const Rgba& fontColor, 
-			             const boost::shared_ptr<Font>& font, boost::uint32_t maxAllowedChar, const SpString& text );
+			             const boost::shared_ptr<Font>& font, boost::uint32_t maxAllowedChar, const wString& text );
 		boost::shared_ptr< GuiSlider >   Make_DefSlider( SpReal posX, SpReal posY, SpReal width, SpReal height, 
 			                                             boost::uint32_t sliderSize, const GuiSliderDir& dir );
 		boost::shared_ptr< GuiEditBox >  Make_DefEditBox( SpReal posX, SpReal posY, const Rgba& bkColor, const Rgba& fontColor, 
-			                             const boost::shared_ptr<Font>& font, boost::uint32_t maxCharLen, const SpString& text );
+			                             const boost::shared_ptr<Font>& font, boost::uint32_t maxCharLen, const wString& text );
 
 	private:
 		
@@ -124,6 +147,7 @@ namespace GUI
 
 		void TraverseRender( const boost::shared_ptr< GfxDriver >& gfxDrvier,const boost::shared_ptr< GuiWindow >& window )const;
 
+		void PlaceFocusWindow();
 	private:
 
 		bool IsElement( const std::string& type )const
@@ -153,10 +177,14 @@ namespace GUI
 		typedef std::list< boost::shared_ptr< GuiWindow > >::const_iterator const_gui_window_itr;
 		typedef	boost::function< boost::shared_ptr< GuiWindow >( const std::string&, const boost::property_tree::ptree& ) > create_call;
 
-
 		typedef std::map< std::string, create_call >::iterator ElemItr;
 		typedef std::map< std::string, create_call >::const_iterator Const_ElemItr;
-		std::list< boost::shared_ptr< GuiWindow > > m_windowList;
+
+		typedef std::list< boost::shared_ptr< GuiWindow > > WindowList;
+		typedef WindowList::iterator WindowItr;
+
+		WindowList m_windowList;
+
 		std::map< std::string, create_call > m_elementCreate;
 		Engine* m_pImplEngine;
 

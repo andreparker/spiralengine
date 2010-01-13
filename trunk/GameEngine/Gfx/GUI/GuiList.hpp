@@ -21,12 +21,12 @@ namespace GUI
 	class GuiList : public GuiWindow
 	{
 	public:
-		GuiList( const Math::Vector2f& position, const SpString itemList[], boost::uint32_t itemCount,
+		GuiList( const Math::Vector2f& position, const wString itemList[], boost::uint32_t itemCount,
 			boost::uint32_t maxListSize, boost::uint32_t maxItemNameLength, const boost::shared_ptr< Font >& font );
 		virtual ~GuiList();
 
-		bool AddItem( const SpString& item );
-		bool GetItem( boost::uint32_t index, SpString& item )const;
+		bool AddItem( const wString& item );
+		bool GetItem( boost::uint32_t index, wString& item )const;
 		
 		void Construct( const boost::shared_ptr< GfxDriver >& gfxDriver );
 
@@ -40,9 +40,9 @@ namespace GUI
 			return m_needsConstruct;
 		}
 	private:
-		std::list< SpString > m_items;
-		typedef std::list< SpString >::iterator ItemItr;
-		typedef std::list< SpString >::const_iterator Const_ItemItr;
+		std::list< wString > m_items;
+		typedef std::list< wString >::iterator ItemItr;
+		typedef std::list< wString >::const_iterator Const_ItemItr;
 		boost::shared_ptr< Font > m_font;
 		const boost::uint32_t m_maxItemNameLength;
 		const boost::uint32_t m_maxListSize;

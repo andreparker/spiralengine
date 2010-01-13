@@ -7,7 +7,7 @@ using namespace Spiral;
 using namespace Spiral::GUI;
 using namespace boost;
 
-bool GuiList::AddItem( const SpString& item )
+bool GuiList::AddItem( const wString& item )
 {
 	bool itemAdded = false;
 	if( item.length() <= m_maxItemNameLength &&
@@ -21,7 +21,7 @@ bool GuiList::AddItem( const SpString& item )
 	return itemAdded;
 }
 
-GuiList::GuiList( const Math::Vector2f& position, const SpString itemList[], boost::uint32_t itemCount,
+GuiList::GuiList( const Math::Vector2f& position, const wString itemList[], boost::uint32_t itemCount,
 				 boost::uint32_t maxListSize, boost::uint32_t maxItemNameLength, const boost::shared_ptr< Font >& font ):
 GuiWindow( position, Rect< SpReal >(), Rect< SpReal >( 0.0f, 1.0f, 1.0f, 0.0f ), shared_ptr<Texture>(), false ),
 m_items(),
@@ -51,7 +51,7 @@ void GuiList::Construct( const boost::shared_ptr< GfxDriver >& gfxDriver )
 
 }
 
-bool GuiList::GetItem( boost::uint32_t index, SpString& item )const
+bool GuiList::GetItem( boost::uint32_t index, wString& item )const
 {
 	bool result = false;
 	if( index < m_items.size() )

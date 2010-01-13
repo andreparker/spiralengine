@@ -119,6 +119,11 @@ project( "SpiralEngine" )
 		
 	end
 	
+	defines
+	{
+		"LUABIND_NO_RTTI"
+	}
+	
 	-- add disabling of depricated warnings
 	if _ACTION == "vs2005" or _ACTION == "vs2008"
 	then

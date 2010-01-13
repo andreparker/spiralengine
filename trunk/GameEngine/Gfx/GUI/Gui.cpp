@@ -16,6 +16,7 @@
 #include "../../Core/Log.hpp"
 #include "../../Script/ScriptManager.hpp"
 #include "../../Core/GeneralException.hpp"
+#include "../../Core/UpdateQueue.hpp"
 
 #include <algorithm>
 #include <boost/bind.hpp>
@@ -25,6 +26,7 @@
 #include <boost/foreach.hpp>
 #include <boost/assert.hpp>
 #include <boost/assign/list_of.hpp>
+#include <boost/type_traits.hpp>
 
 
 #include "GuiButton.hpp"
@@ -148,6 +150,7 @@ void GuiManager::Input( const Event& inputEvent, const boost::any& data )
 		MouseEvent event_data = boost::any_cast< MouseEvent >( data );
 		mouse_position position( static_cast<SpReal>(event_data.pos.x), static_cast<SpReal>(event_data.pos.y) );
 		HandleMouseInput( inputEvent, position );
+		PlaceFocusWindow();
 	}else if( inputEvent.hasCat( Catagory_KeyBoard::value ) )
 	{
 		if( inputEvent.IsCat( Catagory_KeyBoard_Char::value ) )
@@ -163,10 +166,22 @@ void GuiManager::HandleMouseInput( const Event& inputEvent, const mouse_position
 	if( inputEvent.IsCat( Catagory_Mouse_MouseDown::value ) )
 	{
 		std::for_each( m_windowList.begin(), m_windowList.end(), boost::bind( &GuiWindow::MouseDown, _1, boost::cref(position) ) );
+		/*/
+		BOOST_FOREACH( shared_ptr<GuiWindow>& window, m_windowList )
+		{
+			window->MouseDown( position );
+		}
+		//*/
 	}else
 		if( inputEvent.IsCat( Catagory_Mouse_Up::value ) )
 	{
 		std::for_each( m_windowList.begin(), m_windowList.end(), boost::bind( &GuiWindow::MouseUp, _1, boost::cref(position) ) );
+		/*
+		BOOST_FOREACH( shared_ptr<GuiWindow>& window, m_windowList )
+		{
+			window->MouseDown( position );
+		}
+		//*/
 	}else
 		if( inputEvent.IsCat( Catagory_Mouse_Move::value ) )
 	{
@@ -220,7 +235,7 @@ boost::shared_ptr< GuiCheckBox > GuiManager::Make_DefCheckBox( SpReal posX, SpRe
 	return check;
 }
 
-boost::shared_ptr< GuiText > GuiManager::Make_DefTextBox( SpReal posX, SpReal posY, const Rgba& fontColor, const boost::shared_ptr<Font>& font, boost::uint32_t maxAllowedChar, const SpString& text )
+boost::shared_ptr< GuiText > GuiManager::Make_DefTextBox( SpReal posX, SpReal posY, const Rgba& fontColor, const boost::shared_ptr<Font>& font, boost::uint32_t maxAllowedChar, const wString& text )
 {
 	shared_ptr< GuiText > guiText = make_shared< GuiText >( Math::make_vector<SpReal>(posX, posY),m_pImplEngine->GetGfxDriver(),fontColor,maxAllowedChar,font,text,true );
 	return guiText;
@@ -251,7 +266,7 @@ boost::shared_ptr< GuiSlider > GuiManager::Make_DefSlider( SpReal posX, SpReal p
 	return guiSlider;
 }
 
-boost::shared_ptr< GuiEditBox > GuiManager::Make_DefEditBox( SpReal posX, SpReal posY, const Rgba& bkColor, const Rgba& fontColor, const boost::shared_ptr<Font>& font, boost::uint32_t maxCharLen, const SpString& text )
+boost::shared_ptr< GuiEditBox > GuiManager::Make_DefEditBox( SpReal posX, SpReal posY, const Rgba& bkColor, const Rgba& fontColor, const boost::shared_ptr<Font>& font, boost::uint32_t maxCharLen, const wString& text )
 {
 	shared_ptr< GuiEditBox > editbox = make_shared< GuiEditBox >( Math::make_vector( posX,posY ), m_pImplEngine->GetGfxDriver(), 
 		bkColor, fontColor, font, maxCharLen, text );
@@ -410,6 +425,9 @@ void GuiManager::BaseWindowAttributes( ptree::const_iterator& itr, const boost::
 	}else if( itr->first == kKwScriptName )
 	{
 		ExtractScript( const_cast< Engine* >( m_pImplEngine ), itr->second );
+	}else if( itr->first == kKwWindowName )
+	{
+		newWindow->SetName( itr->second.data() );
 	}
 }
 
@@ -576,3 +594,157 @@ boost::shared_ptr< GuiWindow > GuiManager::Create_CheckBox_From_Tree( const std:
 	return newWindow;
 }
 
+namespace boost
+{
+	bool operator==( const shared_ptr<GuiWindow>& ls, const GuiWindow* rs )
+	{
+		return bool( ls.get() == rs );
+	}
+}
+
+void GuiManager::PlaceFocusWindow()
+{
+	if( GuiWindow::lastFocusWindow != NULL )
+	{
+		GuiWindow* parent = GuiWindow::lastFocusWindow->GetAncestor();
+		if( m_windowList.back().get() != parent )
+		{
+			WindowItr itr = std::find( m_windowList.begin(), m_windowList.end(), parent );
+			
+			shared_ptr<GuiWindow> window = *itr;
+
+			m_windowList.erase( itr );
+			m_windowList.push_back( window );
+		}
+	}
+}
+
+namespace
+{
+	
+	const GuiWindow* Window_FindWindow( const GuiWindow* window, const std::string& name )
+	{
+		return window->FindWindow( name );
+	}
+
+	GuiWindow* Window_FindWindow( GuiWindow* window, const std::string& name )
+	{
+		return window->FindWindow( name );
+	}
+
+	GuiButton* window_to_button( GuiWindow* window )
+	{
+		return static_cast<GuiButton*>( window );
+	}
+
+	GuiWindow* button_to_window( GuiButton* button )
+	{
+		return static_cast<GuiWindow*>( button );
+	}
+
+	luabind::scope RegisterWindowSub()
+	{
+		luabind::scope s = luabind::class_< GuiWindow >( "GuiWindow" )
+			.def( "FindWindow", (GuiWindow* (GuiWindow::*)(const std::string&))&GuiWindow::FindWindow )
+			.def( "FindWindow", (const GuiWindow* (GuiWindow::*)(const std::string&)const)&GuiWindow::FindWindow )
+			.def( "GetName", &GuiWindow::GetName )
+			.def( "GetAncestor", (GuiWindow*(GuiWindow::*)())&GuiWindow::GetAncestor )
+			.def( "GetAncestor", (const GuiWindow*(GuiWindow::*)()const)&GuiWindow::GetAncestor )
+			.def( "IsAncestor", &GuiWindow::IsAncestor )
+			.def( "SetClipChildren", &GuiWindow::SetClipChildren )
+			.def( "ClipChildren", &GuiWindow::ClipChildren	)
+			.def( "SetAlphaBlend", &GuiWindow::SetAlphaBlend );
+
+		return s;
+	}
+
+	luabind::scope RegisterButtonSub()
+	{
+		luabind::scope s = luabind::class_< GuiButton, GuiWindow >( "GuiButton" )
+			.def( "SetButtonPressScript", &GuiButton::SetButtonPressScript );
+
+		return s;
+	}
+
+	luabind::scope RegisterGuiManagerSub()
+	{
+		luabind::scope s = luabind::class_< GuiManager >( "GuiManager" )
+			.def( "Clear", &GuiManager::Delay_Clear )
+			.def( "FindWindow", &GuiManager::FindWindow )
+			.def( "LoadLayout", &GuiManager::Delay_LoadLayout_Script );
+
+		return s;
+	}
+
+	luabind::scope RegisterGuiFreeFuctionsSub()
+	{
+		luabind::scope s = luabind::namespace_( "Util" )
+		[
+			luabind::def( "window_to_button", &window_to_button ),
+			luabind::def( "button_to_window", &button_to_window ),
+			luabind::def( "Window_FindWindow", (GuiWindow*(*)(GuiWindow*,const std::string&))&Window_FindWindow ),
+			luabind::def( "Window_FindWindow", (const GuiWindow*(*)(const GuiWindow*,const std::string&))&Window_FindWindow )
+		];
+
+		return s;
+	}
+
+	luabind::scope RegisterEditBoxSub()
+	{
+		luabind::scope s = luabind::class_< GuiEditBox, GuiWindow >( "GuiEditBox" )
+			.def( "GetText", &GuiEditBox::GetText )
+			.def( "SetText", &GuiEditBox::SetText );
+
+		return s;
+	}
+}
+
+void GuiManager::Register( const boost::shared_ptr<ScriptManager>& scriptMgr )
+{
+	luabind::scope s = luabind::namespace_( "GUI" )
+	[
+		RegisterWindowSub(),
+		RegisterButtonSub(),
+		RegisterGuiManagerSub(),
+		RegisterGuiFreeFuctionsSub()
+	];
+
+	scriptMgr->RegisterModule( s );
+
+	// set gui manager global var
+	luabind::globals( scriptMgr->GetLuaState() )["GuiManager"] = this;
+}
+
+GuiWindow* GuiManager::FindWindow( const std::string& name )
+{
+	GuiWindow* window = NULL;
+	for( WindowItr itr = m_windowList.begin(); itr != m_windowList.end(); ++itr )
+	{
+		window = (*itr)->FindWindow( name );
+		if( window ) 
+		{
+			break;
+		}
+	}
+
+	return window;
+}
+
+void GuiManager::LoadLayout_Script( const std::string& fileName )
+{
+	shared_ptr< IFile > file;
+	if( FileManager::instance().getFile( fileName, file ) )
+	{
+		LoadLayout( file );
+	}
+}
+
+void GuiManager::Delay_Clear()
+{
+	UpdateQueue::instance().Add( boost::bind( &GuiManager::Clear, this ) ); 
+}
+
+void GuiManager::Delay_LoadLayout_Script( const std::string& fileName )
+{
+	UpdateQueue::instance().Add( boost::bind( &GuiManager::LoadLayout_Script, this, fileName ) );
+}

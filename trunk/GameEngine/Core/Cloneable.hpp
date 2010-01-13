@@ -12,7 +12,14 @@ namespace Spiral
 	public:
 		virtual ~Cloneable();
 
-		boost::shared_ptr< Cloneable > Clone()const;
+		const boost::shared_ptr< Cloneable > Clone()const;
+
+		template< class To >
+		const boost::shared_ptr< To > Clone_Cast()const
+		{
+			return boost::shared_ptr< To >( static_cast<To*>( DoClone() ) );
+		}
+
 	private:
 		/*!
 			@function   DoClone
