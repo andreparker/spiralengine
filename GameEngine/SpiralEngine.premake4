@@ -63,7 +63,10 @@ project( "SpiralEngine" )
 		"Resource/**.hpp",
 		
 		"Math/**.cpp",
-		"Math/**.hpp"
+		"Math/**.hpp",
+		
+		"local/**.cpp",
+		"local/**.hpp"
 	}
 
 	
@@ -133,5 +136,5 @@ project( "SpiralEngine" )
 		}
 	end
 	
-	CUtil.projConfig( "Spiral" )
+	CUtil.projConfig( "SpiralEngine" )
 	

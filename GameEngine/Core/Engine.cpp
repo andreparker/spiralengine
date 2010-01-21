@@ -10,6 +10,7 @@
 #include "Cloneable.hpp"
 
 #include "../Audio/AudioDriver.hpp"
+#include "../local/StringLocalizer.hpp"
 
 #include "../Gfx/GfxDriver.hpp"
 #include "../Gfx/GfxImpl.hpp"
@@ -81,7 +82,8 @@ m_threadsEnabled(false),
 m_modulesCreated(false),
 m_processManager(),
 m_engineVariables(),
-m_scriptManager()
+m_scriptManager(),
+m_localizer()
 {
 }
 
@@ -121,6 +123,8 @@ bool Engine::Initialize( shared_ptr< GfxDriver >& gfxDriver,boost::shared_ptr< A
 				
 			}
 
+			m_localizer->SetStringDirectoryPath("Data/strings/jap");
+			//m_localizer->LoadStringFile("language_test.xml");
 			m_scriptManager->Initialize();
 
 			RegisterScriptModules();
@@ -139,6 +143,7 @@ void Engine::UnInitialize()
 		DisableThreads();
 	}
 
+	m_localizer->ClearStringTable();
 	LOG_I( module + "^w Clearing resource catalog....\n" );
 	ClearCatalog();
 
@@ -629,6 +634,7 @@ void Engine::CreateModules()
 	m_guiManager      = make_shared< GUI::GuiManager >( this );
 	m_processManager  = make_shared< ProcessManager >();
 	m_scriptManager   = make_shared< ScriptManager >();
+	m_localizer       = make_shared< locale::StringLocalizer >();
 	m_inputSubscriber = make_shared< EventSubscriber >( Event( Event::EVENT_ANY, Catagory_Input::value ) );
 	m_catolog.reset( new ResourceCatalog );
 	m_modulesCreated = true;

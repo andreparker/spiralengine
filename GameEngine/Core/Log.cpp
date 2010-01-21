@@ -20,7 +20,7 @@ LogRouter::~LogRouter()
 {
 }
 
-void LogRouter::Register( const shared_ptr<ScriptManager>& scriptMgr )
+void LogRouter::Register( const boost::shared_ptr<ScriptManager>& scriptMgr )
 {
 	luabind::scope s = luabind::namespace_("Log")
 	[
@@ -31,7 +31,7 @@ void LogRouter::Register( const shared_ptr<ScriptManager>& scriptMgr )
 	scriptMgr->RegisterModule( s );
 }
 
-void LogRouter::addLogger( shared_ptr< LogModule >& logger )
+void LogRouter::addLogger( boost::shared_ptr< LogModule >& logger )
 {
 	m_loggers.push_back( logger );
 }
@@ -51,7 +51,7 @@ void LogRouter::format( string& buffer, const string& msg, ... )const
 
 void LogRouter::logNoArg( const LogFlags& flags, const string& msg )const
 {
-	BOOST_FOREACH( shared_ptr< LogModule > logger, m_loggers )
+	BOOST_FOREACH( boost::shared_ptr< LogModule > logger, m_loggers )
 	{
 		if( logger && logger->CanLog( flags ) )
 		{
@@ -72,7 +72,7 @@ void LogRouter::log( const LogFlags& flags, const string& msg, ...)const
 	va_end( args );
 
 
-	BOOST_FOREACH( shared_ptr< LogModule > logger, m_loggers )
+	BOOST_FOREACH( boost::shared_ptr< LogModule > logger, m_loggers )
 	{
 		if( logger->CanLog( flags ) )
 		{

@@ -39,13 +39,13 @@ using namespace std;
 
 const std::string module = "^yPlatform :";
 
-shared_ptr< GfxDriver > g_gfxDriver;
-shared_ptr< Audio::AudioDriver > g_audioDriver;
+boost::shared_ptr< GfxDriver > g_gfxDriver;
+boost::shared_ptr< Audio::AudioDriver > g_audioDriver;
 
 list< shared_array<char> > g_argList;
 int g_argc = 0;
 bool g_keys[256] = {false};
-weak_ptr< Engine > g_engine;
+boost::weak_ptr< Engine > g_engine;
 
 /*!
    @function  GetSeconds
@@ -105,7 +105,7 @@ int ParseCommandLine( list< shared_array< char > >& arglist )
 	return argc;
 }
 
-void InitializeWindow( shared_ptr< Engine >& engine, shared_ptr< AppWindow >& appWindow )
+void InitializeWindow( boost::shared_ptr< Engine >& engine, boost::shared_ptr< AppWindow >& appWindow )
 {
 	RECT rt;
 	//shared_ptr< CVar > variables = engine->GetVariables();
@@ -131,9 +131,9 @@ void InitializeWindow( shared_ptr< Engine >& engine, shared_ptr< AppWindow >& ap
 	appWindow->Show();
 }
 
-void SwapCurrentRunningApp( shared_ptr<Application>& currentApp, shared_ptr<Application>& newRunApp, const any& data )
+void SwapCurrentRunningApp( boost::shared_ptr<Application>& currentApp, boost::shared_ptr<Application>& newRunApp, const boost::any& data )
 {
-	shared_ptr< Engine > engine( g_engine );
+	boost::shared_ptr< Engine > engine( g_engine );
 
 	if( engine )
 	{
@@ -164,12 +164,12 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	{
 		
 		g_argc = ParseCommandLine( g_argList );
-		shared_ptr< Application > spGameApp = CreateApp();
-		shared_ptr< Application > spEditorApp( new Editor::App );
-		shared_ptr< AppWindow > spAppWindow( new AppWindow( hInstance ) );
-		shared_ptr< Engine > engine = Engine::Create();
-		shared_ptr< LogModule > winLogger;
-		any windowData;
+		boost::shared_ptr< Application > spGameApp = CreateApp();
+		boost::shared_ptr< Application > spEditorApp( new Editor::App );
+		boost::shared_ptr< AppWindow > spAppWindow( new AppWindow( hInstance ) );
+		boost::shared_ptr< Engine > engine = Engine::Create();
+		boost::shared_ptr< LogModule > winLogger;
+		boost::any windowData;
 
 		// get a weak pointer to engine
 		g_engine = engine;
@@ -186,13 +186,13 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 				THROW_WINDOW_EXCEPTION( "Could not create window" );
 			}
 
-			winLogger = make_shared< WindowsLogger >( spAppWindow->Get( EmptyType<HWND>() ) );
+			winLogger = boost::make_shared< WindowsLogger >( spAppWindow->Get( EmptyType<HWND>() ) );
 			LOG_ADD_LOGGER( winLogger );
 
-			g_gfxDriver = make_shared< WinOglDriver >();
-			g_audioDriver = make_shared< Audio::OalAudioDriver >();
+			g_gfxDriver = boost::make_shared< WinOglDriver >();
+			g_audioDriver = boost::make_shared< Audio::OalAudioDriver >();
 
-			windowData = any( spAppWindow->Get( EmptyType<HDC>() ) );
+			windowData = boost::any( spAppWindow->Get( EmptyType<HDC>() ) );
 
 			engine->Initialize( g_gfxDriver , g_audioDriver, windowData );
 			
@@ -236,8 +236,8 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 		SpReal fracSecs = 0.015f;
 		SpReal appChangeDelay = 0.0f;
 
-		shared_ptr< Application > currentAppRunning = spGameApp;
-		shared_ptr< Application > nextAppRunning = spEditorApp;
+		boost::shared_ptr< Application > currentAppRunning = spGameApp;
+		boost::shared_ptr< Application > nextAppRunning = spEditorApp;
 
 		// returns true if WM_QUIT is encountered
 		while( false == spAppWindow->ProcessMessage( msg, 0, 0 ) &&
@@ -280,7 +280,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 		MsgBoxError( "Unhandled exception!" );
 	}
 
-	shared_ptr<OFile> ofile;
+	boost::shared_ptr<OFile> ofile;
 	FileManager::instance().createFile("MemoryAnalysis.log", ofile );
 	MemoryManager< MallocPolicy, 0 >::instance().WriteAnalysis( ofile );
 	ofile->Close();
@@ -326,7 +326,7 @@ boost::any charInputData,mouseMoveData,
 
 void AppWindow::Initialize()
 {
-	m_sysAppEventSubscriber = make_shared< EventSubscriber >( Event( Event::EVENT_ANY, Catagory_App_Status::value ) );
+	m_sysAppEventSubscriber = boost::make_shared< EventSubscriber >( Event( Event::EVENT_ANY, Catagory_App_Status::value ) );
 	m_eventPublisher->AddSubscriber( m_sysAppEventSubscriber );
 	m_sysAppEventSubscriber->AddCallback( boost::bind( &AppWindow::SysAppEvents, this, _1, _2 ) );
 }
@@ -335,7 +335,7 @@ void ScreenToWorld( int& x, int& y )
 {
 	if( !g_engine.expired() )
 	{
-		shared_ptr<Engine> ptr = g_engine.lock();
+		boost::shared_ptr<Engine> ptr = g_engine.lock();
 		Math::Vector2f pos = Math::make_vector<SpReal>( static_cast<SpReal>(x), static_cast<SpReal>(y) );
 		ptr->ScreenToWorld( pos, pos );
 		x = static_cast<int>(pos[0]);

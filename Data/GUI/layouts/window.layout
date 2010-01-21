@@ -15,6 +15,8 @@ texture
 	tagName  "Frame_window_texture"
 }
 
+; load a string table
+loadStringTable "language_test.xml"
 
 ;===================================================================
 ; eClass Type ( Type == window,frame,editBox,slider,button,textBox,scrollWindow,checkBox )
@@ -78,7 +80,85 @@ eClass frame  ;element class of standerd type window
 			x 20.0
 			y 10.0
 		}
+		
+		eClass editBox
+		{
+			name       "editBox0"
+			maxCharLen 15
+			allowFocus true
+			show       true
+			alpha      true
+			multiline  false
+		
+			position
+			{
+				x 5
+				y 45
+			}
+		
+			font
+			{
+				fileName "Data/Fonts/ARIALUNI.ttf"
+				tagName  "Jap_Font"
+				width    10
+				height   11
+			}
+		
+			forColor
+			{
+				red   0.0
+				green 0.0
+				blue  1.0
+				alpha 1.0
+			}
+		
+			backColor
+			{
+				red   1.0
+				green 1.0
+				blue  1.0
+				alpha 1.0
+			}
+		
+			stringId   "test.sentence"
+		}
 	}
+	
+	eClass textBox
+	{
+		name       "textBox0"
+		maxCharLen 26
+		allowFocus false
+		show       true
+		alpha      true
+		multiline  true
+		
+		position
+		{
+			x 5
+			y 30
+		}
+		
+		font
+		{
+			fileName "Data/Fonts/ARIALUNI.ttf"
+			tagName  "Jap_Font"
+			width    12
+			height   8
+		}
+		
+		forColor
+		{
+			red   1.0
+			green 0.0
+			blue  0.0
+			alpha 1.0
+		}
+		
+		stringId   "test.sentence"
+	}
+	
+	
 	
 }
 

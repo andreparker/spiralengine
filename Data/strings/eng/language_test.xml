@@ -1,4 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<id value="1">
-  <string>Hello</string>
-</id>
+<strings>
+  <id value="test.hello">
+    <string>Hello</string>
+  </id>
+  <id value="test.sentence">
+    <string>Hello there, this is a sentence!</string>
+  </id>
+</strings>

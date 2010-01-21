@@ -38,7 +38,7 @@ void GameStateMachine::InitializeStates()
 
 	} funcObject_;
 
-	for_each( m_stateFuncInitList.begin(), m_stateFuncInitList.end(), bind<void>( ref( funcObject_ ), _1, this ) );
+	for_each( m_stateFuncInitList.begin(), m_stateFuncInitList.end(), boost::bind<void>( boost::ref( funcObject_ ), _1, this ) );
 }
 
 void GameStateMachine::ClearStates()
@@ -48,7 +48,7 @@ void GameStateMachine::ClearStates()
 	m_stateFuncInitList.clear();
 }
 
-void GameStateMachine::AddState( shared_ptr<GameState> &state, StateInitFunc initFunc )
+void GameStateMachine::AddState( boost::shared_ptr<GameState> &state, StateInitFunc initFunc )
 {
 	// no duplicates
 	m_stateFuncInitList.push_back( initFunc );
@@ -67,10 +67,10 @@ void GameStateMachine::SetCurrentState( boost::shared_ptr< GameState >& state, E
 	m_currentVisualState->Enter( engine );
 }
 
-shared_ptr< GameState > GameStateMachine::GetState( int32_t stateId )const
+boost::shared_ptr< GameState > GameStateMachine::GetState( int32_t stateId )const
 {
-	shared_ptr< GameState > state;
-	const_state_itr itr = find_if( m_gameStateList.begin(), m_gameStateList.end(), bind( &GameState::GetID, _1 ) == stateId );
+	boost::shared_ptr< GameState > state;
+	const_state_itr itr = find_if( m_gameStateList.begin(), m_gameStateList.end(), boost::bind( &GameState::GetID, _1 ) == stateId );
 	if( itr != m_gameStateList.end() )
 	{
 		state = *itr;
@@ -126,7 +126,7 @@ void GameStateMachine::ProcessEvents( Engine* engine )
 
 			if( m_currentGameState->IsTransition( event ) == true )
 			{
-				shared_ptr< GameState > newState = m_currentGameState->Transition( event, engine );
+				boost::shared_ptr< GameState > newState = m_currentGameState->Transition( event, engine );
 				m_currentVisualState->Transition( engine );
 				SetCurrentState( newState, engine );
 			}

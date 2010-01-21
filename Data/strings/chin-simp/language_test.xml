@@ -1,4 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<id value="1">
-  <string>你好</string>
-</id>
+<strings>
+  <id value="test.hello">
+    <string>你好</string>
+  </id>
+  <id value="test.sentence">
+    <string>你好</string>
+  </id>
+</strings>

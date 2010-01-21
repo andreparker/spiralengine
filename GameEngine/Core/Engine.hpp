@@ -39,6 +39,11 @@ namespace Spiral
 	class ScriptManager;
 	class CVar;
 
+namespace locale
+{
+	class StringLocalizer;
+}
+
 namespace Audio
 {
 	class AudioDriver;
@@ -292,6 +297,11 @@ namespace GUI
 		{
 			return m_scriptManager;
 		}
+
+		const boost::shared_ptr< locale::StringLocalizer >& GetStringLocalizer()const
+		{
+			return m_localizer;
+		}
 		/*!
 		   @function  ScreenToWorld
 		   @brief     translates a screen position to world cordinates
@@ -456,6 +466,7 @@ namespace GUI
 		boost::shared_ptr< ProcessManager >       m_processManager;
 		boost::property_tree::ptree               m_engineVariables;
 		boost::shared_ptr< ScriptManager >        m_scriptManager;
+		boost::shared_ptr< locale::StringLocalizer > m_localizer;
 
 		Engine();
 	};

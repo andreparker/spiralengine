@@ -54,4 +54,6 @@
 #include "Audio/AudioObject.hpp"
 #include "Audio/AudioStreamObject.hpp"
 
+#include "local/StringLocalizer.hpp"
+
 #endif

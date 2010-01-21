@@ -40,7 +40,7 @@ void RenderQueue::Sort( bool bOrder /*= true*/ )
 
 void RenderQueue::Present( boost::shared_ptr< GfxDriver >& gfxDriver )
 {
-	for_each( m_entryList.begin(), m_entryList.end(), bind( &RenderEntry::Render, _1, gfxDriver ) );
+	for_each( m_entryList.begin(), m_entryList.end(), boost::bind( &RenderEntry::Render, _1, gfxDriver ) );
 }
 
 void RenderQueue::Clear()
@@ -51,7 +51,7 @@ void RenderQueue::Clear()
 bool RenderQueue::GetEntry( RenderEntry*& entry, boost::int32_t id )
 {
 
-	EntryItr itr = find_if( m_entryList.begin(), m_entryList.end(), ( bind( &RenderEntry::GetId, _1 ) == id ) );
+	EntryItr itr = find_if( m_entryList.begin(), m_entryList.end(), ( boost::bind( &RenderEntry::GetId, _1 ) == id ) );
 
 	entry = &(*itr);
 	

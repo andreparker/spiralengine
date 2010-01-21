@@ -34,6 +34,8 @@ namespace GUI
 		GuiEditBox( const Math::Vector2f& position, const boost::shared_ptr<GfxDriver>& gfxDriver,const Rgba& backColor,
 					const Rgba& forColor, const boost::shared_ptr<Font>& font, boost::uint32_t maxCharLen, const wString& defText );
 
+		GuiEditBox();
+
 		/*!
 		   @function  GetText
 		   @brief     gets the contents of the text box
@@ -48,14 +50,26 @@ namespace GUI
 		   @param     const std::string & text
 		*/
 		void SetText( const wString& text );
+
+		void SetFont( const boost::shared_ptr< Font >& font, GfxDriver* gfxDriver );
+		void SetMaxCharLen( boost::uint32_t maxCharLen );
+		void SetFontColor( const Rgba& color );
+		void SetMultiLine( bool isMulti );
+
+		void SetBkGroundColor( const Rgba& color );
 	private:
 
 		void DrawString( const wString& str );
 		void OnChar( boost::int32_t eventId, GuiWindow* window, const boost::any& data );
 		void OnDataChanged( boost::int32_t eventId, GuiWindow* window, const boost::any& data );
+
+		void Resize( boost::int32_t width, boost::int32_t height, const boost::shared_ptr< GfxDriver >& gfxDriver );
+		void RefreshBackGround();
 	private:
 
 		boost::shared_ptr<GuiText> m_textBox;
+		Rgba       m_backColor;
+		boost::uint32_t m_maxCharLen;
 	};
 }
 }

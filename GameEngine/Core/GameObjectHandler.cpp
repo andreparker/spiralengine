@@ -8,8 +8,8 @@ using namespace std;
 
 
 
-bool obj_comp::operator()( const shared_ptr<CoreObject>& a,
-						   const shared_ptr<CoreObject>& b )
+bool obj_comp::operator()( const boost::shared_ptr<CoreObject>& a,
+						   const boost::shared_ptr<CoreObject>& b )
 {
 	return a->GetObjectId() < b->GetObjectId();
 }
@@ -39,7 +39,7 @@ void GameObjectHandler::Add( const boost::shared_ptr< CoreObject >& obj )
 
 void GameObjectHandler::Remove( boost::int32_t id )
 {
-	Object_set::iterator itr = find_if( m_objects.begin(), m_objects.end(), bind( &CoreObject::GetObjectId, _1 ) == id );
+	Object_set::iterator itr = find_if( m_objects.begin(), m_objects.end(), boost::bind( &CoreObject::GetObjectId, _1 ) == id );
 
 	if( itr != m_objects.end() )
 	{
@@ -49,7 +49,7 @@ void GameObjectHandler::Remove( boost::int32_t id )
 
 bool GameObjectHandler::Find(boost::int32_t id, boost::shared_ptr<CoreObject> &obj) const
 {
-	Object_set::const_iterator itr = find_if( m_objects.begin(), m_objects.end(), bind( &CoreObject::GetObjectId, _1 ) == id );
+	Object_set::const_iterator itr = find_if( m_objects.begin(), m_objects.end(), boost::bind( &CoreObject::GetObjectId, _1 ) == id );
 
 	if( itr != m_objects.end() )
 	{
@@ -67,7 +67,7 @@ void GameObjectHandler::Clear()
 void GameObjectHandler::DoTick( SpReal ticks )
 {
 	// tick the objects
-	for_each( m_objects.begin(), m_objects.end(), bind( &CoreObject::Tick, _1, ticks ) );
+	for_each( m_objects.begin(), m_objects.end(), boost::bind( &CoreObject::Tick, _1, ticks ) );
 }
 
 CoreObject* GameObjectHandler::DoClone()const
