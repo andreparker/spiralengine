@@ -18,7 +18,7 @@ m_fileSize(0),m_istream( ifs )
 int32_t IBinaryFile::DoRead( int8_t* buffer, int32_t count)
 {
 	m_istream->read( reinterpret_cast<char*>(buffer) , count  );
-	return m_istream->gcount();
+	return static_cast< int32_t > ( m_istream->gcount() );
 }
 
 uint32_t IBinaryFile::DoSize() const

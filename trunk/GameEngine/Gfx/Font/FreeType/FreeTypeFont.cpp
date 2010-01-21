@@ -11,19 +11,27 @@
 using namespace Spiral;
 using namespace boost;
 
-const uint32_t kPadding = 2; // raise it 3 pixels
+const uint32_t kPadding = 3; // raise it 3 pixels
+
+namespace
+{
+	inline int32_t convert_26_6_to_int32( signed long value )
+	{
+		return value >> 6;
+	}
+}
 
 FreeTypeFont::~FreeTypeFont()
 {
 }
 
 FreeTypeFont::FreeTypeFont( const FreeTypeFont& font ):
-Font( font.GetCharWidth(),  ( font.m_face->size->metrics.height >> 6 ) ), 
+Font( font.GetCharWidth(),  convert_26_6_to_int32( font.m_face->size->metrics.height ) ), 
 m_library( font.m_library ), m_face( font.m_face ),m_data( font.m_data )
 {}
 
 FreeTypeFont::FreeTypeFont( FT_Library library, FT_Face font,const boost::shared_array< boost::int8_t >& data, boost::int32_t width, boost::int32_t height ):
-Font( width, ( font->size->metrics.height >> 6 ) ),m_library( library ), m_face( font, FT_Done_Face ),m_data( data )
+Font( width, convert_26_6_to_int32( font->size->metrics.height ) ),m_library( library ), m_face( font, FT_Done_Face ),m_data( data )
 {
 
 }
@@ -54,7 +62,7 @@ boost::uint32_t FindMaxStrSize( const wString& str )
 
 void FreeTypeFont::DoCalcSurfaceSize( const wString& str, boost::int32_t& surfWidth, boost::int32_t& surfHeight )
 {
-	surfWidth = FindMaxStrSize( str ) * (m_face->max_advance_width/2 >> 6 );
+	surfWidth = FindMaxStrSize( str ) * convert_26_6_to_int32( m_face->max_advance_width / 2 );
 	surfHeight = GetCharHeight() * ( 1 + count_element_occurences( str.begin(), str.end(), '\n' ) ) + GetCharHeight();
 }
 																															  
@@ -144,8 +152,8 @@ template< void Render( const SurfacePosition&, const FT_Bitmap&, const Rgba&, bo
 void DrawText( TextData& data, const wString& str, const Rgba& color )
 {
 	const wChar* text = str.c_str();
-
-	SurfacePosition pos( data.cursorPos.x, ( data.face->size->metrics.height >> 6 ) - kPadding );
+	const int32_t text_height = convert_26_6_to_int32( data.face->size->metrics.height );
+	SurfacePosition pos( data.cursorPos.x, text_height - kPadding );
 	bool useKerning = bool( FT_HAS_KERNING( data.face ) ? true : false );
 	FT_UInt preIndex = 0;
 
@@ -155,7 +163,7 @@ void DrawText( TextData& data, const wString& str, const Rgba& color )
 
 		if( c == '\n' )
 		{
-			pos.y += ( data.face->size->metrics.height >> 6 );
+			pos.y += text_height;
 			pos.x = 0;
 			++text;
 			continue;
@@ -171,7 +179,7 @@ void DrawText( TextData& data, const wString& str, const Rgba& color )
 
 				FT_Get_Kerning( data.face, preIndex, index, 0, &delta );
 
-				pos.x += delta.x >> 6;
+				pos.x += convert_26_6_to_int32(delta.x);
 			}
 
 			result = FT_Render_Glyph( data.face->glyph, FT_RENDER_MODE_NORMAL );
@@ -182,7 +190,7 @@ void DrawText( TextData& data, const wString& str, const Rgba& color )
 				Render( tmpPos, slot->bitmap, color, data.renderSurface );
 			}
 
-			pos.x += data.face->glyph->advance.x >> 6;  // advance is in 26.6 format, convert to int
+			pos.x += convert_26_6_to_int32(data.face->glyph->advance.x);  // advance is in 26.6 format, convert to int
 			preIndex = index;
 		}
 
@@ -190,7 +198,7 @@ void DrawText( TextData& data, const wString& str, const Rgba& color )
 	}
 
 	data.cursorPos.x = pos.x;
-	data.cursorPos.y = pos.y - (( data.face->size->metrics.height >> 6 )) ;
+	data.cursorPos.y = pos.y - text_height;
 }
 
 void FreeTypeFont::DoRenderAlpha( boost::shared_ptr< Surface >& surface, const wString& str, const Rgba& color )
@@ -231,12 +239,16 @@ void FreeTypeFont::DoRenderOpaque( boost::shared_ptr< Surface >& surface, boost:
 
 bool FreeTypeFont::DoSetSize( boost::int32_t width, boost::int32_t height )
 {
-	FT_Error result = FT_Set_Pixel_Sizes( m_face.get(), width, height );
-	if( !result )
+	FT_Error result = 0;
+	if( !( convert_26_6_to_int32( m_face->size->metrics.height ) == height && width == GetCharWidth() )  )
 	{
-		SetSize( width, height );
-	}
+		result = FT_Set_Pixel_Sizes( m_face.get(), width, height );
+		if( !result )
+		{
+			SetSize( width, convert_26_6_to_int32( m_face->size->metrics.height ) );
+		}
 
+	}
 	return bool( !result );
 }
 

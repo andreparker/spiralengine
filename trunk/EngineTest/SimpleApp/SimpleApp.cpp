@@ -35,13 +35,15 @@ bool App::DoInit( boost::int32_t /*argc*/, std::list< boost::shared_array< char 
     m_sprite_alpha->SetPosition( 50.0f, 50.0f );
     m_sprite_alpha->SetAlphaBlend( true );
 
+	shared_ptr< locale::StringLocalizer > localizer = engine->GetStringLocalizer();
+	localizer->LoadStringFile("language_test.xml");
     //m_arialN = engine->LoadFont( "c:/windows/fonts/arialn.ttf", "arial_n", 12, 14 );
-    m_arialN = engine->LoadFont( "c:/windows/fonts/arialn.ttf", "arial_n", 16, 10 );
+    m_arialN = engine->LoadFont( "Data/Fonts/ARIALUNI.TTF", "arial_n", 12, 8 );
 
 	shared_ptr< Font > testFont = m_arialN->Clone_Cast< Font >();
-	testFont->SetFontSize( 20, 12 );
+	testFont->SetFontSize( 12, 10 );
 	shared_ptr< Font > testFont2 = testFont->Clone_Cast< Font >();
-	testFont2->SetFontSize( 8, 8 );
+	testFont2->SetFontSize( 12, 10 );
     wString text = L"Testing Font rendering code using true type font.\nThis font is arial narrow.\nTesting newline code\nTesting Font rendering code using true type font.\nTesting Font rendering code using true type font.\nTesting Font rendering code using true type font.\nTesting Font rendering code using true type font.\nTesting Font rendering code using true type font.\nTesting Font rendering code using true type font.\n";
 
 
@@ -72,8 +74,9 @@ bool App::DoInit( boost::int32_t /*argc*/, std::list< boost::shared_array< char 
     button1->Show();
 
 
+	
     shared_ptr< GUI::GuiEditBox > editbox = guiManager->Make_DefEditBox( 32.0f, 332.0f, Rgba( 1.0f, 1.0f, 1.0f ), Rgba(), m_arialN, 32, L"Edit box 2" );
-    shared_ptr< GUI::GuiEditBox > editbox1 = guiManager->Make_DefEditBox( 32.0f, 300.0f, Rgba( 1.0f, 1.0f, 1.0f ), Rgba(), m_arialN, 32, L"Edit box 1" );
+    shared_ptr< GUI::GuiEditBox > editbox1 = guiManager->Make_DefEditBox( 32.0f, 300.0f, Rgba( 1.0f, 1.0f, 1.0f ), Rgba(), m_arialN, 32, localizer->GetString( "test.hello" ) );
     button0->ConnectHandler( GUI::button_Press, bind( &App::ButtonPress, this, _1, _2, _3 ) );
     button1->ConnectHandler( GUI::button_Press, bind( &App::ButtonPress, this, _1, _2, _3 ) );
 
@@ -184,7 +187,7 @@ void App::SliderChanged( boost::int32_t /*eventId*/, Spiral::GUI::GuiWindow* win
     wString str = lexical_cast<wString>( sliderPos );
 
     UpdateQueue_handle queue;
-    queue->Add( bind( &GUI::GuiEditBox::SetText, edit, str ) );
+    queue->Add( boost::bind( &GUI::GuiEditBox::SetText, edit, str ) );
 }
 
 bool App::DoRun( SpReal ticks, boost::shared_ptr< Engine >& engine )

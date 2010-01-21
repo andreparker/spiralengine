@@ -35,10 +35,14 @@ namespace Impl
 			STENCIL_BUFFER
 		};
 
-		BufferInfo( boost::int32_t bits ):
+		BufferInfo( boost::uint32_t bits ):
 			buffer( bits ){}
 		BufferInfo():
-			buffer(0){}
+#if defined(_MSC_VER) || defined(_HAS_CPP0X)
+			buffer( (_ULonglong)0 ){}
+#else
+			buffer( (boost::uint32_t)0 ){}
+#endif
 
 		std::bitset<8> buffer;
 	};

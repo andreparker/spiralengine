@@ -59,10 +59,19 @@ namespace GUI
 		void SetFont( const boost::shared_ptr< Font >& font, GfxDriver* gfxDriver );
 		void SetMaxCharLen( boost::uint32_t maxCharLen );
 		void SetFontColor( const Rgba& color );
+		void SetMultiLine( bool isMulti )
+		{
+			m_multiline = isMulti;
+			UpdateBox();
+		}
+		
+		void Refresh();
 	private:
 
 		void DrawString( const wString& text );
 		void ResizeBox( boost::int32_t width, boost::int32_t height );
+		
+		void UpdateBox();
 		
 	private:
 		wString m_text;

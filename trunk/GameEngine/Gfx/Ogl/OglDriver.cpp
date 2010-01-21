@@ -92,7 +92,7 @@ void OglDriver::SetViewPort( boost::int32_t x0, boost::int32_t y0, boost::int32_
 
 void OglDriver::SetState( const RenderState& state )
 {
-	StateItr itr = find_if( m_stateList.begin(), m_stateList.end(), bind( &RenderState::Cmp, _1, state ) );
+	StateItr itr = find_if( m_stateList.begin(), m_stateList.end(), boost::bind( &RenderState::Cmp, _1, state ) );
 	bool dirty = true;
 
 	// check to see if the state is cached
@@ -215,7 +215,7 @@ void OglDriver::Set( const ClearInfoType_t& type, SpReal value )
 bool OglDriver::CreateSprite( boost::shared_ptr< Sprite >& sprite, boost::shared_ptr< Texture >& texture, const Rect< SpReal >& spriteTexCoords, const Rect< SpReal >& spriteInfo )
 {
 	OglSWVertexBuffer* newVertexBuffer = new OglSWVertexBuffer;
-	shared_ptr< VertexBuffer > buffer( newVertexBuffer );
+	boost::shared_ptr< VertexBuffer > buffer( newVertexBuffer );
 	VertexFormat format = VertexFormat::Create_V3T2();
 
 	if( newVertexBuffer->Create( format, VertexFormat::VFS_V3T2 , 4 ) )
@@ -278,7 +278,7 @@ void OglDriver::InitializeSpriteVertexBuffer( boost::shared_ptr< VertexBuffer >&
 
 }
 
-inline void DrawSprite( const Sprite* sprite, const shared_ptr< VertexBuffer > vertexBuffer )
+inline void DrawSprite( const Sprite* sprite, const boost::shared_ptr< VertexBuffer > vertexBuffer )
 {
 	const Math::Vector2f& position = sprite->GetPosition();
 	glPushMatrix();
@@ -296,7 +296,7 @@ inline void DrawSprite( const Sprite* sprite, const shared_ptr< VertexBuffer > v
 
 void OglDriver::Draw( boost::shared_ptr<Sprite>& sprite )
 {
-	shared_ptr< VertexBuffer > buffer = sprite->GetVertexBuffer();
+	boost::shared_ptr< VertexBuffer > buffer = sprite->GetVertexBuffer();
 	Bind( sprite->GetTexture(), 0 );
 	DrawSprite( sprite.get(), buffer );
 }
@@ -304,7 +304,7 @@ void OglDriver::Draw( boost::shared_ptr<Sprite>& sprite )
 void OglDriver::Draw( const std::list< Sprite* >& spriteList )
 {
 	typedef std::list< Sprite* >::const_iterator Itr;
-	shared_ptr< VertexBuffer > vertexBuffer;
+	boost::shared_ptr< VertexBuffer > vertexBuffer;
 	for( Itr itr = spriteList.begin(); itr != spriteList.end(); ++itr )
 	{
 		vertexBuffer = (*itr)->GetVertexBuffer();

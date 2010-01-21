@@ -79,6 +79,7 @@ namespace Spiral
 		   @return    boost::shared_ptr< std::istream >
 		*/
 		boost::shared_ptr< std::istream > GetStream();
+		boost::shared_ptr< std::wistream > GetStreamW();
 	private:
 		/*!
 
@@ -153,6 +154,7 @@ namespace Spiral
 		void Close();
 
 		boost::shared_ptr< std::ostream > GetStream()const;
+		//boost::shared_ptr< std::wostream > GetStreamW()const;
 
 		/*!
 		   @function  WriteOutStream
@@ -161,6 +163,7 @@ namespace Spiral
 		   @param     const boost::shared_ptr< std::ostream > & stream
 		*/
 		void WriteOutStream( const boost::shared_ptr< std::ostream >& stream );
+		//void WriteOutStreamW( const boost::shared_ptr< std::wostream >& stream );
 	private:
 		/*!
 			@brief writes data from buffer out to a file

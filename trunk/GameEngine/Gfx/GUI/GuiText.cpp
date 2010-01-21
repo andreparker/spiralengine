@@ -14,7 +14,7 @@ using namespace Spiral;
 using namespace Spiral::GUI;
 using namespace boost;
 
-const boost::uint32_t kPadHeight = 4;
+const boost::uint32_t kPadHeight = 0;
 GuiText::GuiText( const Math::Vector2f& position, const boost::shared_ptr<GfxDriver>& gfxDriver, const Rgba& textColor,
 				  boost::uint32_t maxCharLen, const boost::shared_ptr<Font>& font, const wString& text, bool multiline ):
 GuiWindow( position, Rect<SpReal>(), shared_ptr<Texture>(), true ), m_text( text ), m_charPos( 0 ),
@@ -60,15 +60,10 @@ void GuiText::DrawChar( wChar c )
 
 void GuiText::SetText( const wString& text )
 {
-	if( m_maxCharLen > m_text.length() )
+	if( m_multiline || m_maxCharLen > m_text.length() )
 	{
 		m_text = text;
-		if( m_font )
-		{
-			m_charPos = 0;
-			ClearBox();
-			DrawString( m_text );
-		}
+		UpdateBox();
 	}
 }
 
@@ -104,20 +99,10 @@ void GuiText::ClearBox()
 
 void GuiText::SetFont( const boost::shared_ptr< Font >& font, GfxDriver* gfxDriver )
 {
-	boost::int32_t width;
-	boost::int32_t height;
-
+	m_font = font;
 	m_gfxDriver = gfxDriver;
-	if( m_multiline )
-	{
-		font->CalcSurfaceSize( m_text, width, height );
-	}else
-	{
-		width = font->GetCharWidth() * m_maxCharLen;
-		height = font->GetCharHeight() + kPadHeight;
-	}
 
-	ResizeBox( width, height );
+	UpdateBox();
 }
 
 
@@ -156,10 +141,42 @@ void GuiText::ResizeBox( int32_t width, int32_t height )
 	SetRect( rect );
 	SetTexCoords( texCoords );
 	SetTexture( textTexture );
-	SetText( m_text );
+	Refresh();
 }
 
 void GuiText::SetFontColor( const Rgba& color )
 {
 	m_fontColor = color;
+	Refresh();
+}
+
+void GuiText::Refresh()
+{
+	if( m_font )
+	{
+		m_charPos = 0;
+		ClearBox();
+		DrawString( m_text );
+	}
+}
+
+void GuiText::UpdateBox()
+{
+	if( m_font )
+	{
+		boost::int32_t width = 16;
+		boost::int32_t height = 16;
+
+		if( m_multiline && !m_text.empty() )
+		{
+			m_font->CalcSurfaceSize( m_text, width, height );
+		}else
+		{
+			width = m_font->GetCharWidth() * m_maxCharLen;
+			height = m_font->GetCharHeight() + kPadHeight;
+		}
+
+		ResizeBox( width, height );
+	}
+	
 }

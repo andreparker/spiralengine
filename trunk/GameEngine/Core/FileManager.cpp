@@ -107,7 +107,7 @@ bool FileManager::createPack
 bool FileManager::createFile
 ( 
  const string& fileName, ///< file name
- shared_ptr< OFile >& file ///< pointer to a output file object
+ boost::shared_ptr< OFile >& file ///< pointer to a output file object
 )
 {
 	return CreateFileImpl< OBinaryFile, ofstream >( fileName, file );
@@ -122,7 +122,7 @@ bool FileManager::createFile
 bool FileManager::createFile
 ( 
  const string& fileName, ///< file name
- shared_ptr< IFile >& file ///< pointer to a input file object
+ boost::shared_ptr< IFile >& file ///< pointer to a input file object
 )
 {
 	return CreateFileImpl< IBinaryFile, ifstream >( fileName, file );
@@ -155,7 +155,7 @@ bool FileManager::closePack()
 bool FileManager::getFile
 ( 
  const string& fileName, ///< filename
- shared_ptr< IFile >& file ///< pointer to input file object
+ boost::shared_ptr< IFile >& file ///< pointer to input file object
 )
 {
 	if( !_zipCreated && _zipExists )

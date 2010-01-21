@@ -214,7 +214,7 @@ namespace Spiral
 
 	TEMPL_MEMORYPOLICY void MemoryManager<MemoryPolicy,MemoryBudget>::WriteAnalysis( const boost::shared_ptr<OFile>& file )const
 	{
-		shared_ptr< std::ostream > streamPtr = file->GetStream();
+		boost::shared_ptr< std::ostream > streamPtr = file->GetStream();
 		std::ostream* stream = streamPtr.get();
 
 		*stream << "----------Memory Manager Analysis----------" << std::endl;

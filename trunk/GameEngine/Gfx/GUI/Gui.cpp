@@ -1,23 +1,3 @@
-#include "Gui.hpp"
-#include "../../Core/Engine.hpp"
-#include "../GfxDriver.hpp"
-#include "../GfxImpl.hpp"
-#include "../RenderState.hpp"
-#include "../../Core/MouseEvent.hpp"
-#include "../../Core/Events.hpp"
-#include "../Texture.hpp"
-#include "../Color.hpp"
-#include "../Font.hpp"
-#include "../../Math/Math.hpp"
-#include "GuiWindow.hpp"
-#include "GuiWindowEvents.hpp"
-#include "../../Core/File.hpp"
-#include "../../Core/FileManager.hpp"
-#include "../../Core/Log.hpp"
-#include "../../Script/ScriptManager.hpp"
-#include "../../Core/GeneralException.hpp"
-#include "../../Core/UpdateQueue.hpp"
-
 #include <algorithm>
 #include <boost/bind.hpp>
 #include <boost/make_shared.hpp>
@@ -29,18 +9,41 @@
 #include <boost/type_traits.hpp>
 #include <loki/ScopeGuard.h>
 
+#include "../../Core/Engine.hpp"
+#include "../GfxDriver.hpp"
+#include "../GfxImpl.hpp"
+#include "../RenderState.hpp"
+#include "../../Core/MouseEvent.hpp"
+#include "../../Core/Events.hpp"
+#include "../Texture.hpp"
+#include "../Color.hpp"
+#include "../Font.hpp"
+#include "../../Math/Math.hpp"
+#include "../../Core/File.hpp"
+#include "../../Core/FileManager.hpp"
+#include "../../Core/Log.hpp"
+#include "../../Script/ScriptManager.hpp"
+#include "../../Core/GeneralException.hpp"
+#include "../../Core/UpdateQueue.hpp"
+#include "../../local/StringLocalizer.hpp"
 
+#include "Gui.hpp"
 #include "GuiButton.hpp"
 #include "GuiSlider.hpp"
 #include "GuiText.hpp"
 #include "GuiEditBox.hpp"
 #include "GuiCheckBox.hpp"
 #include "GuiFrame.hpp"
+#include "GuiWindow.hpp"
+#include "GuiWindowEvents.hpp"
 
 using namespace Spiral;
 using namespace Spiral::GUI;
+using namespace Spiral::locale;
+
 using namespace boost;
 using namespace boost::property_tree;
+
 
 namespace
 {
@@ -60,11 +63,16 @@ namespace
 	const std::string kKwAllowFocus  = "allowFocus";
 	const std::string kKwShowWindow  = "show";
 
+	// strings
+	const std::string kKwLoadString  = "loadStringTable";
+	
 	// text
 	const std::string kKwFont        = "font";
 	const std::string kKwForColor    = "forColor";
 	const std::string kKwBackColor   = "backColor";
 	const std::string kKwMaxCharLen  = "maxCharLen";
+	const std::string kKwStringId    = "stringId";   // to look up a string in the localizer table
+	const std::string kKwMultiLine   = "multiline";  // check for \n charaters
 
 	// button
 	const std::string kKwOnButtonPress = "OnButtonPress";
@@ -77,14 +85,14 @@ m_pImplEngine( engine ),
 m_lastAddedWindow()
 {
 	m_elementCreate = assign::map_list_of
-	( "window", bind( &GuiManager::Create_Window_From_Tree, this, _1, _2 ) )
-	( "frame" , bind( &GuiManager::Create_Frame_From_Tree, this, _1, _2 ) )
-	( "editBox", bind( &GuiManager::Create_EditBox_From_Tree, this, _1, _2 ) )
-	( "slider", bind( &GuiManager::Create_Slider_From_Tree, this, _1, _2 ) )
-	( "button", bind( &GuiManager::Create_Button_From_Tree, this, _1, _2 ) )
-	( "textBox", bind( &GuiManager::Create_TextBox_From_Tree, this, _1, _2 ) )
-	( "scrollWindow", bind( &GuiManager::Create_Scroll_From_Tree, this, _1, _2 ) )
-	( "checkBox", bind( &GuiManager::Create_CheckBox_From_Tree, this, _1, _2 ) );
+	( "window", boost::bind( &GuiManager::Create_Window_From_Tree, this, _1, _2 ) )
+	( "frame" , boost::bind( &GuiManager::Create_Frame_From_Tree, this, _1, _2 ) )
+	( "editBox", boost::bind( &GuiManager::Create_EditBox_From_Tree, this, _1, _2 ) )
+	( "slider", boost::bind( &GuiManager::Create_Slider_From_Tree, this, _1, _2 ) )
+	( "button", boost::bind( &GuiManager::Create_Button_From_Tree, this, _1, _2 ) )
+	( "textBox", boost::bind( &GuiManager::Create_TextBox_From_Tree, this, _1, _2 ) )
+	( "scrollWindow", boost::bind( &GuiManager::Create_Scroll_From_Tree, this, _1, _2 ) )
+	( "checkBox", boost::bind( &GuiManager::Create_CheckBox_From_Tree, this, _1, _2 ) );
 }
 
 
@@ -244,7 +252,7 @@ boost::shared_ptr< GuiCheckBox > GuiManager::Make_DefCheckBox( SpReal posX, SpRe
 
 boost::shared_ptr< GuiText > GuiManager::Make_DefTextBox( SpReal posX, SpReal posY, const Rgba& fontColor, const boost::shared_ptr<Font>& font, boost::uint32_t maxAllowedChar, const wString& text )
 {
-	shared_ptr< GuiText > guiText = make_shared< GuiText >( Math::make_vector<SpReal>(posX, posY),m_pImplEngine->GetGfxDriver(),fontColor,maxAllowedChar,font,text,true );
+	boost::shared_ptr< GuiText > guiText = boost::make_shared< GuiText >( Math::make_vector<SpReal>(posX, posY),m_pImplEngine->GetGfxDriver(),fontColor,maxAllowedChar,font,text,true );
 	return guiText;
 }
 
@@ -275,7 +283,7 @@ boost::shared_ptr< GuiSlider > GuiManager::Make_DefSlider( SpReal posX, SpReal p
 
 boost::shared_ptr< GuiEditBox > GuiManager::Make_DefEditBox( SpReal posX, SpReal posY, const Rgba& bkColor, const Rgba& fontColor, const boost::shared_ptr<Font>& font, boost::uint32_t maxCharLen, const wString& text )
 {
-	shared_ptr< GuiEditBox > editbox = make_shared< GuiEditBox >( Math::make_vector( posX,posY ), m_pImplEngine->GetGfxDriver(), 
+	boost::shared_ptr< GuiEditBox > editbox = boost::make_shared< GuiEditBox >( Math::make_vector( posX,posY ), m_pImplEngine->GetGfxDriver(), 
 		bkColor, fontColor, font, maxCharLen, text );
 
 	return editbox;
@@ -374,6 +382,15 @@ namespace
 		return font;
 	}
 
+	void LoadStringTable( Engine* engine, const ptree& tree )
+	{
+		shared_ptr< StringLocalizer > localizer = engine->GetStringLocalizer();
+		if( !localizer->LoadStringFile( tree.data() ) )
+		{
+			THROW_GENERAL_EXCEPTION( "Could not load string table :" + tree.data() + "\n" );
+		}
+	}
+
 	Rgba ExtractColor( const ptree& tree )
 	{
 		return Rgba( 
@@ -421,6 +438,29 @@ namespace
 		{
 			std::string nl = "\n";
 			THROW_GENERAL_EXCEPTION( "Error in layout file - " + currentlayoutFile + nl + e.what() );
+		}
+	}
+
+	template< class TextType >
+	void TextAttributes( Engine* engine, const boost::shared_ptr< TextType >& text, ptree::const_iterator& itr )
+	{
+		if( itr->first == kKwFont )
+		{
+			text->SetFont( ExtractFont( engine, itr->second ), engine->GetGfxDriver().get() );
+		}else if( itr->first == kKwForColor )
+		{
+			text->SetFontColor( ExtractColor( itr->second ) );
+		}else if( itr->first == kKwMaxCharLen )
+		{
+			text->SetMaxCharLen( itr->second.get_value<boost::uint32_t>(16) );
+		}else if( itr->first == kKwStringId )
+		{
+			shared_ptr< StringLocalizer > localizer = engine->GetStringLocalizer();
+			wString str = localizer->GetString( itr->second.data() );
+			text->SetText( str );
+		}else if( itr->first == kKwMultiLine )
+		{
+			text->SetMultiLine( ToBoolean( itr->second.data() ) );
 		}
 	}
 }
@@ -476,6 +516,9 @@ void GuiManager::BaseWindowAttributes( ptree::const_iterator& itr, const boost::
 	}else if( itr->first == kKwWindowName )
 	{
 		newWindow->SetName( itr->second.data() );
+	}else if( itr->first == kKwLoadString )
+	{
+		LoadStringTable( const_cast<Engine*>( m_pImplEngine ), itr->second );
 	}
 }
 
@@ -534,6 +577,9 @@ bool GuiManager::LoadLayoutImpl( const boost::shared_ptr< IFile >& layoutFile, c
 			}else if( itr->first == kKwScriptName )
 			{
 				ExtractScript( const_cast< Engine* >( m_pImplEngine ), itr->second );
+			}else if( itr->first == kKwLoadString )
+			{
+				LoadStringTable( const_cast< Engine* >( m_pImplEngine ), itr->second );
 			}
 		}
 	}
@@ -609,7 +655,17 @@ boost::shared_ptr< GuiWindow > GuiManager::Create_Frame_From_Tree( const std::st
 
 boost::shared_ptr< GuiWindow > GuiManager::Create_EditBox_From_Tree( const std::string& parentPath, const boost::property_tree::ptree& tree ) const
 {
-	boost::shared_ptr< GuiWindow > newWindow;
+	boost::shared_ptr< GuiEditBox > newWindow( new GuiEditBox() );
+
+	for( ptree::const_iterator itr = tree.begin(); itr != tree.end(); ++itr )
+	{
+		BaseWindowAttributes( itr, newWindow, parentPath );
+		TextAttributes( const_cast< Engine* >( m_pImplEngine ), newWindow, itr );
+		if( itr->first == kKwBackColor )
+		{
+			newWindow->SetBkGroundColor( ExtractColor( itr->second ) );
+		}
+	}
 
 	return newWindow;
 }
@@ -621,18 +677,7 @@ boost::shared_ptr< GuiWindow > GuiManager::Create_TextBox_From_Tree( const std::
 	for( ptree::const_iterator itr = tree.begin(); itr != tree.end(); ++itr )
 	{
 		BaseWindowAttributes( itr, newWindow, parentPath );
-
-		if( itr->first == kKwFont )
-		{
-			newWindow->SetFont( ExtractFont( const_cast<Engine*>(m_pImplEngine), itr->second ),
-				                const_cast<GfxDriver*>( m_pImplEngine->GetGfxDriver().get() ));
-		}else if( itr->first == kKwForColor )
-		{
-			newWindow->SetFontColor( ExtractColor( itr->second ) );
-		}else if( itr->first == kKwMaxCharLen )
-		{
-			newWindow->SetMaxCharLen( itr->second.get_value<boost::uint32_t>(16) );
-		}
+		TextAttributes( const_cast< Engine* >( m_pImplEngine ), newWindow, itr );
 	}
 
 	return newWindow;
