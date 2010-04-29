@@ -7,6 +7,8 @@
 #include "../VertexBuffer.hpp"
 #include "../IndexBuffer.hpp"
 
+#include <boost/tokenizer.hpp>
+
 using namespace boost;
 using namespace Spiral;
 
@@ -103,4 +105,22 @@ void OglUtil::Draw( const boost::shared_ptr<VertexBuffer>& buffer, boost::int32_
 	Spiral::Bind bind( buffer );
 
 	glDrawArrays( glPrimitiveType, 0, buffer->GetVertexCount() );
+}
+
+bool OglUtil::ExtExist( const std::string extStr )
+{
+	const std::string extensions( (const char*)glGetString( GL_EXTENSIONS ) );
+	typedef boost::tokenizer< boost::char_separator<char>, std::string::const_iterator, std::string > Tokenizer;
+
+	Tokenizer tokens( extensions, boost::char_separator<char>(" ") );
+
+	for( Tokenizer::const_iterator itr = tokens.begin(); itr != tokens.end(); ++itr )
+	{
+		if( *itr == extStr )
+		{
+			return true;
+		}
+	}
+
+	return false;
 }

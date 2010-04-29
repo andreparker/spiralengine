@@ -25,15 +25,18 @@ if exist "Build\vs2003\Spiral.sln" goto BUILD_2003
 
 
 :BUILD_2008
-MSBuild Build\vs2008\Spiral.sln /t:Rebuild /m:
+MSBuild Build\vs2008\Spiral.sln /t:Rebuild /p:Configuration="Debugvs2008" /p:Platform="Win32" /m
+MSBuild Build\vs2008\Spiral.sln /t:Rebuild /p:Configuration="Releasevs2008" /p:Platform="Win32" /m
 goto :eof
 
 :BUILD_2005
-MSBuild Build\vs2005\Spiral.sln /t:Rebuild /m:
+MSBuild Build\vs2005\Spiral.sln /t:Rebuild /p:Configuration="Debugvs2005" /p:Platform="Win32" /m
+MSBuild Build\vs2005\Spiral.sln /t:Rebuild /p:Configuration="Releasevs2005" /p:Platform="Win32" /m
 goto :eof
 
 :BUILD_2003
-MSBuild Build\vs2003\Spiral.sln /t:Rebuild /m:
+MSBuild Build\vs2003\Spiral.sln /t:Rebuild /p:Configuration="Debugvs2003" /p:Platform="Win32" /m
+MSBuild Build\vs2003\Spiral.sln /t:Rebuild /p:Configuration="Releasevs2003" /p:Platform="Win32" /m
 goto :eof
 
 :NO_VS_INSTALLED

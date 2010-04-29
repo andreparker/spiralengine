@@ -22,6 +22,7 @@
 #include "../GfxImpl.hpp"
 #include "../Color.hpp"
 #include "../Sprite.hpp"
+#include "../GfxDeviceCapability.hpp"
 
 using namespace Spiral;
 using namespace std;
@@ -440,4 +441,15 @@ void OglDriver::GetViewPort( Rect<boost::int32_t>& viewPort )
 void OglDriver::SetClipRect( boost::int32_t x0, boost::int32_t y0, boost::int32_t x1, boost::int32_t y1 )
 {
 	glScissor( (GLint)x0, (GLint)((m_scrHeight-y0)-y1), (GLsizei)x1, (GLsizei)y1 );
+}
+
+void OglDriver::GetCaps( GfxDeviceCaps& caps ) const
+{
+	GLint value;
+	glGetIntegerv( GL_MAX_TEXTURE_SIZE, &value );
+
+	caps.maxTextureWidth = value;
+	caps.maxTextureHeight = value;
+	caps.nonPowerOf2Texture = OglUtil::ExtExist( "GL_ARB_texture_non_power_of_two" );
+
 }

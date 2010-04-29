@@ -1,6 +1,7 @@
 #include "GfxDriver.hpp"
 #include "GfxImpl.hpp"
 #include "Texture.hpp"
+#include "GfxDeviceCapability.hpp"
 #include "../Common/BitManipulation.hpp"
 #include "Utility/Image.hpp"
 #include <boost/scoped_array.hpp>
@@ -16,20 +17,25 @@ bool GfxDriver::CreateTexture(const TextureInfo_t &info, shared_ptr<Texture> &te
 		newHeight = info.height;
 	const int8_t* finalData = data;
 	TextureInfo_t newInfo;
+	GfxDeviceCaps caps;
 	scoped_array< int8_t > newImageData;
 
-	if( !PowerOf2( info.width ) )
+	GetCaps( caps );
+	if( caps.nonPowerOf2Texture == false )
 	{
-		newWidth = NextPowerOf2( info.width );
-		copyImage = true;
-	}
+		if( !PowerOf2( info.width ) )
+		{
+			newWidth = NextPowerOf2( info.width );
+			copyImage = true;
+		}
 
-	if( !PowerOf2( info.height ) )
-	{
-		newHeight = NextPowerOf2( info.height );
-		copyImage = true;
+		if( !PowerOf2( info.height ) )
+		{
+			newHeight = NextPowerOf2( info.height );
+			copyImage = true;
+		}
 	}
-
+	
 	if( copyImage && data )
 	{
 		// set up for transfer to a power of 2 surface
@@ -201,4 +207,9 @@ void GfxDriver::GetViewPort( Rect<boost::int32_t>& viewPort )
 void GfxDriver::SetClipRect( boost::int32_t x0, boost::int32_t y0, boost::int32_t x1, boost::int32_t y1 )
 {
 	DoSetClipRect( x0, y0, x1, y1 );
+}
+
+void GfxDriver::GetCaps( GfxDeviceCaps& caps ) const
+{
+	DoGetCaps( caps );
 }

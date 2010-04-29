@@ -108,6 +108,7 @@ int ParseCommandLine( list< shared_array< char > >& arglist )
 void InitializeWindow( boost::shared_ptr< Engine >& engine, boost::shared_ptr< AppWindow >& appWindow )
 {
 	RECT rt;
+	GfxVidInfo_t info;
 	//shared_ptr< CVar > variables = engine->GetVariables();
 
 	LOG_I( module + "^w - Window Attributes - \n" );
@@ -126,8 +127,14 @@ void InitializeWindow( boost::shared_ptr< Engine >& engine, boost::shared_ptr< A
 	rt.right = width;
 	rt.bottom = height;
 
+	info.width = width;
+	info.height = height;
+	info.bitDepth = 32;
+
 	LOG_I( module + "^w setting window attributes....\n" );
-	appWindow->ResizeWindow( &rt, (fullscreen==1) ? true : false );
+	bool fs = (fullscreen==1) ? true : false;
+	engine->GetGfxDriver()->SetVideo( info, fs ); 
+	appWindow->ResizeWindow( &rt,  fs );
 	appWindow->Show();
 }
 
@@ -141,9 +148,6 @@ void SwapCurrentRunningApp( boost::shared_ptr<Application>& currentApp, boost::s
 		engine->UnInitialize();
 
 		engine->Initialize( g_gfxDriver, g_audioDriver, data );
-
-		
-
 		engine->LoadConfig( "Data/Config/Config.cfg" );
 		newRunApp->Init( g_argc, g_argList, engine );
 		

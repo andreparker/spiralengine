@@ -1,27 +1,21 @@
-/*!
-*/
-#ifndef WIN_OGL_DRIVER_HPP
-#define WIN_OGL_DRIVER_HPP
-
-#define WIN32_LEAN_AND_MEAN
-
-#include <windows.h>
+#ifndef DIRECT3D9_DRIVER_HPP
+#define DIRECT3D9_DRIVER_HPP
 
 #include "../GfxDriver.hpp"
+#include <windows.h>
+#include <D3D9.h>
 
 namespace Spiral
 {
-
-	class OglDriver;
-    class WinOglDriver : public GfxDriver
-    {
+	class Direct3D9Driver : public GfxDriver
+	{
 	public:
-		WinOglDriver();
-		~WinOglDriver();
+		Direct3D9Driver();
+		~Direct3D9Driver();
 
 	private:
-        virtual bool DoInitialize( const boost::any& data );
-        virtual bool DoUnInitialize();
+		virtual bool DoInitialize( const boost::any& data );
+		virtual bool DoUnInitialize();
 
 		virtual void DoSetWorld( const Math::Matrix4x4f& world );
 		virtual void DoSetView( const Math::Matrix4x4f& view );
@@ -47,19 +41,22 @@ namespace Spiral
 		virtual bool DoCreateGeometry( const GeometryType& type, boost::shared_ptr<Geometry>& geometry );
 		virtual void DoBind( const boost::shared_ptr< Texture >& texture, boost::int32_t unit );
 		virtual bool DoCreateTexture( const TextureInfo_t& info, boost::shared_ptr< Texture >& texture, const boost::int8_t* data );
-        virtual bool DoSetVideo( const GfxVidInfo_t& info, bool bfullscreen );
-        virtual bool DoEnumerateSettings( std::list< GfxVidInfo_t >& modeList );
-        virtual bool DoBeginDraw();
-        virtual void DoEndDraw();
-        virtual bool DoPresent();
-    private:
-        void CreateContext( HDC dc );
-        void FillInDeviceInfo();
+		virtual bool DoSetVideo( const GfxVidInfo_t& info, bool bfullscreen );
+		virtual bool DoEnumerateSettings( std::list< GfxVidInfo_t >& modeList );
+		virtual bool DoBeginDraw();
+		virtual void DoEndDraw();
+		virtual bool DoPresent();
+	private:
+		void InitDefaultPresentSettings( D3DPRESENT_PARAMETERS& presentSettings );
+		void InitFullScreenPresentSettings( D3DPRESENT_PARAMETERS& presentSettings, const GfxVidInfo_t& info );
+		void InitWindowedPresentSettings( D3DPRESENT_PARAMETERS& presentSettings, const GfxVidInfo_t& info );
+		void ReleaseD3DInterfaces();
 
-        HGLRC m_rc;
-        HDC   m_dc;
-		OglDriver* m_glDriver;
-    };
+		bool FindDisplayMode( const GfxVidInfo_t& info, D3DDISPLAYMODE& display );
+	private:
+		HWND m_focusWindow;
+		IDirect3D9* m_d3d9;
+		IDirect3DDevice9* m_device9;
+	};
 }
-
 #endif

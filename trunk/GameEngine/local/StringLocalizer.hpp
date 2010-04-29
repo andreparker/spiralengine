@@ -14,7 +14,7 @@ namespace Spiral { namespace locale
 	class StringLocalizer : boost::noncopyable
 	{
 	public:
-		typedef std::map< cString, wString > string_table;
+		typedef std::map< cString, wString >         string_table;
 		typedef string_table::iterator               string_table_itr;
 		typedef string_table::const_iterator         string_table_const_itr;
 
