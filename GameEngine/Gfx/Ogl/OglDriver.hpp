@@ -46,6 +46,7 @@ namespace Spiral
 		bool CreateTexture( const TextureInfo_t& info, boost::shared_ptr< Texture >& texture, const boost::int8_t* data );
 		bool SetVideo( const GfxVidInfo_t& info, bool bfullscreen );
 		bool EnumerateSettings( std::list< GfxVidInfo_t >& modeList );
+		void GetCaps( GfxDeviceCaps& caps )const;
 		bool BeginDraw();
 		void EndDraw();
 		bool Present();

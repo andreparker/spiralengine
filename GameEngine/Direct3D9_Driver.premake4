@@ -1,0 +1,51 @@
+
+dofile( "../utility.premake4" )
+
+project( "Direct3D9_Driver" )
+	
+	language( "C++" )
+	kind( "StaticLib" )
+	
+	-- use compiler name for folder /build/compiler
+	location( "../Build/" .. _ACTION )
+	
+	files
+	{
+	    "Gfx/Direct3D9/**.cpp",
+		"Gfx/Direct3D9/**.hpp"
+	}
+
+	
+	-- include dirs
+	includedirs 
+	{
+		"../ThirdParty/loki-0.1.7"
+	}
+	
+	-- add window defines 
+	if os.get() == "windows"
+	then
+		defines
+		{
+			"WIN32",
+			"_WINDOWS",
+			"NOMINMAX" -- prevent windows.h from defining them
+		}
+		-- link with opengl
+		links
+		{
+			"D3d9"
+		}
+	end
+	
+	-- add disabling of depricated warnings
+	if _ACTION == "vs2005" or _ACTION == "vs2008"
+	then
+		defines
+		{
+			"_CRT_SECURE_NO_WARNINGS"
+		}
+	end
+	
+	CUtil.projConfig( "Direct3D9_Driver" )
+	

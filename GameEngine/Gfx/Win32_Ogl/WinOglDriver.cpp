@@ -286,3 +286,8 @@ void WinOglDriver::DoSetClipRect( boost::int32_t x0, boost::int32_t y0, boost::i
 {
 	m_glDriver->SetClipRect( x0, y0, x1, y1 );
 }
+
+void WinOglDriver::DoGetCaps( GfxDeviceCaps& caps ) const
+{
+	m_glDriver->GetCaps( caps );
+}

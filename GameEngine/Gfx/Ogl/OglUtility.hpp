@@ -5,6 +5,7 @@
 
 #include <boost/cstdint.hpp>
 #include <boost/shared_ptr.hpp>
+#include <string>
 
 namespace Spiral
 {
@@ -19,6 +20,8 @@ namespace OglUtil
 	
 	void Draw( const boost::shared_ptr<Geometry>& geometry );
 	void Draw( const boost::shared_ptr<VertexBuffer>& buffer, boost::int32_t GeometryType );
+
+	bool ExtExist( const std::string extStr );
 
 	boost::int8_t* GetIndexBufferPointer();
 	boost::int32_t GetIndexBufferEnum();

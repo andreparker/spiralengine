@@ -27,6 +27,7 @@ solution( "Spiral" )
 	
 	if os.get() == "windows" then
 		dofile( "GameEngine/Win32_Ogl_Driver.premake4" )
+		--dofile( "GameEngine/Direct3D9_Driver.premake4" )
 	end
 
 	-- Test
