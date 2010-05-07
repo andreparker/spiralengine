@@ -2,6 +2,7 @@
 #define MATH_HPP
 
 #include "../Core/Sp_DataTypes.hpp"
+#include "../Core/Rect.hpp"
 #include "../../ThirdParty/Math/Eigen/Core"
 #include "../../ThirdParty/Math/Eigen/Geometry"
 

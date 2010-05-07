@@ -5,9 +5,11 @@
 int main(int argc, char *argv[]) {
     
 	int retVal;
+	NSAutoreleasePool * pool;
+	
 	try 
 	{
-		NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
+		pool = [[NSAutoreleasePool alloc] init];
 		retVal = UIApplicationMain(argc, argv, nil, @"Platform_IphoneAppDelegate");
 	}
 	catch ( std::exception e ) 

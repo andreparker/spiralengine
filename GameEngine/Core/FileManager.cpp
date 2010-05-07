@@ -38,15 +38,6 @@ bool CreateFileImpl
 	FstreamType* fs = new FstreamType( fileName.c_str(), FstreamType::binary );
 	bool isOpen = fs->is_open();
 
-	// delet the file if it did not open
-	BOOST_SCOPE_EXIT( (isOpen)(fs) )
-	{
-		if( false == isOpen )
-		{
-			delete fs;
-		}
-	}BOOST_SCOPE_EXIT_END;
-
 
 	if( isOpen )
 	{
@@ -56,6 +47,7 @@ bool CreateFileImpl
 	}else
 	{
 		LOG_I( "^ybool CreateFileImpl: ^rERROR ^wFile: ^g%1% ^rcannot be opened.\n", fileName );
+		delete fs;
 	}
 
 	return isOpen;

@@ -31,6 +31,22 @@
 	return m_eaglContext;
 }
 
+-(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
+{
+}
+
+-(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
+{
+}
+
+-(void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
+{
+}
+
+-(void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
+{
+}
+
 - (id)initWithFrame:(CGRect)aRect
 {
 	if( (self = [super initWithFrame:aRect]) )
@@ -50,7 +66,6 @@
 				return nil;
 			}
 			
-			animationInterval = 1.0 / 60.0;
 	}
 	
 	return self;

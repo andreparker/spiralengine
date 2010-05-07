@@ -57,7 +57,7 @@ namespace Spiral
 			}
 		}
 
-		Bind::~Bind()
+		~Bind()
 		{
 			if( m_object )
 			{

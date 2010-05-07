@@ -308,8 +308,8 @@ namespace
 	template< class Type >
 	Type ExtractData( const std::string& str, const ptree& tree )
 	{
-		ptree::const_iterator dataItr = tree.find( str );
-		if( dataItr == tree.end() )
+		ptree::const_assoc_iterator dataItr = tree.find( str );
+		if( tree.to_iterator(dataItr) == tree.end() )
 		{
 			THROW_GENERAL_EXCEPTION( "Error Could not extract " + str + " !" );
 		}
@@ -319,10 +319,10 @@ namespace
 
 	void ExtractBounds( const ptree& tree, SpReal* bounds )
 	{
-		ptree::const_iterator leftItr   = tree.find( "left" );
-		ptree::const_iterator rightItr  = tree.find( "right" );
-		ptree::const_iterator topItr    = tree.find( "top" );
-		ptree::const_iterator bottomItr = tree.find( "bottom" );
+		ptree::const_assoc_iterator leftItr   = tree.find( "left" );
+		ptree::const_assoc_iterator rightItr  = tree.find( "right" );
+		ptree::const_assoc_iterator topItr    = tree.find( "top" );
+		ptree::const_assoc_iterator bottomItr = tree.find( "bottom" );
 
 		*bounds++ = leftItr->second.get_value( 0.0f );
 		*bounds++ = rightItr->second.get_value( 0.0f );
@@ -333,13 +333,13 @@ namespace
 	shared_ptr< Texture > ExtractTexture( Engine* engine, const ptree& tree )
 	{
 		shared_ptr< Texture > newTexture;
-		ptree::const_iterator fileName = tree.find( "fileName" );
-		ptree::const_iterator tagName  = tree.find( "tagName"  );
+		ptree::const_assoc_iterator fileName = tree.find( "fileName" );
+		ptree::const_assoc_iterator tagName  = tree.find( "tagName"  );
 
-		if( fileName != tree.end() && tagName != tree.end() )
+		if( tree.to_iterator(fileName) != tree.end() && tree.to_iterator(tagName) != tree.end() )
 		{
 			newTexture = engine->LoadTexture( fileName->second.data(), tagName->second.data() );
-		}else if( tagName != tree.end() )
+		}else if( tree.to_iterator(tagName) != tree.end() )
 		{
 			newTexture = engine->GetTexture( tagName->second.data() );
 		}
@@ -349,8 +349,8 @@ namespace
 
 	void ExtractScript( Engine* engine, const ptree& tree )
 	{
-		ptree::const_iterator fileName = tree.find( "fileName" );
-		ptree::const_iterator tagName  = tree.find( "tagName"  );
+		ptree::const_assoc_iterator fileName = tree.find( "fileName" );
+		ptree::const_assoc_iterator tagName  = tree.find( "tagName"  );
 
 		boost::shared_ptr< IFile > scriptFile;
 		if( FileManager::instance().getFile( fileName->second.data(), scriptFile ) )
@@ -364,12 +364,12 @@ namespace
 
 	boost::shared_ptr< Font > ExtractFont( Engine* engine, const ptree& tree )
 	{
-		ptree::const_iterator fileName = tree.find( "fileName" );
-		ptree::const_iterator tagName  = tree.find( "tagName"  );
-		ptree::const_iterator fontWidth = tree.find( "width" );
-		ptree::const_iterator fontHeight = tree.find( "height" );
+		ptree::const_assoc_iterator fileName = tree.find( "fileName" );
+		ptree::const_assoc_iterator tagName  = tree.find( "tagName"  );
+		ptree::const_assoc_iterator fontWidth = tree.find( "width" );
+		ptree::const_assoc_iterator fontHeight = tree.find( "height" );
 
-		if( fontWidth == tree.end() || fontHeight == tree.end() )
+		if( tree.to_iterator(fontWidth) == tree.end() || tree.to_iterator(fontHeight) == tree.end() )
 		{
 			THROW_GENERAL_EXCEPTION( "Error: Font extract, missing width/height!" );
 		}
@@ -408,20 +408,20 @@ namespace
 
 	void ExtractPosition( const ptree& tree, SpReal* position )
 	{
-		ptree::const_iterator xItr = tree.find( "x" );
-		if( xItr != tree.end() )
+		ptree::const_assoc_iterator xItr = tree.find( "x" );
+		if( tree.to_iterator(xItr) != tree.end() )
 		{
 			*position++ = xItr->second.get_value( 0.0f );
 		}
 
-		ptree::const_iterator yItr = tree.find( "y" );
-		if( yItr != tree.end() )
+		ptree::const_assoc_iterator yItr = tree.find( "y" );
+		if( tree.to_iterator(yItr) != tree.end() )
 		{
 			*position++ = yItr->second.get_value( 0.0f );
 		}
 
-		ptree::const_iterator zItr = tree.find( "z" );
-		if( zItr != tree.end() )
+		ptree::const_assoc_iterator zItr = tree.find( "z" );
+		if( tree.to_iterator(zItr) != tree.end() )
 		{
 			*position++ = zItr->second.get_value( 0.0f );
 		}
@@ -543,12 +543,12 @@ bool GuiManager::LoadLayoutImpl( const boost::shared_ptr< IFile >& layoutFile, c
 	ptree tree;
 
 	ReadInfo( layoutFile, tree );
-	ptree::iterator layoutItr = tree.find( kKwLayout );
+	ptree::assoc_iterator layoutItr = tree.find( kKwLayout );
 
-	if( layoutItr != tree.end() )
+	if( tree.to_iterator(layoutItr) != tree.end() )
 	{
 		ptree& layoutVal = layoutItr->second;
-		for( ptree::iterator itr = layoutVal.begin(); itr != layoutVal.end(); ++itr )
+		for( ptree::const_iterator itr = layoutVal.begin(); itr != layoutVal.end(); ++itr )
 		{
 			if( IsElement( itr->first ) )
 			{

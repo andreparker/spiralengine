@@ -9,7 +9,7 @@ using namespace Spiral::GfxUtil;
 using namespace Spiral;
 using namespace boost;
 
-void cdecl CustomPngReadFunc( png_structp pngPtr, png_bytep data, png_size_t size )
+extern "C" void CustomPngReadFunc( png_structp pngPtr, png_bytep data, png_size_t size )
 {
 	IFile* pngFile = static_cast< IFile* >( png_get_io_ptr( pngPtr ) );
 	pngFile->Read( reinterpret_cast<int8_t*>( data ), size );

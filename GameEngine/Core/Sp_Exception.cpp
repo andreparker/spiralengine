@@ -5,9 +5,9 @@ std::string& Spiral::BaseException::GetGeneralError() const throw()
 {
 	m_final = GetComponentName() + m_errorStr + "\n";
 
-	boost::shared_ptr<std::string const> fileInfo = boost::get_error_info<Ex_SrcFileInfo>( *this );
-	boost::shared_ptr<std::string const> functionInfo = boost::get_error_info<Ex_FunctionInfo>( *this );
-	boost::shared_ptr<int const> lineInfo = boost::get_error_info<Ex_SrcLineInfo>( *this );
+	boost::shared_ptr<std::string const> fileInfo(boost::get_error_info<Ex_SrcFileInfo>( *this ));
+	boost::shared_ptr<std::string const> functionInfo(boost::get_error_info<Ex_FunctionInfo>( *this ));
+	boost::shared_ptr<int const> lineInfo(boost::get_error_info<Ex_SrcLineInfo>( *this ));
 
 	if( fileInfo )
 	{

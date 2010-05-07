@@ -13,52 +13,55 @@
 
 using namespace Spiral;
 
+const boost::uint32_t kBufferSize = 512;
+char dataBuffer[ kBufferSize ];
+
+extern "C" {
+const char* Reader( lua_State* state, void* data, size_t* size )
+{
+	IFile* file = reinterpret_cast< IFile* >( data );
+	*size = file->Read( reinterpret_cast<boost::int8_t*>( dataBuffer ), kBufferSize );
+	
+	return dataBuffer;
+}
+
+void* Alloc_lua ( void *ud, void *ptr, size_t osize, size_t nsize )
+{
+	if( nsize )
+	{
+		void* np = new char[ nsize + sizeof(size_t) ];
+		char* addr = (char*)np + sizeof(size_t);
+		
+		memset( addr, 0, nsize );
+		
+		if( ptr )
+		{
+			char* actual = (char*)((char*)ptr - sizeof(size_t));
+			size_t size = *(size_t*)actual;
+			
+			memcpy( addr, ptr, ( size > nsize ? nsize : size ) );
+			delete [] actual;
+		}	
+		
+		
+		*(size_t*)np = nsize;
+		
+		return addr;
+	}else
+	{
+		if( ptr )
+		{
+			char* actual = (char*)((char*)ptr - sizeof(size_t));
+			delete [] actual;
+		}
+	}
+	
+	return NULL;
+}}
+
 namespace
 {
-	const boost::uint32_t kBufferSize = 512;
-	char dataBuffer[ kBufferSize ];
-
-	const char* __cdecl Reader( lua_State* state, void* data, size_t* size )
-	{
-		IFile* file = reinterpret_cast< IFile* >( data );
-		*size = file->Read( reinterpret_cast<boost::int8_t*>( dataBuffer ), kBufferSize );
-
-		return dataBuffer;
-	}
-
-	void* __cdecl Alloc_lua ( void *ud, void *ptr, size_t osize, size_t nsize )
-	{
-		if( nsize )
-		{
-			void* np = new char[ nsize + sizeof(size_t) ];
-			char* addr = (char*)np + sizeof(size_t);
-
-			memset( addr, 0, nsize );
-			
-			if( ptr )
-			{
-				char* actual = (char*)((char*)ptr - sizeof(size_t));
-				size_t size = *(size_t*)actual;
-
-				memcpy( addr, ptr, ( size > nsize ? nsize : size ) );
-				delete [] actual;
-			}	
-			
-
-			*(size_t*)np = nsize;
-
-			return addr;
-		}else
-		{
-			if( ptr )
-			{
-				char* actual = (char*)((char*)ptr - sizeof(size_t));
-				delete [] actual;
-			}
-		}
-
-		return NULL;
-	}
+	
 
 	int AddDebugInfo(lua_State* L)
 	{
