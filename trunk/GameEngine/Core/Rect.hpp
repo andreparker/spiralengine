@@ -4,6 +4,7 @@
 #define RECT_HPP
 
 #include <boost/serialization/nvp.hpp>
+#include "Sp_DataTypes.hpp"
 
 namespace Spiral
 {
@@ -48,26 +49,10 @@ namespace Spiral
 		}
 
 		template< class Type >
-		bool Contains( Type x, Type y )const
-		{
-			SpReal xpos = (SpReal)x;
-			SpReal ypos = (SpReal)y;
-
-			return Contains( xpos, ypos );
-		}
+		bool Contains( Type x, Type y )const;
 		
-		template<> inline bool Contains( float x, float y )const
-		{
-			bool isInBounds = false;
-			if( x >= left && x <= right )
-			{
-				if( y >= top && y <= bottom )
-				{
-					isInBounds = true;
-				}
-			}
-			return isInBounds;
-		}
+		bool Contains( float x, float y )const;
+
 
 		template< class Archive >
 		void serialize( Archive& ar, const unsigned int version )
@@ -80,6 +65,29 @@ namespace Spiral
 
 		T left, right, bottom, top;
 	};
+	
+	template< class T >
+	template< class Type > bool Rect<T>::Contains( Type x, Type y )const
+	{
+		SpReal xpos = (SpReal)x;
+		SpReal ypos = (SpReal)y;
+		
+		return Contains( xpos, ypos );
+	}
+	
+	template<class T>
+	bool Rect<T>::Contains( float x, float y )const
+	{
+		bool isInBounds = false;
+		if( x >= left && x <= right )
+		{
+			if( y >= top && y <= bottom )
+			{
+				isInBounds = true;
+			}
+		}
+		return isInBounds;
+	}
 }
 
 #endif

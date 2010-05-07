@@ -31,14 +31,16 @@ void GameStateMachine::InitializeStates()
 {
 	struct funcObject
 	{
-		void operator()( StateInitFunc func, GameStateMachine* data_ )
+		funcObject( GameStateMachine* ptr_):m_ptr(ptr_){}
+		void operator()( StateInitFunc func )
 		{
-			func( data_ );
+			func( m_ptr );
 		}
+		
+		GameStateMachine* m_ptr;
+	} funcObject_( this );
 
-	} funcObject_;
-
-	for_each( m_stateFuncInitList.begin(), m_stateFuncInitList.end(), boost::bind<void>( boost::ref( funcObject_ ), _1, this ) );
+	//std::for_each( m_stateFuncInitList.begin(), m_stateFuncInitList.end(), funcObject_ );
 }
 
 void GameStateMachine::ClearStates()

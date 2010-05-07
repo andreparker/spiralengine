@@ -3,7 +3,7 @@
 #ifndef SP_EXCEPTION_HPP
 #define SP_EXCEPTION_HPP
 
-#include <boost/exception.hpp>
+#include <boost/exception/all.hpp>
 #include <exception>
 #include <string>
 
@@ -19,6 +19,10 @@ namespace Spiral
 		 BaseException( const std::string& component, const std::string& errorStr ) throw():
 			 m_componentName( component ),m_errorStr( errorStr ){}
 
+		 virtual ~BaseException() throw()
+		 {
+		 }
+		
 		 std::string GetComponentName()const throw()
 		 {
 			 return std::string( "[ " + m_componentName + " ] " );

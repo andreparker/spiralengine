@@ -15,7 +15,7 @@ namespace
 
 		while( *pStr != NULL )
 		{
-			out.push_back( static_cast< outStr::value_type >( *pStr++ ) );
+			out.push_back( static_cast< typename outStr::value_type >( *pStr++ ) );
 		}
 
 		out.push_back( NULL );

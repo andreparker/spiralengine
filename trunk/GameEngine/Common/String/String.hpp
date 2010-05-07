@@ -8,10 +8,12 @@ namespace Spiral { namespace Common { namespace String {
 	template<  class OutStr , class InStr >
 	const OutStr StringToString( const InStr& str )
 	{
-		typedef OutStr::value_type val_type;
+		typedef typename OutStr::value_type val_type;
+		typedef typename InStr::const_iterator const_iterator;
+		
 		OutStr out;
 
-		for( InStr::const_iterator itr = str.begin();
+		for( const_iterator itr = str.begin();
 			 itr != str.end(); ++itr )
 		{
 			 const val_type val = static_cast< const val_type >( *itr );

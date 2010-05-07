@@ -36,7 +36,7 @@ namespace Spiral
 		{
 			holePart = bits / 10L
 		};
-		static const boost::uint32_t value = ( static_cast<boost::uint32_t>(  ( float( bits * 0.1f - holePart ) > 0.0f ? 1 : 0 )  ) << place ) |
+		static const boost::uint32_t value = ( static_cast<boost::uint32_t>(  ( ( bits * 0.1f - holePart ) > 0.0f ? 1 : 0 )  ) << place ) |
 			Binary2Dec< holePart, place+1 >::value;
 	};
 

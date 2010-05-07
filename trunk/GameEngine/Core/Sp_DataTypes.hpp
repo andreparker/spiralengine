@@ -4,7 +4,7 @@
 #define SP_DATATYPES_HPP
 
 #include <string>
-#include "Rect.hpp"
+//#include "Rect.hpp"
 
 namespace Spiral
 {

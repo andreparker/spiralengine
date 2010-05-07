@@ -18,6 +18,7 @@
 #include <boost/property_tree/ptree.hpp>
 
 #include "Sp_DataTypes.hpp"
+#include "EngineAttributes.hpp"
 #include "../Gfx/SpriteLayerImplFwd.hpp"
 #include "../Gfx/SpriteDrawListImplFwd.hpp"
 #include "../Math/Math.hpp"
@@ -53,7 +54,7 @@ namespace Audio
 	class GfxDriver;
 	class Sprite;
 	struct ResourceCatalog;
-	struct EngineAttribute;
+	// struct EngineAttribute;
 
 	class FontFactory;
 	class Font;

@@ -5,6 +5,7 @@
 
 #include <boost/cstdint.hpp>
 #include "../Core/Sp_DataTypes.hpp"
+#include "../Core/Rect.hpp"
 
 namespace Spiral
 {

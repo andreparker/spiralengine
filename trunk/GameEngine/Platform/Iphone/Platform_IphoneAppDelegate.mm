@@ -1,5 +1,5 @@
 #import "Platform_IphoneAppDelegate.hpp"
-#import "EAGLView.h"
+#import "EAGLView.hpp"
 
 @interface Platform_IphoneAppDelegate ()
 
@@ -10,7 +10,7 @@
 
 - (void) Tick;
 - (void) SetUpMain;
-- (void) SetTickInterval: (NSTimeIntervel)interval;
+- (void) SetTickInterval: (NSTimeInterval)interval;
 - (void) StopTick;
 
 @end

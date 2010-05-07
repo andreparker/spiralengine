@@ -8,7 +8,9 @@
 #include <Windows.h>
 #define GET_MICRO_SECS GetTickCount
 #else
-#define GET_MICRO_SECS
+#include <ctime>
+boost::uint32_t time_ex() { return (boost::uint32_t)time(NULL); }
+#define GET_MICRO_SECS time_ex
 #endif
 
 

@@ -24,7 +24,7 @@ namespace Spiral { namespace Common { namespace Ini {
 		template< class ValType >
 		const ValType GetValue( const cString& key )const
 		{
-			BOOST_ASSERT( m_tree.find( key ) != m_tree.end() );
+			BOOST_ASSERT( m_tree.to_iterator(m_tree.find( key )) != m_tree.end() );
 			return m_tree.get< ValType >( key );
 		}
 
@@ -37,16 +37,16 @@ namespace Spiral { namespace Common { namespace Ini {
 	template<>
 	const cString IniParser::GetValue( const cString& key )const
 	{
-		Tree_Const_Iter itr = m_tree.find( key );
-		BOOST_ASSERT( itr != m_tree.end() );
+		Tree::const_assoc_iterator itr = m_tree.find( key );
+		BOOST_ASSERT( m_tree.to_iterator(itr) != m_tree.end() );
 		return itr->second.data();
 	}
 
 	template<>
 	const wString IniParser::GetValue( const cString& key )const
 	{
-		Tree_Const_Iter itr = m_tree.find( key );
-		BOOST_ASSERT( itr != m_tree.end() );
+		Tree::const_assoc_iterator itr = m_tree.find( key );
+		BOOST_ASSERT( m_tree.to_iterator(itr) != m_tree.end() );
 		return String::ConvertCString_To_WString( itr->second.data() );
 	}
 
